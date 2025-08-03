@@ -1,0 +1,71 @@
+@use "sass:color";
+
+/* GoVently brand colors */
+$govently-primary: #4CA6A8;
+$govently-secondary: #B9A5D9;
+$govently-light: #FDF8F3;
+$govently-dark: #2E3B4E;
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn {
+    padding: 0.9rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 1rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  h1, h2 {
+    font-size: 1.4rem;
+  }
+
+  .app-preview {
+    max-width: 85%;
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* Hero gradient */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, $govently-primary, $govently-secondary);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: $govently-primary;
+  border: none;
+}
+.btn-primary:hover {
+  background-color: color.adjust($govently-primary, $lightness: -5%);
+}
+
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Prompt section */
+.prompt-section {
+  background-color: $govently-light;
+}
+
+/* Cards */
+.card {
+  border-radius: 1rem;
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Blockquotes */
+blockquote {
+  font-style: italic;
+  color: #555;
+  padding: 0 1rem;
+  max-width: 600px;
+  margin: auto;
+}

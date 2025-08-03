@@ -1,0 +1,22 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+/* Global typography */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #ffffff;
+  color: #2E3B4E;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+}
+
+.shadow-soft {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.rounded-xl {
+  border-radius: 1.2rem;
+}

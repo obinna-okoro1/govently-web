@@ -1,0 +1,31 @@
+@use "sass:color";
+
+$govently-primary: #4CA6A8;
+$govently-light: #FDF8F3;
+
+.signup-page {
+  background-color: $govently-light;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+
+  .card {
+    border-radius: 1rem;
+    background-color: white;
+  }
+
+  .btn-govently-primary {
+    background-color: $govently-primary;
+    color: white;
+    border: none;
+    &:hover {
+      background-color: color.adjust($govently-primary, $lightness: -5%);
+    }
+  }
+
+  input.form-control,
+  select.form-select {
+    border-radius: 0.8rem;
+    padding: 0.8rem 1rem;
+  }
+}

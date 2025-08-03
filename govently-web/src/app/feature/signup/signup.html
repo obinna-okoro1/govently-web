@@ -1,0 +1,67 @@
+<div class="signup-page container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-soft border-0 p-4">
+        <div class="text-center mb-4">
+          <img src="assets/logo.svg" alt="GoVently Logo" style="height:60px;">
+          <h2 class="fw-bold mt-3">Create Account</h2>
+          <p class="text-muted">Join GoVently and start your wellness journey</p>
+        </div>
+
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input id="name" formControlName="name" type="text" class="form-control form-control-lg" placeholder="Your name">
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input id="email" formControlName="email" type="email" class="form-control form-control-lg" placeholder="you@example.com">
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input id="password" formControlName="password" type="password" class="form-control form-control-lg" placeholder="********">
+          </div>
+
+          <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <select id="gender" formControlName="gender" class="form-select form-select-lg">
+              <option value="">Select...</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="nonbinary">Non-binary</option>
+              <option value="prefer_not">Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="country" class="form-label">Country</label>
+            <select id="country" formControlName="country" class="form-select form-select-lg">
+              <option value="">Select...</option>
+              <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <select id="city" formControlName="city" class="form-select form-select-lg" [disabled]="!cities.length">
+              <option value="">Select...</option>
+              <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+            </select>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-govently-primary btn-lg" [disabled]="signupForm.invalid">
+              Sign Up
+            </button>
+          </div>
+
+          <div class="text-center mt-3">
+            <small>Already have an account? <a routerLink="/login" class="text-decoration-none">Sign in</a></small>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
