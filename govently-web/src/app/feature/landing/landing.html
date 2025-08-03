@@ -26,14 +26,24 @@
     <p class="lead text-muted mb-4" data-aos="fade-up" data-aos-delay="100">
       “What’s one thing you wish someone would understand about you today?”
     </p>
-    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-    <a href="#" class="btn btn-primary btn-lg px-5" data-aos="fade-up" data-aos-delay="200">
-      Start Journaling
-    </a>
-    <a href="/chat" class="btn btn-ai btn-lg px-5" data-aos="fade-up" data-aos-delay="250">
-      💬 Chat with AI
-    </a>
-  </div>
+   <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+  <button 
+    class="btn btn-primary btn-lg px-5" 
+    (click)="startJournaling()" 
+    data-aos="fade-up" 
+    data-aos-delay="200"
+  >
+    Start Journaling
+  </button>
+  <button 
+    class="btn btn-ai btn-lg px-5" 
+    (click)="chatWithAI()" 
+    data-aos="fade-up" 
+    data-aos-delay="250"
+  >
+    💬 Chat with AI
+  </button>
+</div>
   </section>
 
   <!-- STORY SECTION -->
