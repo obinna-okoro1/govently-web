@@ -28,7 +28,7 @@ export class LandingComponent {
 
   chatWithAI() {
     if (this.canNavigate()) {
-      this.router.navigate(['/chat']);
+      this.router.navigate(['/ai-chat']);
     }
   }
 

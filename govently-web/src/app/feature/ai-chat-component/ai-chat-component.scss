@@ -1,0 +1,132 @@
+.chat-container {
+  max-width: 600px;
+  margin: auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #fdf8f3, #f2f6ff);
+}
+
+.companion-bar {
+  display: flex;
+  overflow-x: auto;
+  padding: 0.5rem;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+
+  .companion-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    margin-right: 0.5rem;
+    background: #ffffff;
+
+    .emoji { font-size: 1.3rem; }
+
+    &.active {
+      background: linear-gradient(135deg, #4CA6A8, #B9A5D9);
+      color: white;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.chat-message {
+  display: flex;
+  margin: 0.5rem 0;
+
+  &.from-ai {
+    justify-content: flex-start;
+    .bubble {
+      background: #f4f0ff;
+      border-radius: 18px 18px 18px 4px;
+    }
+  }
+
+  &.from-user {
+    justify-content: flex-end;
+    .bubble {
+      background: linear-gradient(135deg, #4CA6A8, #B9A5D9);
+      color: white;
+      border-radius: 18px 18px 4px 18px;
+    }
+  }
+
+  .bubble {
+    padding: 0.7rem 1rem;
+    max-width: 75%;
+    word-wrap: break-word;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    animation: fadeIn 0.3s ease forwards;
+  }
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 0.3rem;
+  margin: 0.5rem;
+  span {
+    width: 6px;
+    height: 6px;
+    background: #bbb;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+  }
+  span:nth-child(2) { animation-delay: 0.2s; }
+  span:nth-child(3) { animation-delay: 0.4s; }
+}
+
+.chat-input {
+  display: flex;
+  padding: 0.8rem;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  background: white;
+
+  input {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 20px;
+    border: none;
+    background: #f0f0f0;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .send-btn {
+    margin-left: 0.5rem;
+    background: linear-gradient(135deg, #4CA6A8, #B9A5D9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.3; }
+  40% { opacity: 1; }
+}

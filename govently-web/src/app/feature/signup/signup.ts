@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http'; // ✅ Import here
 import { LocationService } from '../../shared/location-service';
 import { ModalService } from '../../shared/modal/modal.service';
 import { Login } from '../login/login';
+import { AuthService, Gender } from '../../core/auth/auth-service';
 
 @Component({
   selector: 'app-signup',
@@ -17,7 +18,8 @@ export class Signup {
   name = '';
   email = '';
   password = '';
-  gender = '';
+  age = 0; // Placeholder, you might want to add an input for age
+  gender: Gender = 'other';
   country = '';
   city = '';
   countries: string[] = [];
@@ -25,7 +27,8 @@ export class Signup {
 
   constructor(
     private locationService: LocationService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -50,17 +53,30 @@ export class Signup {
     }
   }
 
-  onSubmit(): void {
-    console.log('Signup form data:', {
+ onSubmit(): void {
+    
+    this.authService.signUp({
       name: this.name,
       email: this.email,
-      password: this.password,
       gender: this.gender,
       country: this.country,
-      city: this.city
+      city: this.city,
+      age: this.age
+    }, this.password).subscribe({
+      next: (response) => {
+        // Handle successful signup
+        console.log('Signup successful:', response);
+        this.modalService.close();
+        // Optionally open login modal or redirect
+        this.modalService.open(Login, 'Login', {});
+      },
+      error: (error) => {
+        // Handle signup error
+        console.error('Signup failed:', error);
+        // You might want to show an error message to the user here
+      }
     });
-    // TODO: integrate Supabase signup
-  }
+}
 
   goToLogin(): void {
     this.modalService.close();

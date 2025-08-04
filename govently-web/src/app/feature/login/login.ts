@@ -3,6 +3,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ModalService } from '../../shared/modal/modal.service';
 import { Signup } from '../signup/signup';
+import { AuthService } from '../../core/auth/auth-service';
 
 @Component({
   selector: 'app-login',
@@ -18,13 +19,20 @@ export class Login {
   password = '';
 
   constructor(
-    private modalService: ModalService
+    private modalService: ModalService,
+    private authService: AuthService,
    ) {}
 
   onSubmit() {
-    // TODO: Replace with real authentication logic
-    console.log('Login submitted:', this.email, this.password);
-    this.loginSuccess.emit({ email: this.email, password: this.password });
+    this.authService.signIn({ email: this.email, password: this.password }).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        this.loginSuccess.emit({ email: this.email, password: this.password });
+      },
+      error: (error) => {
+        console.error('Login failed:', error);
+      }
+    });
   }
 
   goToSignup() {

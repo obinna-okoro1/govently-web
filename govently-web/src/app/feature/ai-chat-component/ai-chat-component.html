@@ -1,0 +1,35 @@
+<div class="chat-container">
+  
+  <!-- Companion Selector -->
+  <div class="companion-bar">
+    <div 
+      *ngFor="let c of companions" 
+      class="companion-pill" 
+      [class.active]="c.name === activeCompanion.name"
+      (click)="selectCompanion(c)">
+      <span class="emoji">{{ c.emoji }}</span>
+      <span class="label">{{ c.name }}</span>
+    </div>
+  </div>
+
+  <!-- Chat Messages -->
+  <div class="chat-body" #chatBody>
+    <div 
+      *ngFor="let msg of messages" 
+      class="chat-message" 
+      [ngClass]="{'from-ai': msg.sender === 'ai', 'from-user': msg.sender === 'user'}">
+      <div class="bubble">{{ msg.text }}</div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div *ngIf="isTyping" class="typing-indicator">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input">
+    <input type="text" [(ngModel)]="userMessage" placeholder="Type your feels here..." (keydown.enter)="sendMessage()">
+    <button class="send-btn" (click)="sendMessage()">➤</button>
+  </div>
+</div>
