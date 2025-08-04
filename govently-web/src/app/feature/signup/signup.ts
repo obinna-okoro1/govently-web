@@ -1,63 +1,69 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http'; // ✅ Import here
 import { LocationService } from '../../shared/location-service';
-import { HttpClientModule } from '@angular/common/http';
+import { ModalService } from '../../shared/modal/modal.service';
+import { Login } from '../login/login';
 
 @Component({
   selector: 'app-signup',
-  imports: [HttpClientModule, ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, HttpClientModule], // ✅ Include it
   templateUrl: './signup.html',
   styleUrl: './signup.scss'
 })
 export class Signup {
- signupForm!: FormGroup;
+  name = '';
+  email = '';
+  password = '';
+  gender = '';
+  country = '';
+  city = '';
   countries: string[] = [];
   cities: string[] = [];
 
   constructor(
-    private fb: FormBuilder,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
-    // Initialize form
-    this.signupForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      gender: ['', Validators.required],
-      country: ['', Validators.required],
-      city: ['', Validators.required]
-    });
-
-    // Load countries
     this.locationService.getCountries().subscribe((res: any) => {
       if (res?.data) {
         this.countries = res.data.map((c: any) => c.country);
       }
     });
-
-    // Watch for country changes
-    this.signupForm.get('country')?.valueChanges.subscribe(country => {
-      if (country) {
-        this.locationService.getCities(country).subscribe((res: any) => {
-          if (res?.data) {
-            this.cities = res.data;
-            this.signupForm.patchValue({ city: '' });
-          }
-        });
-      } else {
-        this.cities = [];
-        this.signupForm.patchValue({ city: '' });
-      }
-    });
   }
 
-  onSubmit(): void {
-    if (this.signupForm.valid) {
-      console.log('Form data:', this.signupForm.value);
-      // TODO: Integrate with Supabase Auth here
+  onCountryChange(country: string): void {
+    if (country) {
+      this.locationService.getCities(country).subscribe((res: any) => {
+        if (res?.data) {
+          this.cities = res.data;
+          this.city = '';
+        }
+      });
+    } else {
+      this.cities = [];
+      this.city = '';
     }
   }
 
+  onSubmit(): void {
+    console.log('Signup form data:', {
+      name: this.name,
+      email: this.email,
+      password: this.password,
+      gender: this.gender,
+      country: this.country,
+      city: this.city
+    });
+    // TODO: integrate Supabase signup
+  }
+
+  goToLogin(): void {
+    this.modalService.close();
+    this.modalService.open(Login, 'Login', {});
+  }
 }

@@ -3,6 +3,5 @@ import { LandingComponent } from './feature/landing/landing.component'
 import { Signup } from './feature/signup/signup';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
-  { path: 'signup', component: Signup }
+  { path: '', component: LandingComponent }
 ];

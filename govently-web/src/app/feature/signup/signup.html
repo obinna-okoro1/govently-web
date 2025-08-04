@@ -1,67 +1,101 @@
-<div class="signup-page container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-      <div class="card shadow-soft border-0 p-4">
-        <div class="text-center mb-4">
-          <img src="assets/logo.svg" alt="GoVently Logo" style="height:60px;">
-          <h2 class="fw-bold mt-3">Create Account</h2>
-          <p class="text-muted">Join GoVently and start your wellness journey</p>
-        </div>
+<div class="signup-wrapper">
+  <h3 class="text-center mb-4">Create Account</h3>
 
-        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-          <div class="mb-3">
-            <label for="name" class="form-label">Full Name</label>
-            <input id="name" formControlName="name" type="text" class="form-control form-control-lg" placeholder="Your name">
-          </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input id="email" formControlName="email" type="email" class="form-control form-control-lg" placeholder="you@example.com">
-          </div>
-
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input id="password" formControlName="password" type="password" class="form-control form-control-lg" placeholder="********">
-          </div>
-
-          <div class="mb-3">
-            <label for="gender" class="form-label">Gender</label>
-            <select id="gender" formControlName="gender" class="form-select form-select-lg">
-              <option value="">Select...</option>
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="nonbinary">Non-binary</option>
-              <option value="prefer_not">Prefer not to say</option>
-            </select>
-          </div>
-
-          <div class="mb-3">
-            <label for="country" class="form-label">Country</label>
-            <select id="country" formControlName="country" class="form-select form-select-lg">
-              <option value="">Select...</option>
-              <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
-            </select>
-          </div>
-
-          <div class="mb-3">
-            <label for="city" class="form-label">City</label>
-            <select id="city" formControlName="city" class="form-select form-select-lg" [disabled]="!cities.length">
-              <option value="">Select...</option>
-              <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
-            </select>
-          </div>
-
-          <div class="d-grid">
-            <button type="submit" class="btn btn-govently-primary btn-lg" [disabled]="signupForm.invalid">
-              Sign Up
-            </button>
-          </div>
-
-          <div class="text-center mt-3">
-            <small>Already have an account? <a routerLink="/login" class="text-decoration-none">Sign in</a></small>
-          </div>
-        </form>
-      </div>
+  <form (ngSubmit)="onSubmit()" #signupFormRef="ngForm">
+    <div class="mb-3">
+      <label for="name" class="form-label fw-semibold">Full Name</label>
+      <input
+        type="text"
+        id="name"
+        class="form-control"
+        name="name"
+        [(ngModel)]="name"
+        required
+      />
     </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label fw-semibold">Email address</label>
+      <input
+        type="email"
+        id="email"
+        class="form-control"
+        name="email"
+        [(ngModel)]="email"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label fw-semibold">Password</label>
+      <input
+        type="password"
+        id="password"
+        class="form-control"
+        name="password"
+        [(ngModel)]="password"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="gender" class="form-label fw-semibold">Gender</label>
+      <select
+        id="gender"
+        class="form-select"
+        name="gender"
+        [(ngModel)]="gender"
+        required
+      >
+        <option value="">Select...</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+        <option value="non-binary">Non-binary</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="country" class="form-label fw-semibold">Country</label>
+      <select
+        id="country"
+        class="form-select"
+        name="country"
+        [(ngModel)]="country"
+        (ngModelChange)="onCountryChange($event)"
+        required
+      >
+        <option value="">Select...</option>
+        <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="city" class="form-label fw-semibold">City</label>
+      <select
+        id="city"
+        class="form-select"
+        name="city"
+        [(ngModel)]="city"
+        [disabled]="!cities.length"
+        required
+      >
+        <option value="">Select...</option>
+        <option *ngFor="let cityName of cities" [value]="cityName">{{ cityName }}</option>
+      </select>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary w-100 py-2 fw-semibold"
+      [disabled]="!signupFormRef.valid"
+    >
+      Sign Up
+    </button>
+  </form>
+
+  <div class="text-center mt-4">
+    <small class="text-muted">Already have an account?</small>
+    <a href="#" class="fw-semibold text-primary" (click)="goToLogin()">Login</a>
   </div>
 </div>

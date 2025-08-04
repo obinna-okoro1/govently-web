@@ -1,6 +1,6 @@
 interface ImportMetaEnv {
-  readonly SUPABASEURL: string;
-  readonly SUPABASEKEY: string;
+  readonly VITE_SUPABASE_URL: string;
+  readonly VITE_SUPABASE_KEY: string;
   // add other env variables here if needed
 }
 
@@ -12,6 +12,6 @@ declare global {
 
 export const environment = {
   production: false,
-  supabaseUrl: import.meta.env.SUPABASEURL || '',
-  supabaseKey: import.meta.env.SUPABASEKEY || '',
+  supabaseUrl: import.meta.env.VITE_SUPABASE_URL || '',
+  supabaseKey: import.meta.env.VITE_SUPABASE_KEY || '',
 };

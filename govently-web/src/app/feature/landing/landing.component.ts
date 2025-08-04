@@ -23,16 +23,12 @@ export class LandingComponent {
     // your checks here, e.g. authentication or form validation
     if (this.canNavigate()) {
       this.router.navigate(['/journaling']);
-    } else {
-      alert('You must complete the checks first!');
     }
   }
 
   chatWithAI() {
     if (this.canNavigate()) {
       this.router.navigate(['/chat']);
-    } else {
-      alert('You must complete the checks first!');
     }
   }
 

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ModalService } from '../../shared/modal/modal.service';
+import { Signup } from '../signup/signup';
 
 @Component({
   selector: 'app-login',
@@ -11,10 +13,13 @@ import { FormsModule } from '@angular/forms';
 })
 export class Login {
     @Output() loginSuccess = new EventEmitter<{ email: string; password: string }>();
-  @Output() openSignup = new EventEmitter<void>();
 
   email = '';
   password = '';
+
+  constructor(
+    private modalService: ModalService
+   ) {}
 
   onSubmit() {
     // TODO: Replace with real authentication logic
@@ -23,7 +28,9 @@ export class Login {
   }
 
   goToSignup() {
-    this.openSignup.emit();
-  }
+  // Close the current modal
+  this.modalService.close();
 
+  this.modalService.open(Signup, 'Sign Up', {});
+}
 }
