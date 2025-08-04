@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalService } from '../../shared/modal/modal.service';
+import { Login } from '../login/login';
+import { AuthService } from '../../core/auth/auth-service';
 
 @Component({
   selector: 'app-landing',
@@ -10,7 +13,11 @@ import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./landing.scss']
 })
 export class LandingComponent {
-   constructor(private router: Router) {}
+   constructor(
+    private router: Router,
+    private modalService: ModalService,
+    private authService: AuthService
+   ) {}
 
   startJournaling() {
     // your checks here, e.g. authentication or form validation
@@ -30,7 +37,11 @@ export class LandingComponent {
   }
 
   private canNavigate(): boolean {
-    // your logic here, return true or false
+  if (this.authService.isAuthenticated()) {
     return true;
   }
+
+  this.modalService.open(Login, 'Login', {});
+  return false;
+}
 }

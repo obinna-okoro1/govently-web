@@ -21,13 +21,20 @@ import {
   Session,
   User,
 } from '@supabase/supabase-js';
+import { SupabaseService } from './supabase-client';
 
-import { UserProfile } from '../user-profile';
-import {
-  GeolocationService,
-  IpInfoResponse,
-} from './geolocation.service';
-import { SupabaseService } from './supabase.service';
+export type Gender = 'male' | 'female' | 'non-binary' | 'other';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  userId: string;
+  name: string;
+  gender: Gender;
+  age: number;
+  city: string;
+  country: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -36,15 +43,13 @@ export class AuthService {
   private sessionSubject = new BehaviorSubject<Session | null>(null);
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null); // Cache for user profile
   private isRefreshing = false; // Flag to track token refresh state
-  private ipInfoCache = new BehaviorSubject<IpInfoResponse | null>(null);
 
   // Inactivity timer
   private inactivityTimer: any;
   private readonly INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
 
   constructor(
-    private readonly supabase: SupabaseService,
-    private geolocationService: GeolocationService
+    private readonly supabase: SupabaseService
   ) {
     this.initializeAuth();
     this.setupActivityListeners(); // Start tracking user activity
@@ -68,8 +73,6 @@ export class AuthService {
         this.fetchAndCacheUserProfile(session.user);
         this.resetInactivityTimer(); // Reset the inactivity timer on sign-in
       }
-
-      this.fetchAndCacheIpInfo()
     });
   }
 
@@ -129,21 +132,6 @@ export class AuthService {
   }
 
   /**
-   * Fetch and cache IP info
-   */
-  private fetchAndCacheIpInfo(): void {
-    this.geolocationService.getIpInfo().subscribe({
-      next: (ipInfo) => {
-        this.ipInfoCache.next(ipInfo); // Cache IP info
-        console.log('IP Info:', ipInfo);
-      },
-      error: (error) => {
-        console.error('Error fetching IP info:', error);
-      },
-    });
-  }
-
-  /**
    * Get the current session as an Observable
    */
   public getSession(): Observable<Session | null> {
@@ -157,31 +145,21 @@ export class AuthService {
     return this.userProfileSubject.asObservable();
   }
 
-  public getIpInfo(): Observable<IpInfoResponse | null> {
-    return this.ipInfoCache.asObservable();
-  }
-
   /**
    * User Sign Up
    */
-  public signUp(userData: Omit<UserProfile, 'id' | 'is_seller' | 'created_at'>, password: string): Observable<AuthResponse> {
+  public signUp(userData: Omit<UserProfile, 'id' | 'userId' | 'created_at'>, password: string): Observable<AuthResponse> {
     return from(
       this.supabase.client.auth.signUp({
         email: userData.email,
         password,
         options: {
           data: {
-            first_name: userData.full_name,
-            last_name: 'Doe',
-            username: userData.username,
-            phone_country: userData.phoneCountry,
-            phone_number: userData.phoneNumber,
-            address: userData.address,
+            name: userData.name,
+            gender: userData.gender,
+            age: userData.age,
             city: userData.city,
-            country: userData.country,
-            profile_photo: userData.profilePhoto || null,
-            id_upload: userData.idUpload,
-            is_seller: false,
+            country: userData.country
           },
         },
       })
@@ -273,6 +251,14 @@ export class AuthService {
       })
     );
   }
+
+  /**
+   * Check if the user is authenticated
+   */
+  public isAuthenticated(): boolean {
+  const session = this.sessionSubject.value;
+  return !!session?.user;
+}
 
   /**
    * Refresh the session (e.g., when the token expires)
