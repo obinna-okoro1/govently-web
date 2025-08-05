@@ -1,0 +1,33 @@
+.back-btn {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #4CA6A8;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: darken(#4CA6A8, 10%);
+  }
+
+  .back-icon {
+    display: inline-block;
+    transition: transform 0.9s ease, color 0.3s ease;
+    animation: arrowBounce 0.9s ease infinite alternate;
+  }
+
+  &:hover .back-icon {
+    animation: arrowBounce 0.3s ease infinite alternate;
+    transform: translateX(-5px);
+  }
+}
+
+/* Arrow bounce animation */
+@keyframes arrowBounce {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-5px); }
+}

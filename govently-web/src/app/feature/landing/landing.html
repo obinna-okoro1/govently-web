@@ -6,7 +6,7 @@
         <img src="https://image.similarpng.com/file/similarpng/very-thumbnail/2021/05/Colorful-Abstract-Circle-Logo-on-transparent-background-PNG.png" 
              alt="GoVently Logo" style="height:60px;" class="mb-4">
         <h1 class="fw-bold display-4">GoVently</h1>
-        <p class="lead">Your gentle space for emotional wellness — connect, reflect, and breathe in a safe, calming space.</p>
+        <p class="lead">Your gentle space for emotional wellness — vent, reflect, and breathe in a safe, calming space.</p>
         <div class="mt-4 d-flex flex-column flex-sm-row gap-3">
           <a href="#" class="btn btn-light btn-lg fw-semibold px-4">Download on iOS</a>
           <a href="#" class="btn btn-outline-light btn-lg fw-semibold px-4">Get it on Android</a>
@@ -24,7 +24,7 @@
   <section class="prompt-section text-center py-5 bg-light">
     <h2 class="fw-bold mb-3" data-aos="fade-up">Today's Reflection</h2>
     <p class="lead text-muted mb-4" data-aos="fade-up" data-aos-delay="100">
-      “What’s one thing you wish someone would understand about you today?”
+      {{ todayPrompt | async }}
     </p>
    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
   <button 

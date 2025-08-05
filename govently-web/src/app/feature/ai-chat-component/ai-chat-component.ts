@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { BackButtonComponent } from '../../shared/back-button-component/back-button-component';
 
 interface Companion {
   name: string;
@@ -16,7 +17,7 @@ interface ChatMessage {
 
 @Component({
   selector: 'app-ai-chat-component',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BackButtonComponent],
   templateUrl: './ai-chat-component.html',
   styleUrl: './ai-chat-component.scss'
 })

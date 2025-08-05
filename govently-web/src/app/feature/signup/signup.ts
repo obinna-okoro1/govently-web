@@ -18,7 +18,7 @@ export class Signup {
   name = '';
   email = '';
   password = '';
-  age = 0; // Placeholder, you might want to add an input for age
+  age = 18; // Placeholder, you might want to add an input for age
   gender: Gender = 'other';
   country = '';
   city = '';

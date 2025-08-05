@@ -1,5 +1,10 @@
 <div class="journal-wrapper d-flex align-items-center justify-content-center">
+  
+
   <div class="journal-card p-4 shadow-lg" [class.burned]="burning">
+    <div class="position-sticky top-0" style="z-index: 10;">
+  <app-back-button-component></app-back-button-component>
+</div>
     
     <!-- Greeting -->
     <div class="text-center mb-4">
@@ -27,7 +32,7 @@
         📅 Today's Reflection
       </h4>
       <div class="mood-selector d-flex justify-content-center gap-3">
-        {{prompt}}
+        {{todayPrompt$ | async}}
       </div>
     </div>
 
@@ -40,9 +45,11 @@
 
     <!-- Buttons -->
     <div class="text-center mt-4 d-flex justify-content-center gap-3">
-      <button class="btn btn-save px-4 py-3" (click)="saveEntry()">
-        💾 Save & Reflect
-      </button>
+      <ng-container *ngIf="todayPrompt$ | async as todayPrompt">
+        <button class="btn btn-save px-4 py-3" (click)="saveJournal(todayPrompt)">
+          💾 Save & Reflect
+        </button>
+      </ng-container>
       <button class="btn btn-burn px-4 py-3" (click)="burnEntry()">
         🔥 Burn
       </button>
@@ -56,12 +63,13 @@
 
     <!-- If there are journals -->
     <div class="reflection-list">
-        <div class="reflection-card" *ngFor="let entry of pastReflections">
+        <div class="reflection-card" *ngFor="let entry of pastReflections$ | async" 
+             (click)="viewReflection(entry)">
         <div class="reflection-left">
-            <span class="mood-icon">{{ entry.moodEmoji }}</span>
+            <span class="mood-icon">{{ entry.mood }}</span>
             <div class="reflection-info">
-            <h6 class="reflection-title">{{ entry.title }}</h6>
-            <small class="text-muted">{{ entry.date | date:'mediumDate' }}</small>
+            <h6 class="reflection-title">{{ entry.prompt }}</h6>
+            <small class="text-muted">{{ entry.created_at | date:'mediumDate' }}</small>
             </div>
         </div>
         <i class="bi bi-chevron-right text-muted"></i>
@@ -69,10 +77,12 @@
     </div>
 
     <!-- Empty state -->
-    <div *ngIf="pastReflections.length === 0" class="empty-reflections">
-        <img src="assets/empty-journal.svg" alt="No entries" class="empty-img">
-        <p class="text-muted">No past reflections yet — start your first one today!</p>
-    </div>
+     <ng-container *ngIf="pastReflections$ | async as pastReflections">
+       <div *ngIf="pastReflections.length === 0" class="empty-reflections">
+           <img src="assets/empty-journal.svg" alt="No entries" class="empty-img">
+           <p class="text-muted">No past reflections yet — start your first one today!</p>
+       </div>
+     </ng-container>
     </section>
   </div>
 </div>

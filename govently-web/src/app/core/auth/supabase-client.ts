@@ -16,6 +16,8 @@ const SUPABASE_ANON_KEY = environment.supabaseKey;
 export class SupabaseService {
   private supabase: SupabaseClient;
 
+  supabaseUrl = SUPABASE_URL;
+
   constructor() {
     this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {

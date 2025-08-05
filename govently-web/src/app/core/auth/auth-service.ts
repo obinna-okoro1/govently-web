@@ -113,23 +113,30 @@ export class AuthService {
    * Fetch and cache the user profile
    */
   private fetchAndCacheUserProfile(user: User): void {
-    from(this.supabase.client.auth.getUser())
-      .pipe(
-        takeLast(1),
-        map(({ data, error }) => {
-          if (error || !data.user) throw new Error('Failed to fetch user profile');
-          const userData = data.user.user_metadata as UserProfile;
-          return { ...userData, id: data.user.id, created_at: new Date(data.user.created_at) };
-        }),
-        catchError((error) => {
-          console.error('Error fetching user profile:', error);
-          return of(null);
-        })
-      )
-      .subscribe((userProfile) => {
-        this.userProfileSubject.next(userProfile);
-      });
-  }
+  from(this.supabase.client.auth.getUser())
+    .pipe(
+      map(({ data, error }) => {
+        if (error || !data.user) {
+          throw new Error('User no longer exists');
+        }
+
+        const userData = data.user.user_metadata as UserProfile;
+        return {
+          ...userData,
+          id: data.user.id,
+          created_at: new Date(data.user.created_at),
+        };
+      }),
+      catchError((error) => {
+        console.error('Error fetching user profile:', error);
+        this.clearAuthTokenDueToMissingUser(); // <-- logs them out
+        return of(null);
+      })
+    )
+    .subscribe((userProfile) => {
+      this.userProfileSubject.next(userProfile);
+    });
+}
 
   /**
    * Get the current session as an Observable
@@ -156,6 +163,7 @@ export class AuthService {
         options: {
           data: {
             name: userData.name,
+            email: userData.email,
             gender: userData.gender,
             age: userData.age,
             city: userData.city,
@@ -275,11 +283,12 @@ export class AuthService {
         return data.session;
       }),
       tap((session) => {
-        // Cache the user profile after refreshing the session
-        if (session?.user) {
-          this.fetchAndCacheUserProfile(session.user);
-        }
-      }),
+  if (session?.user) {
+    this.fetchAndCacheUserProfile(session.user);
+  } else {
+    this.clearAuthTokenDueToMissingUser(); // <- sets sessionSubject to null
+  }
+}),
       catchError((error) => {
         console.error('Error refreshing session:', error);
         return of(null);
@@ -320,4 +329,17 @@ export class AuthService {
       })
     );
   }
+
+  private clearAuthTokenDueToMissingUser(): void {
+  this.supabase.client.auth.signOut().then(({ error }) => {
+    if (error) {
+      console.error('Failed to clear auth token:', error.message);
+    } else {
+      console.warn('Auth token cleared due to missing user.');
+      this.sessionSubject.next(null);
+      this.userProfileSubject.next(null);
+      window.location.href = '/login'; // Optional redirect
+    }
+  });
+}
 }
