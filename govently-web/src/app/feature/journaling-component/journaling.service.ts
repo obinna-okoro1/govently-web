@@ -63,6 +63,18 @@ export class JournalingService {
     ).pipe(map(({ data }) => data));
   }
 
+  getEntriesByDate(userId: string, date: string): Observable<JournalEntry[]> {
+  return from(
+    this.supabase.client
+      .from('journal_entries')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('created_at', `${date}T00:00:00Z`)
+      .lte('created_at', `${date}T23:59:59Z`)
+  ).pipe(map(res => res.data || []));
+}
+
+
   /**
    * Update an entry by ID
    */

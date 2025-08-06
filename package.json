@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "@supabase/supabase-js": "^2.53.0",
-    "bootstrap": "^5.3.7"
+    "bootstrap": "^5.3.7",
+    "canvas-confetti": "^1.9.3"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0"
   }
 }

@@ -112,24 +112,28 @@ export class AuthService {
   /**
    * Fetch and cache the user profile
    */
-  private fetchAndCacheUserProfile(user: User): void {
-  from(this.supabase.client.auth.getUser())
+private fetchAndCacheUserProfile(user: User): void {
+  from(
+    this.supabase.client
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+  )
     .pipe(
       map(({ data, error }) => {
-        if (error || !data.user) {
-          throw new Error('User no longer exists');
+        if (error || !data) {
+          throw new Error('Profile not found');
         }
 
-        const userData = data.user.user_metadata as UserProfile;
         return {
-          ...userData,
-          id: data.user.id,
-          created_at: new Date(data.user.created_at),
+          ...data,
+          userId: data.user_id
         };
       }),
       catchError((error) => {
         console.error('Error fetching user profile:', error);
-        this.clearAuthTokenDueToMissingUser(); // <-- logs them out
+        this.clearAuthTokenDueToMissingUser();
         return of(null);
       })
     )

@@ -5,7 +5,11 @@ import { BackButtonComponent } from '../../shared/back-button-component/back-but
 import { DailyPromptService } from '../../shared/daily-prompt.service';
 import { Observable } from 'rxjs';
 import { JournalEntry, JournalingService } from './journaling.service';
-import { UserProfile } from '../../core/auth/auth-service';
+import { AuthService, UserProfile } from '../../core/auth/auth-service';
+import { ModalService } from '../../shared/modal/modal.service';
+import { EditJournal } from '../edit-journal/edit-journal';
+import confetti from 'canvas-confetti';
+import { moods } from '../../shared/mood';
 
 @Component({
   selector: 'app-journaling-component',
@@ -14,7 +18,7 @@ import { UserProfile } from '../../core/auth/auth-service';
   styleUrl: './journaling-component.scss'
 })
 export class JournalingComponent implements OnInit {
-currentUser!: UserProfile; // Replace with actual user ID
+currentUser!: UserProfile | null; // Replace with actual user ID
 greeting = '';
   todayPrompt$: Observable<string>;
   entry = '';
@@ -22,28 +26,35 @@ greeting = '';
 
   pastReflections$!: Observable<JournalEntry[]>;
 
-  moods = [
-    { emoji: '😊', label: 'Happy', color: '#FFD166' },
-    { emoji: '😌', label: 'Calm', color: '#06D6A0' },
-    { emoji: '😢', label: 'Sad', color: '#118AB2' },
-    { emoji: '😤', label: 'Frustrated', color: '#EF476F' }
-  ];
+  moods = moods;
 
   burning = false;
 
   constructor(
     // private router: Router,
-    // private modalService: ModalService,
-    // private authService: AuthService,
+    private modalService: ModalService,
+    private authService: AuthService,
     private journalingService: JournalingService,
     private dailyPromptService: DailyPromptService
   ) {
     this.todayPrompt$ = this.dailyPromptService.getPrompt();
+
+    this.authService.getUserProfile()
+    .subscribe(profile => {
+      this.currentUser = profile;
+
+      this.refreshEntries();
+    });
   }
 
   ngOnInit(): void {
     this.setGreeting();
-    this.pastReflections$ = this.journalingService.getEntries('currentUserId'); // Replace with actual user ID
+  }
+
+  refreshEntries() {
+ if (this.currentUser) {
+      this.pastReflections$ = this.journalingService.getEntries(this.currentUser.userId);
+    }
   }
 
   setGreeting() {
@@ -57,31 +68,57 @@ greeting = '';
     }
   }
 
-  saveJournal(todayPrompt: string) {
-    if (this.entry.trim()) {
-      console.log({
-        mood: this.mood,
-        text: this.entry
-      });
-      this.journalingService.createEntry({
-         user_id: 'currentUserId',
-         prompt: todayPrompt,
-        entry: this.entry,
-        mood: this.mood,
-        burn_after: false
-      })
-      .subscribe((data) => {
-        if (data) {
-          const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 3000);
-      this.entry = '';
-      this.mood = '';
-        }
-      });
-    }
+ saveJournal(todayPrompt: string) {
+  if (!this.currentUser) {
+    console.error('No user profile available');
+    return;
   }
+
+  if (!this.entry.trim()) {
+    alert('Please write something in your journal before saving.');
+    return;
+  }
+
+  const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
+
+  // First: Check if there's already an entry for today
+  this.journalingService.getEntriesByDate(this.currentUser.userId, today).subscribe(existingEntries => {
+    if (existingEntries && existingEntries.length > 0) {
+      const confirmEdit = confirm(
+        "You already have a journal entry for today, so let's edit it instead.\n We will append your new entry to the existing one."
+      );
+      if (confirmEdit) {
+  const entryToEdit = { ...existingEntries[0] };
+  entryToEdit.entry = (entryToEdit.entry || '') + '\n\n' + this.entry.trim(); // append user input
+  
+  if (this.mood) {
+    entryToEdit.mood = this.mood; // update mood if selected
+  }
+
+  this.editReflection(entryToEdit);
+  this.entry = ''; // clear input after editing
+  return;
+}
+    }
+
+    // Otherwise, proceed to create new entry
+    this.journalingService.createEntry({
+      user_id: this.currentUser?.userId,
+      prompt: todayPrompt,
+      entry: this.entry,
+      mood: this.mood,
+      burn_after: false
+    }).subscribe((data) => {
+      if (data) {
+        this.launchConfetti();
+        this.entry = '';
+        this.mood = '';
+        this.refreshEntries();
+      }
+    });
+  });
+}
+
 
   burnEntry() {
     if (this.entry.trim()) {
@@ -99,6 +136,38 @@ greeting = '';
     console.log('Viewing reflection:', entry);
     // Example: this.router.navigate(['/reflection', entry.id]);
   }
+
+  burnReflection(entry: JournalEntry) {
+  // Show confirmation, then call service to delete
+  if (confirm('Are you sure you want to burn this reflection?')) {
+    this.journalingService.deleteEntry(entry.id).subscribe(() => {
+      
+      
+      this.refreshEntries();
+      console.log('Reflection burned:', entry.id);
+      
+    });
+  }
+}
+
+editReflection(entry: JournalEntry) {
+   const modalRef = this.modalService.open(EditJournal, 'Edit Journal', {
+    entry,
+  });
+
+  modalRef.result.then((changed) => {
+    if (changed) this.refreshEntries();
+  });
+}
+
+ private launchConfetti() {
+    confetti({
+      particleCount: 100,
+      spread: 80,
+      origin: { y: 0.6 },
+    });
+  }
+
 }
 
 
