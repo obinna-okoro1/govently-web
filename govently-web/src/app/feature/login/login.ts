@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ModalService } from '../../shared/modal/modal.service';
 import { Signup } from '../signup/signup';
 import { AuthService } from '../../core/auth/auth-service';
+import { ConfettiService } from '../../shared/confetti-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,24 +15,30 @@ import { AuthService } from '../../core/auth/auth-service';
   styleUrl: './login.scss'
 })
 export class Login {
-    @Output() loginSuccess = new EventEmitter<{ email: string; password: string }>();
 
   email = '';
   password = '';
 
+  errorMessage = '';
+
   constructor(
+    private router: Router,
     private modalService: ModalService,
     private authService: AuthService,
+    private confettiService: ConfettiService
    ) {}
 
   onSubmit() {
     this.authService.signIn({ email: this.email, password: this.password }).subscribe({
       next: (response) => {
-        console.log('Login successful:', response);
-        this.loginSuccess.emit({ email: this.email, password: this.password });
+        if (response) {
+          this.modalService.close();
+          this.confettiService.launchConfetti();
+          this.router.navigate(['/journaling']);
+        }
       },
       error: (error) => {
-        console.error('Login failed:', error);
+        this.errorMessage = error.error?.message || 'Login failed. Please try again.';
       }
     });
   }

@@ -90,7 +90,8 @@ export class AiChatComponent {
         session_id,
         content: sentMessage,
         assistant_type: this.activeCompanion.value,
-        gender: gender
+        gender: gender,
+        date: new Date().toLocaleString()
       });
     })
   ).subscribe({

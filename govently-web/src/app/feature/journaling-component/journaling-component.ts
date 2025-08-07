@@ -8,12 +8,13 @@ import { JournalEntry, JournalingService } from './journaling.service';
 import { AuthService, UserProfile } from '../../core/auth/auth-service';
 import { ModalService } from '../../shared/modal/modal.service';
 import { EditJournal } from '../edit-journal/edit-journal';
-import confetti from 'canvas-confetti';
 import { moods } from '../../shared/mood';
+import { ConfettiService } from '../../shared/confetti-service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-journaling-component',
-  imports: [CommonModule, FormsModule, BackButtonComponent],
+  imports: [CommonModule, FormsModule, RouterModule, BackButtonComponent],
   templateUrl: './journaling-component.html',
   styleUrl: './journaling-component.scss'
 })
@@ -35,7 +36,8 @@ greeting = '';
     private modalService: ModalService,
     private authService: AuthService,
     private journalingService: JournalingService,
-    private dailyPromptService: DailyPromptService
+    private dailyPromptService: DailyPromptService,
+    private confettiService: ConfettiService
   ) {
     this.todayPrompt$ = this.dailyPromptService.getPrompt();
 
@@ -110,7 +112,7 @@ greeting = '';
       burn_after: false
     }).subscribe((data) => {
       if (data) {
-        this.launchConfetti();
+        this.confettiService.launchConfetti();
         this.entry = '';
         this.mood = '';
         this.refreshEntries();
@@ -144,8 +146,6 @@ greeting = '';
       
       
       this.refreshEntries();
-      console.log('Reflection burned:', entry.id);
-      
     });
   }
 }
@@ -159,15 +159,6 @@ editReflection(entry: JournalEntry) {
     if (changed) this.refreshEntries();
   });
 }
-
- private launchConfetti() {
-    confetti({
-      particleCount: 100,
-      spread: 80,
-      origin: { y: 0.6 },
-    });
-  }
-
 }
 
 

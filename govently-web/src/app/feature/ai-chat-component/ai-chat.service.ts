@@ -10,6 +10,7 @@ export interface AIChatRequest {
   content: string;
   assistant_type: string;
   gender: string;
+  date: string
 }
 
 export interface AIChatResponse {
@@ -31,6 +32,8 @@ export class AiChatService {
   }
 
   sendMessage(request: AIChatRequest): Observable<AIChatResponse> {
+    console.log(request);
+    
     return this.authService.getSession().pipe(
       switchMap((session) => {
         if (!session?.access_token) {

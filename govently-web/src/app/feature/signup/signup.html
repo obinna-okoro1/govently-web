@@ -94,6 +94,10 @@
     </button>
   </form>
 
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+
   <div class="text-center mt-4">
     <small class="text-muted">Already have an account?</small>
     <a href="#" class="fw-semibold text-primary" (click)="goToLogin()">Login</a>

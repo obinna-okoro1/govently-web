@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { JournalEntry, JournalingService } from '../journaling-component/journaling.service';
 import { FormsModule } from '@angular/forms';
 import { moods } from '../../shared/mood';
+import { ConfettiService } from '../../shared/confetti-service';
 
 @Component({
   selector: 'app-edit-journal',
@@ -24,7 +25,8 @@ export class EditJournal {
 
   constructor(
     private journalingService: JournalingService,
-    public modal: NgbActiveModal
+    public modal: NgbActiveModal,
+    private confettiService: ConfettiService
   ) {}
 
   ngOnInit(): void {
@@ -40,20 +42,12 @@ export class EditJournal {
     if (!entryText) return;
 
     this.journalingService.updateEntry(this.entry.id, this.updatedEntry).subscribe(() => {
-      this.launchConfetti();
+      this.confettiService.launchConfetti();
       setTimeout(() => this.modal.close(true), 800);
     });
   }
 
   cancel() {
     this.modal.dismiss();
-  }
-
-  private launchConfetti() {
-    confetti({
-      particleCount: 100,
-      spread: 80,
-      origin: { y: 0.6 },
-    });
   }
 }

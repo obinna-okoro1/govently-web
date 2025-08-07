@@ -6,6 +6,7 @@ import { LocationService } from '../../shared/location-service';
 import { ModalService } from '../../shared/modal/modal.service';
 import { Login } from '../login/login';
 import { AuthService, Gender } from '../../core/auth/auth-service';
+import { ConfettiService } from '../../shared/confetti-service';
 
 @Component({
   selector: 'app-signup',
@@ -24,11 +25,13 @@ export class Signup {
   city = '';
   countries: string[] = [];
   cities: string[] = [];
+  errorMessage = '';
 
   constructor(
     private locationService: LocationService,
     private modalService: ModalService,
-    private authService: AuthService
+    private authService: AuthService,
+    private confettiService: ConfettiService
   ) {}
 
   ngOnInit(): void {
@@ -64,16 +67,14 @@ export class Signup {
       age: this.age
     }, this.password).subscribe({
       next: (response) => {
-        // Handle successful signup
-        console.log('Signup successful:', response);
-        this.modalService.close();
-        // Optionally open login modal or redirect
-        this.modalService.open(Login, 'Login', {});
+        if (response) {
+          this.modalService.close();
+          this.confettiService.launchConfetti();
+          this.modalService.open(Login, 'Login', {});
+        }
       },
       error: (error) => {
-        // Handle signup error
-        console.error('Signup failed:', error);
-        // You might want to show an error message to the user here
+        this.errorMessage = error.error?.message || 'Signup failed. Please try again.';
       }
     });
 }
