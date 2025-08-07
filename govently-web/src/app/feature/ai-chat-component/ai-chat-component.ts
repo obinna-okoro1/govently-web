@@ -10,6 +10,7 @@ import { filter, Observable, of, switchMap } from 'rxjs';
 
 interface Companion {
   name: string;
+  value: string;
   emoji: string;
 }
 
@@ -31,9 +32,9 @@ export class AiChatComponent {
   currentUser$: Observable<UserProfile | null>;
 
   companions: Companion[] = [
-    { name: 'Tired Therapist', emoji: '😌' },
-    { name: 'Empathetic Friend', emoji: '💜' },
-    { name: 'Chill Listener', emoji: '🎧' }
+    { name: 'Tired Therapist', value: 'tired_therapist', emoji: '😌' },
+    { name: 'Empathetic Friend', value: 'empathetic_friend', emoji: '💜' },
+    { name: 'Chill Listener', value: 'chill_listener', emoji: '🎧' }
   ];
 
   activeCompanion = this.companions[0];
@@ -88,7 +89,7 @@ export class AiChatComponent {
       return this.aiChatService.sendMessage({
         session_id,
         content: sentMessage,
-        assistant_type: 'tired_therapist', // Make sure this is defined
+        assistant_type: this.activeCompanion.value,
         gender: gender
       });
     })
