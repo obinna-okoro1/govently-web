@@ -1,0 +1,223 @@
+<div class="signup-wrapper">
+  <h3 class="text-center mb-4">Therapist Application</h3>
+
+  <form (ngSubmit)="onSubmit(therapistFormRef)" #therapistFormRef="ngForm">
+    <!-- Basic Information -->
+    <div class="mb-3">
+      <label for="full_name" class="form-label fw-semibold">Full Name</label>
+      <input
+        type="text"
+        id="full_name"
+        class="form-control"
+        name="full_name"
+        [(ngModel)]="full_name"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label fw-semibold">Email address</label>
+      <input
+        type="email"
+        id="email"
+        class="form-control"
+        name="email"
+        [(ngModel)]="email"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label fw-semibold">Phone Number (Optional)</label>
+      <input
+        type="tel"
+        id="phone"
+        class="form-control"
+        name="phone"
+        [(ngModel)]="phone"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="country" class="form-label fw-semibold">Country</label>
+      <select
+        id="country"
+        class="form-select"
+        name="country"
+        [(ngModel)]="country"
+        required
+      >
+        <option value="">Select...</option>
+        <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+
+    <!-- License Information -->
+    <div class="mb-3">
+      <label for="license_number" class="form-label fw-semibold">License Number (Optional)</label>
+      <input
+        type="text"
+        id="license_number"
+        class="form-control"
+        name="license_number"
+        [(ngModel)]="license_number"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="license_region" class="form-label fw-semibold">License Region/State (Optional)</label>
+      <input
+        type="text"
+        id="license_region"
+        class="form-control"
+        name="license_region"
+        [(ngModel)]="license_region"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="years_experience" class="form-label fw-semibold">Years of Experience (Optional)</label>
+      <input
+        type="number"
+        id="years_experience"
+        class="form-control"
+        name="years_experience"
+        [(ngModel)]="years_experience"
+        min="0"
+      />
+    </div>
+
+    <!-- Specializations -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Specializations (Select all that apply)</label>
+      <div class="form-check" *ngFor="let spec of availableSpecializations">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [id]="'spec_' + spec"
+          [value]="spec"
+          [(ngModel)]="specializations[spec]"
+          name="specializations"
+        />
+        <label class="form-check-label" [for]="'spec_' + spec">
+          {{ spec }}
+        </label>
+      </div>
+    </div>
+
+    <!-- Languages -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Languages Spoken (Select all that apply)</label>
+      <div class="form-check" *ngFor="let lang of availableLanguages">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [id]="'lang_' + lang"
+          [value]="lang"
+          [(ngModel)]="languages[lang]"
+          name="languages"
+        />
+        <label class="form-check-label" [for]="'lang_' + lang">
+          {{ lang }}
+        </label>
+      </div>
+    </div>
+
+    <!-- Availability -->
+    <div class="mb-3">
+      <label for="availability_hours_per_week" class="form-label fw-semibold">Availability (hours per week, Optional)</label>
+      <input
+        type="number"
+        id="availability_hours_per_week"
+        class="form-control"
+        name="availability_hours_per_week"
+        [(ngModel)]="availability_hours_per_week"
+        min="1"
+        max="40"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="preferred_session_type" class="form-label fw-semibold">Preferred Session Type (Optional)</label>
+      <select
+        id="preferred_session_type"
+        class="form-select"
+        name="preferred_session_type"
+        [(ngModel)]="preferred_session_type"
+      >
+        <option value="">Select...</option>
+        <option value="individual">Individual</option>
+        <option value="couples">Couples</option>
+        <option value="family">Family</option>
+        <option value="group">Group</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="expected_hourly_rate" class="form-label fw-semibold">Expected Hourly Rate (Optional)</label>
+      <div class="input-group">
+        <span class="input-group-text">$</span>
+        <input
+          type="number"
+          id="expected_hourly_rate"
+          class="form-control"
+          name="expected_hourly_rate"
+          [(ngModel)]="expected_hourly_rate"
+          min="0"
+          step="0.01"
+        />
+      </div>
+    </div>
+
+    <!-- Bio -->
+    <div class="mb-3">
+      <label for="bio" class="form-label fw-semibold">Professional Bio (Optional)</label>
+      <textarea
+        id="bio"
+        class="form-control"
+        name="bio"
+        [(ngModel)]="bio"
+        rows="4"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="linkedin_url" class="form-label fw-semibold">LinkedIn Profile URL (Optional)</label>
+      <input
+        type="url"
+        id="linkedin_url"
+        class="form-control"
+        name="linkedin_url"
+        [(ngModel)]="linkedin_url"
+        placeholder="https://linkedin.com/in/yourprofile"
+      />
+    </div>
+
+    <!-- Consent -->
+    <div class="mb-3 form-check">
+      <input
+        type="checkbox"
+        id="consent"
+        class="form-check-input"
+        name="consent"
+        [(ngModel)]="consent"
+        required
+      />
+      <label class="form-check-label" for="consent">
+        I agree to the terms and conditions
+      </label>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary w-100 py-2 fw-semibold"
+      [disabled]="!therapistFormRef.valid"
+    >
+      Submit Application
+    </button>
+  </form>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+</div>

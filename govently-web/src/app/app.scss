@@ -1,0 +1,10 @@
+$govently-primary: #4CA6A8;
+$govently-secondary: #B9A5D9;
+$govently-light-bg: #f5f5f7;
+
+// Wrapper
+.wrapper {
+  background: linear-gradient(135deg, $govently-primary, $govently-secondary);
+    padding: 0rem;
+    margin: 0rem;
+}
