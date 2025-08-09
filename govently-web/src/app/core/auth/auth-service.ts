@@ -216,6 +216,17 @@ private fetchAndCacheUserProfile(user: User): void {
     );
   }
 
+  public passwordReset(email: string): Observable<{ error: AuthError | null }> {
+    return from(this.supabase.client.auth.resetPasswordForEmail(email)).pipe(
+      map((response) => {
+        return response;
+      }),
+      catchError((error) => {
+        return of({ error });
+      })
+    );
+  }
+
   public getUserById(userId: string): Observable<User | null> {
     // Check if the user is authenticated
     const session = this.sessionSubject.value;

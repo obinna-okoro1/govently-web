@@ -61,6 +61,11 @@
           <button class="dropdown-item" *ngIf="currentUser$ | async" (click)="logOut()">
             <i class="bi bi-box-arrow-right me-2"></i> Log Out
           </button>
+
+          <hr>
+          <button class="btn btn-outline-light rounded-pill text-dark" (click)="openTherapistSignup()">
+    <i class="bi bi-person-heart me-2"></i> therapist?
+        </button>
         </div>
       </div>
     </div>

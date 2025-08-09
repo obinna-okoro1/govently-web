@@ -43,6 +43,21 @@ export class Login {
     });
   }
 
+  onForgotPassword() {
+    this.authService.passwordReset(this.email).subscribe({
+      next: (response) => {
+        if (response.error) {
+          this.errorMessage = response.error.message;
+        } else {
+          this.modalService.close();
+        }
+      },
+      error: (error) => {
+        this.errorMessage = error.error?.message || 'Password reset failed. Please try again.';
+      }
+    });
+  }
+
   goToSignup() {
   // Close the current modal
   this.modalService.close();
