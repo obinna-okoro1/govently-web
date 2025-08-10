@@ -1,0 +1,97 @@
+<div class="modal-header border-0">
+  <h5 class="modal-title fw-bold">
+    {{ activeTab === 'privacy' ? 'Privacy Policy' : 'Terms & Conditions' }}
+  </h5>
+</div>
+
+<div class="modal-body legal-content">
+  <!-- Tabs -->
+  <ul class="nav nav-pills mb-3 justify-content-center">
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'privacy'"
+        (click)="activeTab = 'privacy'">
+        <i class="bi bi-shield-lock-fill me-1"></i> Privacy Policy
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'terms'"
+        (click)="activeTab = 'terms'">
+        <i class="bi bi-file-earmark-text-fill me-1"></i> Terms & Conditions
+      </button>
+    </li>
+  </ul>
+
+  <!-- Privacy Policy -->
+  <div *ngIf="activeTab === 'privacy'" class="scrollable-text">
+    <h6>Effective Date: August 10, 2025</h6>
+    <p><strong>1. Who We Are</strong><br>
+    GoVently (“we”, “our”, “us”) is a digital wellness platform offering AI-assisted journaling and emotional reflection tools.</p>
+
+    <p><strong>2. Information We Collect</strong><br>
+    - Account details: name, email address<br>
+    - Journal entries and user-generated content<br>
+    - Technical data: device type, browser, IP address, usage logs</p>
+
+    <p><strong>3. How We Use Your Data</strong><br>
+    We process your data to:<br>
+    - Deliver and maintain our services<br>
+    - Improve features and user experience<br>
+    - Troubleshoot technical issues<br>
+    - Comply with legal obligations</p>
+
+    <p><strong>4. Data Storage & Security</strong><br>
+    Your data is stored securely; however, it is <strong>NOT encrypted end-to-end</strong> at this stage. You should avoid storing sensitive medical, financial, or personally identifying data beyond what is necessary.</p>
+
+    <p><strong>5. Legal Bases (GDPR)</strong><br>
+    We rely on your consent, contractual necessity, and legitimate interest for processing. You may withdraw consent at any time.</p>
+
+    <p><strong>6. Your Rights</strong><br>
+    Under GDPR/CCPA, you have the right to access, correct, delete, and export your data. Contact <a href="mailto:support@govently.com">support@govently.com</a>.</p>
+
+    <p><strong>7. Third-Party Services</strong><br>
+    We may use analytics and hosting providers; they process data under contract and in compliance with applicable laws.</p>
+
+    <p><strong>8. Updates to This Policy</strong><br>
+    We may revise this Privacy Policy and will notify users via the platform or email.</p>
+
+    <p><strong>9. Data Hosting & Processing (Supabase)</strong><br>
+We use <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabase</a> as our backend platform to store and process your data. 
+Supabase acts as our Data Processor, while GoVently remains the Data Controller. 
+Your data may be stored on servers located in the European Union.<br>
+Supabase implements encryption at rest and in transit, role-based access controls, and monitoring. 
+However, data is <strong>not encrypted end-to-end</strong> at this stage, meaning authorized system administrators could technically access it.
+</p>
+  </div>
+
+  <!-- Terms & Conditions -->
+  <div *ngIf="activeTab === 'terms'" class="scrollable-text">
+    <h6>Effective Date: August 10, 2025</h6>
+
+    <p><strong>1. Acceptance of Terms</strong><br>
+    By accessing or using GoVently, you agree to these Terms and our Privacy Policy. If you do not agree, you must stop using the platform.</p>
+
+    <p><strong>2. User Responsibilities</strong><br>
+    - You are responsible for the accuracy of your data.<br>
+    - You must not engage in harassment, share illegal content, or spam.<br>
+    - You must not attempt to exploit or disrupt our systems.</p>
+
+    <p><strong>3. Content Ownership</strong><br>
+    You retain ownership of your journal entries. By using GoVently, you grant us a limited license to store, process, and display your content for the purpose of providing the service.</p>
+
+    <p><strong>4. No Medical Advice</strong><br>
+    GoVently is <strong>not</strong> a substitute for therapy or medical treatment. In case of crisis, contact professional help or emergency services immediately.</p>
+
+    <p><strong>5. Service Availability</strong><br>
+    We may modify, suspend, or discontinue parts of the service at any time without liability.</p>
+
+    <p><strong>6. Limitation of Liability</strong><br>
+    To the maximum extent permitted by law, GoVently is not liable for indirect, incidental, or consequential damages arising from your use of the platform.</p>
+
+    <p><strong>7. Changes to Terms</strong><br>
+    We may update these Terms; continued use constitutes acceptance of the revised version.</p>
+  </div>
+</div>

@@ -50,6 +50,9 @@ export class NavComponent implements OnInit {
       (result) => {
         if (result === 'confirm') {
           this.auth.signOut().subscribe({
+            next: () => {
+              this.router.navigate(['/']);
+            },
             error: (error) => {
               console.error('Error deleting listing:', error);
             },

@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BackButtonComponent } from '../../shared/back-button-component/back-button-component';
 import { DailyPromptService } from '../../shared/daily-prompt.service';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { JournalEntry, JournalingService } from './journaling.service';
 import { AuthService, UserProfile } from '../../core/auth/auth-service';
 import { ModalService } from '../../shared/modal/modal.service';
@@ -40,7 +40,7 @@ greeting = '';
     private dailyPromptService: DailyPromptService,
     private confettiService: ConfettiService
   ) {
-    this.todayPrompt$ = this.dailyPromptService.getPrompt();
+    this.todayPrompt$ = this.dailyPromptService.getPrompt().pipe(take(1));
 
     this.authService.getUserProfile()
     .subscribe(profile => {

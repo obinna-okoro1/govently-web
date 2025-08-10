@@ -98,7 +98,6 @@
     <!-- Empty state -->
      <ng-container *ngIf="pastReflections$ | async as pastReflections">
        <div *ngIf="pastReflections.length === 0" class="empty-reflections">
-           <img src="assets/empty-journal.svg" alt="No entries" class="empty-img">
            <p class="text-muted">No past reflections yet — start your first one today!</p>
        </div>
      </ng-container>

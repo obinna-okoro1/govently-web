@@ -7,6 +7,7 @@ import { AuthService } from '../../core/auth/auth-service';
 import { DailyPromptService } from '../../shared/daily-prompt.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { GoventlyLegalComponent } from '../govently-legal.component/govently-legal.component';
 
 @Component({
   selector: 'app-landing',
@@ -46,5 +47,9 @@ export class LandingComponent {
 
   this.modalService.open(Login, 'Login', {});
   return false;
+}
+
+openLegalModal() {
+  this.modalService.open(GoventlyLegalComponent, 'Privacy & Terms', {});
 }
 }

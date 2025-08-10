@@ -7,17 +7,12 @@ import { AiChatService } from './ai-chat.service';
 import { AuthService, UserProfile } from '../../core/auth/auth-service';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { filter, Observable, of, switchMap } from 'rxjs';
+import { Session } from '@supabase/supabase-js';
 
 interface Companion {
   name: string;
   value: string;
   emoji: string;
-}
-
-interface ChatMessage {
-  sender: 'user' | 'ai';
-  text: string;
-  timestamp: Date;
 }
 
 @Component({
@@ -42,6 +37,7 @@ export class AiChatComponent {
   messages: { sender: 'user' | 'ai', text: string }[] = [];
   userMessage = '';
   isTyping = false;
+  isBurning = false;
 
   constructor(
     private aiChatService: AiChatService,
@@ -68,51 +64,60 @@ export class AiChatComponent {
     });
   }
 
- sendMessage(): void {
+sendMessage(): void {
   if (!this.userMessage.trim()) return;
 
-  this.currentUser$.pipe(
-    switchMap((profile) => {
-      if (!profile) {
-        return throwError(() => new Error('User profile not found.'));
-      }
+  // Store message immediately for responsive UI
+  const sentMessage = this.userMessage;
+  this.messages.push({ sender: 'user', text: sentMessage });
+  this.userMessage = '';
+  this.isTyping = true;
 
-      const gender = profile.gender;
-      const session_id = uuidv4(); // Generate a unique session ID
-      const sentMessage = this.userMessage;
+  this.authService.getSession().pipe(
+    filter((session): session is Session => !!session?.access_token),
+    switchMap(session => {
+      // Use the session token as the session ID
+      const session_id = session.access_token; 
+      
+      return this.currentUser$.pipe(
+        switchMap(profile => {
+          if (!profile) {
+            return throwError(() => new Error('User profile not found'));
+          }
 
-      // Push user message to chat UI
-      this.messages.push({ sender: 'user', text: sentMessage });
-      this.userMessage = '';
-      this.isTyping = true;
-
-      // Call AI chat service
-      return this.aiChatService.sendMessage({
-        session_id,
-        content: sentMessage,
-        assistant_type: this.activeCompanion.value,
-        gender: gender,
-        date: new Date().toLocaleString()
-      });
+          return this.aiChatService.sendMessage({
+            session_id, // Using session token as ID
+            content: sentMessage,
+            assistant_type: this.activeCompanion.value,
+            gender: profile.gender,
+            date: new Date().toISOString() // Using ISO string for consistency
+          });
+        })
+      );
     })
   ).subscribe({
     next: (res) => {
-      
       this.messages.push({ sender: 'ai', text: res.reply });
       this.isTyping = false;
+      
+      // Optional: Scroll to bottom of chat
+      setTimeout(() => {
+        const chatContainer = document.querySelector('.chat-container');
+        if (chatContainer) {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      }, 50);
     },
     error: (err) => {
       console.error('AI Chat Error:', err);
       this.messages.push({
         sender: 'ai',
-        text: 'Something went wrong. Please try again later.'
+        text: 'Sorry, I encountered an error. Please try again.'
       });
       this.isTyping = false;
     }
   });
 }
-
-isBurning = false;
 
 burnChat(): any {
   if (this.messages.length === 0) return;
