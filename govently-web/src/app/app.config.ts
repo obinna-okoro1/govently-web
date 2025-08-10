@@ -1,14 +1,16 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, withPreloading } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http'; // <-- Modern alternative to HttpClientModule
+import { PreloadAllModules } from '@angular/router'; // <-- For route preloading
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-    importProvidersFrom(HttpClientModule),  // <-- Add this line
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules) // <-- Optional: Preload lazy routes in background
+    ),
+    provideHttpClient(), // <-- Replacement for HttpClientModule (modern standalone approach)
   ]
 };

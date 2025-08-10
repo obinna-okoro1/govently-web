@@ -2,15 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import confetti from 'canvas-confetti';
-import { JournalEntry, JournalingService } from '../journaling-component/journaling.service';
+import { JournalEntry, JournalingService } from '../journaling.service';
 import { FormsModule } from '@angular/forms';
-import { moods } from '../../shared/mood';
-import { ConfettiService } from '../../shared/confetti-service';
+import { moods } from '../../../shared/mood';
+import { ConfettiService } from '../../../shared/confetti-service';
 
 @Component({
   selector: 'app-edit-journal',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  providers: [JournalingService],
   templateUrl: './edit-journal.html',
   styleUrl: './edit-journal.scss'
 })

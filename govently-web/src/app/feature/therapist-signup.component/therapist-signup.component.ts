@@ -1,10 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
+import { ModalService } from '../../shared/modal/modal.service';
+import { TherapistSignupService } from './therapist-signup.service';
+import { ConfirmationModal } from '../../shared/confirmation-modal/confirmation-modal';
 
 @Component({
   selector: 'app-therapist-signup.component',
   imports: [ CommonModule, FormsModule],
+  providers: [TherapistSignupService],
   templateUrl: './therapist-signup.component.html',
   styleUrl: './therapist-signup.component.scss'
 })
@@ -57,7 +61,10 @@ export class TherapistSignupComponent {
 
   errorMessage: string | null = null;
 
-  constructor() {
+  constructor(
+    private modalService: ModalService,
+    private therapistSignupService: TherapistSignupService
+  ) {
     // Initialize checkboxes
     this.availableSpecializations.forEach(spec => {
       this.specializations[spec] = false;
@@ -90,15 +97,23 @@ export class TherapistSignupComponent {
         };
 
         // Here you would typically send the data to your backend service
-        console.log('Form submitted:', formData);
-        
-        // Reset form after submission if needed
-        // form.resetForm();
-        // this.resetCheckboxes();
-
-        // Show success message or redirect
-        this.errorMessage = null;
-        alert('Thank you for your application! We will review your information and get back to you soon.');
+        this.therapistSignupService.submitApplication(formData).subscribe({
+          next: (response) => {
+            // Show success message or redirect
+          this.errorMessage = null;
+          this.modalService.close();
+          this.modalService.open(ConfirmationModal, 'Thank you', {
+            inputs: {
+              message: 'Thank you for your application! We will review your information and get back to you soon.',
+              hideButton: true
+            }
+          });
+          },
+          error: (error) => {
+            console.error('Error submitting application:', error);
+            this.errorMessage = 'An error occurred while submitting your application. Please try again.';
+          }
+        });
       } catch (error) {
         console.error('Submission error:', error);
         this.errorMessage = 'An error occurred while submitting your application. Please try again.';

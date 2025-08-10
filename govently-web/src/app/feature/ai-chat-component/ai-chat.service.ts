@@ -17,9 +17,7 @@ export interface AIChatResponse {
   reply: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AiChatService {
   private functionUrl: string;
 

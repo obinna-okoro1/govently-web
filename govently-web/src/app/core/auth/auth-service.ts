@@ -36,6 +36,17 @@ export interface UserProfile {
   country: string;
 }
 
+export interface ResetPasswordResponse {
+  user: User | null;
+  session: Session | null;
+  error: Error | null;
+}
+
+export interface ResetPasswordError {
+  message: string;
+  // Add other error properties if needed
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -224,6 +235,22 @@ private fetchAndCacheUserProfile(user: User): void {
       catchError((error) => {
         return of({ error });
       })
+    );
+  }
+
+  public updatePassword(newPassword: string): Observable<ResetPasswordResponse> {
+    return from(
+      this.supabase.client.auth.updateUser({
+        password: newPassword
+      }, {
+        emailRedirectTo: window.location.origin
+      })
+    ).pipe(
+      map(({ data, error }) => ({
+        user: data?.user || null,
+        session: this.sessionSubject.value,
+        error: error
+      }))
     );
   }
 

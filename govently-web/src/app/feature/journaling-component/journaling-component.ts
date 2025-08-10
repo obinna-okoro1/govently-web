@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { JournalEntry, JournalingService } from './journaling.service';
 import { AuthService, UserProfile } from '../../core/auth/auth-service';
 import { ModalService } from '../../shared/modal/modal.service';
-import { EditJournal } from '../edit-journal/edit-journal';
+import { EditJournal } from './edit-journal/edit-journal';
 import { moods } from '../../shared/mood';
 import { ConfettiService } from '../../shared/confetti-service';
 import { RouterModule } from '@angular/router';
@@ -15,6 +15,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-journaling-component',
   imports: [CommonModule, FormsModule, RouterModule, BackButtonComponent],
+  providers: [JournalingService],
   templateUrl: './journaling-component.html',
   styleUrl: './journaling-component.scss'
 })

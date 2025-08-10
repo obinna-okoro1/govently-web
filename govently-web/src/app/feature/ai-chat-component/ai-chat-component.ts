@@ -23,6 +23,7 @@ interface ChatMessage {
 @Component({
   selector: 'app-ai-chat-component',
   imports: [CommonModule, FormsModule, BackButtonComponent],
+  providers: [AiChatService],
   templateUrl: './ai-chat-component.html',
   styleUrl: './ai-chat-component.scss'
 })
