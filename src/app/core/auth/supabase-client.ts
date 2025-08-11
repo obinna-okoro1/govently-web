@@ -5,7 +5,7 @@ import {
   SupabaseClient,
 } from '@supabase/supabase-js';
 
-import { environment } from '../../../environment/environment';
+import { environment } from '../../../environments/environment';
 
 const SUPABASE_URL = environment.supabaseUrl;
 const SUPABASE_ANON_KEY = environment.supabaseKey;
