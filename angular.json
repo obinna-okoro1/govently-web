@@ -22,7 +22,11 @@
               "zone.js",
               "@angular/localize/init"
             ],
-            "allowedCommonJsDependencies": ["aos"],
+            "allowedCommonJsDependencies": [
+              "aos",
+              "canvas-confetti",
+              "@supabase/supabase-js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -35,12 +39,14 @@
               }
             ],
             "styles": [
-  "bootstrap/dist/css/bootstrap.min.css",
-  "bootstrap-icons/font/bootstrap-icons.css",
-  "aos/dist/aos.css",
-  "src/styles.scss"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "node_modules/aos/dist/aos.css",
+              "src/styles.scss"
             ],
-            "scripts": ["aos/dist/aos.js"]
+            "scripts": [
+              "node_modules/aos/dist/aos.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -101,12 +107,14 @@
               }
             ],
             "styles": [
-  "bootstrap/dist/css/bootstrap.min.css",
-  "bootstrap-icons/font/bootstrap-icons.css",
-  "aos/dist/aos.css",
-  "src/styles.scss"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "node_modules/aos/dist/aos.css",
+              "src/styles.scss"
             ],
-            "scripts": ["aos/dist/aos.js"]
+            "scripts": [
+              "node_modules/aos/dist/aos.js"
+            ]
           }
         }
       }
