@@ -13,9 +13,9 @@
 <button (click)="startJournaling()" class="btn btn-warning rounded-pill px-3 py-2 shadow-sm d-flex align-items-center">
   <i class="bi bi-journal-text me-2"></i> Vent Journaling
 </button>
-      <a *ngIf="currentUser$ | async" [routerLink]="'/settings'" class="btn btn-secondary rounded-pill px-3 py-2 shadow-sm d-flex align-items-center">
+      <!-- <a *ngIf="currentUser$ | async" [routerLink]="'/settings'" class="btn btn-secondary rounded-pill px-3 py-2 shadow-sm d-flex align-items-center">
         <i class="bi bi-gear me-2"></i> Settings
-      </a>
+      </a> -->
       <button class="btn btn-light text-dark rounded-pill px-3 py-2 shadow-sm d-flex align-items-center"
               *ngIf="!(currentUser$ | async)"
               (click)="openLoginModal()">
@@ -52,9 +52,9 @@
       <button class="dropdown-item" (click)="startJournaling()">
         <i class="bi bi-journal-text me-2"></i> Vent Journaling
       </button>
-          <a class="dropdown-item" *ngIf="currentUser$ | async" [routerLink]="'/settings'">
+          <!-- <a class="dropdown-item" *ngIf="currentUser$ | async" [routerLink]="'/settings'">
             <i class="bi bi-gear me-2"></i> Settings
-          </a>
+          </a> -->
           <button class="dropdown-item" *ngIf="!(currentUser$ | async)" (click)="openLoginModal()">
             <i class="bi bi-box-arrow-in-right me-2"></i> Login
           </button>

@@ -72,7 +72,6 @@ export class AuthService {
   private initializeAuth(): void {
     this.supabase.client.auth.onAuthStateChange((event, session) => {
       this.sessionSubject.next(session);
-      console.log('Auth state changed:', event);
 
       // Clear cached user profile on sign-out
       if (event === 'SIGNED_OUT') {
@@ -188,9 +187,7 @@ private fetchAndCacheUserProfile(user: User): void {
       })
     ).pipe(
       switchMap((authResponse: AuthResponse) => {
-        console.log('Supabase response:', authResponse); // Log Supabase response
         if (authResponse.error) {
-          console.error('Supabase error:', authResponse.error); // Log detailed error
           throw new Error(authResponse.error.message);
         }
 
@@ -202,7 +199,6 @@ private fetchAndCacheUserProfile(user: User): void {
         return of(authResponse);
       }),
       catchError((error) => {
-        console.error('Error during sign-up:', error);
         throw new Error(error.message);
       })
     );
@@ -221,7 +217,6 @@ private fetchAndCacheUserProfile(user: User): void {
         this.resetInactivityTimer(); // Reset the inactivity timer on sign-in
       }),
       catchError((error) => {
-        console.error('Error during sign-in:', error);
         throw new Error(error.message);
       })
     );
@@ -271,7 +266,6 @@ private fetchAndCacheUserProfile(user: User): void {
 
     return from(query).pipe(
       map((response: any) => {
-        console.log(response.data);
 
         if (!response.data) {
           return null; // Return null if user is not found

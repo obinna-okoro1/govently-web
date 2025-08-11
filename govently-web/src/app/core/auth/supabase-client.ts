@@ -28,8 +28,7 @@ export class SupabaseService {
       });
 
     // In SupabaseService constructor
-this.supabase.auth.onAuthStateChange((event, session) => {
-    console.log('Auth state changed:', event, session);
+this.supabase.auth.onAuthStateChange(() => {
   });
   }
 
