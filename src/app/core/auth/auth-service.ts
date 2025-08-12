@@ -11,7 +11,6 @@ import {
   finalize,
   map,
   switchMap,
-  takeLast,
   tap,
 } from 'rxjs/operators';
 
@@ -22,6 +21,8 @@ import {
   User,
 } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase-client';
+import { Login } from '../../feature/login/login';
+import { ModalService } from '../../shared/modal/modal.service';
 
 export type Gender = 'male' | 'female' | 'non-binary' | 'other';
 
@@ -60,7 +61,8 @@ export class AuthService {
   private readonly INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
 
   constructor(
-    private readonly supabase: SupabaseService
+    private readonly supabase: SupabaseService,
+    private readonly modalService: ModalService
   ) {
     this.initializeAuth();
     this.setupActivityListeners(); // Start tracking user activity
@@ -115,7 +117,7 @@ export class AuthService {
     } else {
       console.log('User logged out due to inactivity');
       this.userProfileSubject.next(null); // Clear cached user profile
-      window.location.href = '/login'; // Redirect to login page
+      this.modalService.open(Login, 'Login', {});
     }
   }
 
@@ -374,7 +376,7 @@ private fetchAndCacheUserProfile(user: User): void {
       console.warn('Auth token cleared due to missing user.');
       this.sessionSubject.next(null);
       this.userProfileSubject.next(null);
-      window.location.href = '/login'; // Optional redirect
+      this.modalService.open(Login, 'Login', {}); // Open login modal
     }
   });
 }

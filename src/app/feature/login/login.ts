@@ -6,6 +6,7 @@ import { Signup } from '../signup/signup';
 import { AuthService } from '../../core/auth/auth-service';
 import { ConfettiService } from '../../shared/confetti-service';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -29,19 +30,31 @@ export class Login {
    ) {}
 
   onSubmit() {
-    this.authService.signIn({ email: this.email, password: this.password }).subscribe({
+  this.authService.signIn({ email: this.email, password: this.password })
+    .pipe(take(1))
+    .subscribe({
       next: (response) => {
-        if (response) {
+        if (response.error) {
+          if (response.error.code === 'email_not_confirmed') {
+            this.errorMessage = 'Please confirm your email before logging in.';
+          } else {
+            this.errorMessage = response.error.message || 'Login failed. Please try again.';
+          }
+          return;
+        }
+        if (response.data) {
           this.modalService.close();
           this.confettiService.launchConfetti();
           this.router.navigate(['/journaling']);
         }
       },
       error: (error) => {
+        // Handles true HTTP/network errors
         this.errorMessage = error.error?.message || 'Login failed. Please try again.';
       }
     });
-  }
+}
+
 
   onForgotPassword() {
     this.authService.passwordReset(this.email).subscribe({

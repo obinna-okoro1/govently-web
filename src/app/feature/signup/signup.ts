@@ -7,6 +7,8 @@ import { ModalService } from '../../shared/modal/modal.service';
 import { Login } from '../login/login';
 import { AuthService, Gender } from '../../core/auth/auth-service';
 import { ConfettiService } from '../../shared/confetti-service';
+import { Router } from '@angular/router';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -31,7 +33,8 @@ export class Signup {
     private locationService: LocationService,
     private modalService: ModalService,
     private authService: AuthService,
-    private confettiService: ConfettiService
+    private confettiService: ConfettiService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -65,12 +68,11 @@ export class Signup {
       country: this.country,
       city: this.city,
       age: this.age
-    }, this.password).subscribe({
+    }, this.password).pipe(take(1)).subscribe({
       next: (response) => {
         if (response) {
+           this.confettiService.launchConfetti();
           this.modalService.close();
-          this.confettiService.launchConfetti();
-          this.modalService.open(Login, 'Login', {});
         }
       },
       error: (error) => {
