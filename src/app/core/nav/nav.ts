@@ -89,7 +89,7 @@ export class NavComponent implements OnInit {
     return true;
   }
 
-  this.modalService.open(Login, 'Login', {});
+  this.modalService.open(Signup, 'Sign Up', {});
   return false;
 }
 }
