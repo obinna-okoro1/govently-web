@@ -11,6 +11,7 @@ import { EditJournal } from './edit-journal/edit-journal';
 import { moods } from '../../shared/mood';
 import { ConfettiService } from '../../shared/confetti-service';
 import { RouterModule } from '@angular/router';
+import { Signup } from '../signup/signup';
 
 @Component({
   selector: 'app-journaling-component',
@@ -74,7 +75,11 @@ greeting = '';
  saveJournal(todayPrompt: string) {
   if (!this.currentUser) {
     console.error('No user profile available');
-    return;
+    setTimeout(() => {
+          this.modalService.open(Signup, 'To save your reflection journal, please sign up.', {});
+        }, 300);
+
+        return;
   }
 
   if (!this.entry.trim()) {

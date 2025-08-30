@@ -2,12 +2,10 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalService } from '../../shared/modal/modal.service';
-import { AuthService } from '../../core/auth/auth-service';
 import { DailyPromptService } from '../../shared/daily-prompt.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { GoventlyLegalComponent } from '../govently-legal.component/govently-legal.component';
-import { Signup } from '../signup/signup';
 
 @Component({
   selector: 'app-landing',
@@ -21,33 +19,18 @@ export class LandingComponent {
    constructor(
     private router: Router,
     private modalService: ModalService,
-    private authService: AuthService,
     private dailyPromptService: DailyPromptService
   ) {
     this.todayPrompt = this.dailyPromptService.getPrompt();
   }
 
   startJournaling() {
-    // your checks here, e.g. authentication or form validation
-    if (this.canNavigate()) {
-      this.router.navigate(['/journaling']);
-    }
+    this.router.navigate(['/journaling']);
   }
 
   chatWithAI() {
-    if (this.canNavigate()) {
-      this.router.navigate(['/ai-chat']);
-    }
+    this.router.navigate(['/ai-chat']);
   }
-
-  private canNavigate(): boolean {
-  if (this.authService.isAuthenticated()) {
-    return true;
-  }
-
-  this.modalService.open(Signup, 'Sign Up', {});
-  return false;
-}
 
 openLegalModal() {
   this.modalService.open(GoventlyLegalComponent, 'Privacy & Terms', {});

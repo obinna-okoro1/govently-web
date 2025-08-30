@@ -2,12 +2,10 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http'; // ✅ Import here
-import { LocationService } from '../../shared/location-service';
 import { ModalService } from '../../shared/modal/modal.service';
 import { Login } from '../login/login';
 import { AuthService, Gender } from '../../core/auth/auth-service';
 import { ConfettiService } from '../../shared/confetti-service';
-import { Router } from '@angular/router';
 import { take } from 'rxjs';
 
 @Component({
@@ -21,6 +19,7 @@ export class Signup {
   name = '';
   email = '';
   password = '';
+  confirmPassword = '';
   age = 18; // Placeholder, you might want to add an input for age
   gender: Gender = 'other';
   country = '';
@@ -30,34 +29,32 @@ export class Signup {
   errorMessage = '';
 
   constructor(
-    private locationService: LocationService,
     private modalService: ModalService,
     private authService: AuthService,
-    private confettiService: ConfettiService,
-    private router: Router
+    private confettiService: ConfettiService
   ) {}
 
   ngOnInit(): void {
-    this.locationService.getCountries().subscribe((res: any) => {
-      if (res?.data) {
-        this.countries = res.data.map((c: any) => c.country);
-      }
-    });
+    // this.locationService.getCountries().subscribe((res: any) => {
+    //   if (res?.data) {
+    //     this.countries = res.data.map((c: any) => c.country);
+    //   }
+    // });
   }
 
-  onCountryChange(country: string): void {
-    if (country) {
-      this.locationService.getCities(country).subscribe((res: any) => {
-        if (res?.data) {
-          this.cities = res.data;
-          this.city = '';
-        }
-      });
-    } else {
-      this.cities = [];
-      this.city = '';
-    }
-  }
+  // onCountryChange(country: string): void {
+  //   if (country) {
+  //     this.locationService.getCities(country).subscribe((res: any) => {
+  //       if (res?.data) {
+  //         this.cities = res.data;
+  //         this.city = '';
+  //       }
+  //     });
+  //   } else {
+  //     this.cities = [];
+  //     this.city = '';
+  //   }
+  // }
 
  onSubmit(): void {
     

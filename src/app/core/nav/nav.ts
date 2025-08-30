@@ -72,24 +72,10 @@ export class NavComponent implements OnInit {
   }
 
   startJournaling() {
-    // your checks here, e.g. authentication or form validation
-    if (this.canNavigate()) {
-      this.router.navigate(['/journaling']);
-    }
+   this.router.navigate(['/journaling']);
   }
 
   chatWithAI() {
-    if (this.canNavigate()) {
-      this.router.navigate(['/ai-chat']);
-    }
+    this.router.navigate(['/ai-chat']);
   }
-
-  private canNavigate(): boolean {
-  if (this.auth.isAuthenticated()) {
-    return true;
-  }
-
-  this.modalService.open(Signup, 'Sign Up', {});
-  return false;
-}
 }

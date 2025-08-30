@@ -6,8 +6,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { AiChatService } from './ai-chat.service';
 import { AuthService, UserProfile } from '../../core/auth/auth-service';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import { filter, Observable, of, switchMap } from 'rxjs';
+import { EMPTY, filter, Observable, of, switchMap } from 'rxjs';
 import { Session } from '@supabase/supabase-js';
+import { Signup } from '../signup/signup';
+import { ModalService } from '../../shared/modal/modal.service';
 
 interface Companion {
   name: string;
@@ -18,7 +20,7 @@ interface Companion {
 @Component({
   selector: 'app-ai-chat-component',
   imports: [CommonModule, FormsModule, BackButtonComponent],
-  providers: [AiChatService],
+  providers: [AiChatService,],
   templateUrl: './ai-chat-component.html',
   styleUrl: './ai-chat-component.scss'
 })
@@ -41,7 +43,8 @@ export class AiChatComponent {
 
   constructor(
     private aiChatService: AiChatService,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalService: ModalService
   ) {
     this.currentUser$ = this.authService.getUserProfile();
     this.greetUser();
@@ -74,14 +77,31 @@ sendMessage(): void {
   this.isTyping = true;
 
   this.authService.getSession().pipe(
+    switchMap((session) => {
+      if (!session?.access_token) {
+        setTimeout(() => {
+          this.messages.push({ sender: 'ai', text: 'To help you better, please sign up to continue.' });
+          this.isTyping = false;
+        }, 500);
+
+        setTimeout(() => {
+          this.modalService.open(Signup, 'Please sign up to continue', {});
+        }, 3000);
+
+        return EMPTY;
+      }
+      return of(session);
+    }),
     filter((session): session is Session => !!session?.access_token),
     switchMap(session => {
+      
       // Use the session token as the session ID
       const session_id = session.access_token; 
       
       return this.currentUser$.pipe(
         switchMap(profile => {
           if (!profile) {
+            this.modalService.open(Signup, 'Sign Up', {});
             return throwError(() => new Error('User profile not found'));
           }
 
@@ -122,20 +142,28 @@ sendMessage(): void {
 burnChat(): any {
   if (this.messages.length === 0) return;
 
-  this.isBurning = true;
-
   this.currentUser$.pipe(
-  filter((profile): profile is UserProfile => profile !== null),
-  switchMap((profile) => {
-    const result = this.aiChatService.clearChat(profile.userId);
-    return result !== undefined ? result : of(null);
-  })
+    switchMap((profile) => {
+      if (!profile) {
+        this.messages = [];
+        this.greetUser();
+        return EMPTY;
+      }
+      this.isBurning = true;
+      return of(profile);
+    }),
+    filter((profile): profile is UserProfile => profile !== null),
+    switchMap((profile) => {
+      const result = this.aiChatService.clearChat(profile.userId);
+      return result !== undefined ? result : of(null);
+    })
 ).subscribe({
     next: () => {
       // Let the burn animation play before clearing the chat
       setTimeout(() => {
         this.messages = [];
         this.isBurning = false;
+        this.greetUser();
       }, 1200);
     },
     error: (err) => {

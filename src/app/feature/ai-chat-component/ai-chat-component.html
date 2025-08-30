@@ -43,10 +43,10 @@
     </div>
 
     <!-- Input -->
-    <div class="chat-input">
-      <input type="text" [(ngModel)]="userMessage" placeholder="Type your feels here..." (keydown.enter)="sendMessage()">
-      <button class="send-btn" (click)="sendMessage()">➤</button>
-    </div>
+    <form (ngSubmit)="sendMessage()" class="chat-input">
+  <input type="text" [(ngModel)]="userMessage" name="msg" placeholder="Type your feels here..." />
+  <button type="submit" class="send-btn">➤</button>
+</form>
   </div>
 </div>
 

@@ -3,18 +3,6 @@
 
   <form (ngSubmit)="onSubmit()" #signupFormRef="ngForm">
     <div class="mb-3">
-      <label for="name" class="form-label fw-semibold">Full Name</label>
-      <input
-        type="text"
-        id="name"
-        class="form-control"
-        name="name"
-        [(ngModel)]="name"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
       <label for="email" class="form-label fw-semibold">Email address</label>
       <input
         type="email"
@@ -26,69 +14,49 @@
       />
     </div>
 
-    <div class="mb-3">
-      <label for="password" class="form-label fw-semibold">Password</label>
-      <input
-        type="password"
-        id="password"
-        class="form-control"
-        name="password"
-        [(ngModel)]="password"
-        required
-      />
+     <div class="mb-3">
+    <label for="password" class="form-label fw-semibold">Password</label>
+    <input
+      type="password"
+      id="password"
+      class="form-control"
+      name="password"
+      [(ngModel)]="password"
+      required
+      pattern="^(?=.*[A-Z])(?=.*\d).{6,}$"
+      #passwordCtrl="ngModel"
+    />
+    <div *ngIf="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)" class="text-danger mt-1">
+      <small *ngIf="passwordCtrl.errors?.['required']">Password is required.</small>
+      <small *ngIf="passwordCtrl.errors?.['pattern']">
+        Must be at least 6 characters, include a capital letter and a number.
+      </small>
     </div>
+  </div>
 
-    <div class="mb-3">
-      <label for="gender" class="form-label fw-semibold">Gender</label>
-      <select
-        id="gender"
-        class="form-select"
-        name="gender"
-        [(ngModel)]="gender"
-        required
-      >
-        <option value="">Select...</option>
-        <option value="female">Female</option>
-        <option value="male">Male</option>
-        <option value="non-binary">Non-binary</option>
-        <option value="other">Other</option>
-      </select>
+  <!-- Confirm password field -->
+  <div class="mb-3">
+    <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+    <input
+      type="password"
+      id="confirmPassword"
+      class="form-control"
+      name="confirmPassword"
+      [(ngModel)]="confirmPassword"
+      required
+      #confirmPasswordCtrl="ngModel"
+    />
+    <div *ngIf="confirmPasswordCtrl.dirty || confirmPasswordCtrl.touched" class="text-danger mt-1">
+      <small *ngIf="confirmPassword !== password">
+        Passwords do not match.
+      </small>
     </div>
-
-    <div class="mb-3">
-      <label for="country" class="form-label fw-semibold">Country</label>
-      <select
-        id="country"
-        class="form-select"
-        name="country"
-        [(ngModel)]="country"
-        (ngModelChange)="onCountryChange($event)"
-        required
-      >
-        <option value="">Select...</option>
-        <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
-      </select>
-    </div>
-
-    <div class="mb-3">
-      <label for="city" class="form-label fw-semibold">City</label>
-      <select
-        id="city"
-        class="form-select"
-        name="city"
-        [(ngModel)]="city"
-        [disabled]="!cities.length"
-        required
-      >
-        <option value="">Select...</option>
-        <option *ngFor="let cityName of cities" [value]="cityName">{{ cityName }}</option>
-      </select>
-    </div>
+  </div>
 
     <button
       type="submit"
       class="btn btn-primary w-100 py-2 fw-semibold"
-      [disabled]="!signupFormRef.valid"
+      [disabled]="!signupFormRef.valid || signupFormRef.invalid || password !== confirmPassword"
     >
       Sign Up
     </button>
@@ -100,6 +68,6 @@
 
   <div class="text-center mt-4">
     <small class="text-muted">Already have an account?</small>
-    <a href="#" class="fw-semibold ms-2" (click)="goToLogin()">Login</a>
+    <a class="fw-semibold ms-2" (click)="goToLogin()">Login</a>
   </div>
 </div>
