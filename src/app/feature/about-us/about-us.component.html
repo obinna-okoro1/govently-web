@@ -1,0 +1,68 @@
+<div class="about-us">
+  <h1>About Us</h1>
+  <section class="why-we-exist">
+    <h2>Why We Exist</h2>
+    <p class="lead mb-5">
+      GoVently is your gentle e-space for emotional wellness — vent, reflect, and breathe in a safe — calming space, with AI companions who truly “get it.”
+    </p>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 glass-card">
+          <div class="card-body">
+            <h3 class="fs-5">🌙 Heart-felt Chat</h3>
+            <p class="text-muted">Feel heard & supported in every conversation.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 glass-card">
+          <div class="card-body">
+            <h3 class="fs-5">🧠 AI Companions</h3>
+            <p class="text-muted">Choose from Tired Therapist, Empathetic Friend, or Chill Listener.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 glass-card">
+          <div class="card-body">
+            <h3 class="fs-5">📝 Daily Prompts</h3>
+            <p class="text-muted">Get thoughtful reflection prompts every day.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 glass-card">
+          <div class="card-body">
+            <h3 class="fs-5">🔒 Privacy First</h3>
+            <p class="text-muted">Your words are yours — you can decide to burn every chat if you want and it will be gone forever.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="feedback">
+    <h2>What People Say</h2>
+    <ngb-carousel 
+      [interval]="4000" 
+      [pauseOnHover]="true" 
+      [wrap]="true" 
+      [keyboard]="true" 
+      class="reviews-carousel">
+      <ng-template ngbSlide>
+        <blockquote class="blockquote text-center">
+          “GoVently is my safe space every night before bed.” — Alex, 21
+        </blockquote>
+      </ng-template>
+      <ng-template ngbSlide>
+        <blockquote class="blockquote text-center">
+          “The Tired Therapist AI feels more human than my old counselor.” — Sam, 19
+        </blockquote>
+      </ng-template>
+      <ng-template ngbSlide>
+        <blockquote class="blockquote text-center">
+          “It's like having a friend who always understands.” — Jordan, 24
+        </blockquote>
+      </ng-template>
+    </ngb-carousel>
+  </section>
+</div>

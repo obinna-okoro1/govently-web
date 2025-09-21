@@ -1,128 +1,35 @@
 <div class="container-fluid p-0">
-  <!-- PROMPT HERO (Main Focus) -->
-  <section class="prompt-hero text-center py-5">
-    <div class="float-element float-1"></div>
-<div class="float-element float-2"></div>
-<div class="float-element float-3"></div>
-<div class="float-element float-4"></div>
-    <div class="container" data-aos="fade-up">
-      <img src="/assets/logo/govently-black.png" alt="GoVently Logo" class="mb-4 logo-hero">
-      <h1 class="fw-bold display-4">Today's Reflection</h1>
-      <p class="lead reflection-text mb-5">{{ todayPrompt | async }}</p>
+  <div class="landing-page-root d-flex flex-column" [style.height.px]="landingHeight">
 
-      <div class="d-flex flex-column flex-sm-row justify-content-center gap-4">
-        <button 
-          class="btn btn-gradient btn-lg px-5 fw-semibold"
-          (click)="startJournaling()"
-          data-aos="zoom-in"
-          data-aos-delay="100"
-        >
-          ✍️ Start Journaling
-        </button>
-        <button 
-          class="btn btn-outline-glass btn-lg px-5 fw-semibold"
-          (click)="chatWithAI()"
-          data-aos="zoom-in"
-          data-aos-delay="200"
-        >
-          💬 Go to Chat
-        </button>
+    <!-- main area: chat expands to fill available space -->
+    <main class="landing-chat-root flex-grow-1">
+      <app-ai-chat-component *ngIf="!showChatOverlay"></app-ai-chat-component>
+
+      <div class="chat-overlay" *ngIf="showChatOverlay">
+        <button class="overlay-close btn btn-light" (click)="closeChatOverlay()">Close</button>
+        <app-ai-chat-component></app-ai-chat-component>
       </div>
-    </div>
-  </section>
+    </main>
 
-  <!-- STORY SECTION -->
-  <section class="story-section py-5 text-center container">
-    <h2 class="fw-bold mb-4" data-aos="fade-up">Why We Exist</h2>
-    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
-      GoVently is your gentle e-space for emotional wellness — vent, reflect, and breathe in a safe — calming space, with AI companions who truly “get it.”
-    </p>
-    <div class="row g-4">
-      <div class="col-md-3" data-aos="zoom-in">
-        <div class="card h-100 shadow-sm border-0 glass-card">
-          <div class="card-body">
-            <h3 class="fs-5">🌙 Heart-felt Chat</h3>
-            <p class="text-muted">Feel heard & supported in every conversation.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
-        <div class="card h-100 shadow-sm border-0 glass-card">
-          <div class="card-body">
-            <h3 class="fs-5">🧠 AI Companions</h3>
-            <p class="text-muted">Choose from Tired Therapist, Empathetic Friend, or Chill Listener.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
-        <div class="card h-100 shadow-sm border-0 glass-card">
-          <div class="card-body">
-            <h3 class="fs-5">📝 Daily Prompts</h3>
-            <p class="text-muted">Get thoughtful reflection prompts every day.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
-        <div class="card h-100 shadow-sm border-0 glass-card">
-          <div class="card-body">
-            <h3 class="fs-5">🔒 Privacy First</h3>
-            <p class="text-muted">Your words are yours — you can decide to burn every chat if you want and it will be gone forever.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <!-- Footer at page foot -->
+    <footer class="govently-footer text-center py-3 small">
+      © 2025 GoVently — All Rights Reserved
+      <span class="mx-2 text-muted">|</span>
 
-  <!-- REVIEWS CAROUSEL -->
-  <section class="reviews-section py-5 bg-light">
-    <h2 class="fw-bold text-center mb-4" data-aos="fade-up">What People Say</h2>
-    <ngb-carousel 
-      [interval]="4000" 
-      [pauseOnHover]="true" 
-      [wrap]="true" 
-      [keyboard]="true" 
-      class="reviews-carousel" 
-      data-aos="fade-up"
-      data-aos-delay="100"
-    >
-      <ng-template ngbSlide>
-        <blockquote class="blockquote text-center">
-          “GoVently is my safe space every night before bed.” — Alex, 21
-        </blockquote>
-      </ng-template>
-      <ng-template ngbSlide>
-        <blockquote class="blockquote text-center">
-          “The Tired Therapist AI feels more human than my old counselor.” — Sam, 19
-        </blockquote>
-      </ng-template>
-      <ng-template ngbSlide>
-        <blockquote class="blockquote text-center">
-          “It's like having a friend who always understands.” — Jordan, 24
-        </blockquote>
-      </ng-template>
-    </ngb-carousel>
-  </section>
+      <a href="mailto:support@govently.com" class="support-link">
+        <i class="bi bi-envelope-fill me-1"></i> Support
+      </a>
 
-  <!-- FINAL CTA -->
-  <section class="cta-section text-center py-5 bg-gradient-primary text-white">
-    <h2 class="fw-bold mb-3" data-aos="fade-up">Ready to Find Your Calm?</h2>
-    <p class="mb-4" data-aos="fade-up" data-aos-delay="100">Join thousands already feeling more at peace with GoVently.</p>
-    <a href="#" class="btn btn-light btn-lg px-5" data-aos="fade-up" data-aos-delay="200">Get Started</a>
-  </section>
+      <span class="mx-2 text-muted">|</span>
 
-  <!-- FOOTER -->
-  <footer class="govently-footer text-center py-4 small">
-  © 2025 GoVently — All Rights Reserved
-  <span class="mx-2 text-muted">|</span>
+      <a routerLink="/about" class="about-link">
+        <i class="bi bi-info-circle-fill me-1"></i> About Us
+      </a>
 
-  <a href="mailto:support@govently.com" class="support-link">
-    <i class="bi bi-envelope-fill me-1"></i> Support
-  </a>
+      <span class="mx-2 text-muted">|</span>
 
-  <span class="mx-2 text-muted">|</span>
-
-  <a href="#" class="privacy-link" (click)="openLegalModal()">
-    <i class="bi bi-shield-lock-fill me-1"></i> Privacy & Terms
-  </a>
-</footer>
-</div>
+      <a href="#" class="privacy-link" (click)="openLegalModal()">
+        <i class="bi bi-shield-lock-fill me-1"></i> Privacy & Terms
+      </a>
+    </footer>
+  </div>

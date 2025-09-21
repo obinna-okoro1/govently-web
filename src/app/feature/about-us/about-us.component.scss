@@ -1,0 +1,55 @@
+.about-us {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.why-we-exist, .feedback {
+  margin-bottom: 2rem;
+}
+
+// Improve carousel visuals
+.reviews-carousel {
+  position: relative;
+  padding: 1.5rem 0;
+}
+
+.reviews-carousel .carousel-inner {
+  min-height: 140px; /* ensure enough room for text */
+  display: flex;
+  align-items: center;
+}
+
+.reviews-carousel blockquote {
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  color: #333;
+}
+
+/* Move controls and indicators below slides */
+.reviews-carousel .carousel-control-prev,
+.reviews-carousel .carousel-control-next,
+.reviews-carousel .carousel-indicators {
+  z-index: 0;
+}
+
+.reviews-carousel .carousel-control-prev,
+.reviews-carousel .carousel-control-next {
+  top: auto;
+  bottom: -40px;
+  width: auto;
+  height: auto;
+  opacity: 1;
+}
+
+.reviews-carousel .carousel-indicators {
+  bottom: -10px;
+}
+
+@media (max-width: 576px) {
+  .reviews-carousel .carousel-inner { min-height: 120px; }
+  .reviews-carousel .carousel-control-prev,
+  .reviews-carousel .carousel-control-next { display: none; }
+}

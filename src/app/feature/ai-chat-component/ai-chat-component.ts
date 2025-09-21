@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, AfterViewChecked, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BackButtonComponent } from '../../shared/back-button-component/back-button-component';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,13 +19,25 @@ interface Companion {
 
 @Component({
   selector: 'app-ai-chat-component',
+  standalone: true,
   imports: [CommonModule, FormsModule, BackButtonComponent],
-  providers: [AiChatService,],
+  providers: [AiChatService],
   templateUrl: './ai-chat-component.html',
-  styleUrl: './ai-chat-component.scss'
+  styleUrls: ['./ai-chat-component.scss']
 })
-export class AiChatComponent {
+export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewChecked {
   @ViewChild('chatBody') chatBody!: ElementRef;
+
+  // Host element reference will be used to set CSS variable for dynamic height
+  constructor(
+    private aiChatService: AiChatService,
+    private authService: AuthService,
+    private modalService: ModalService,
+    private host: ElementRef
+  ) {
+    this.currentUser$ = this.authService.getUserProfile();
+    this.greetUser();
+  }
 
   currentUser$: Observable<UserProfile | null>;
 
@@ -41,13 +53,48 @@ export class AiChatComponent {
   isTyping = false;
   isBurning = false;
 
-  constructor(
-    private aiChatService: AiChatService,
-    private authService: AuthService,
-    private modalService: ModalService
-  ) {
-    this.currentUser$ = this.authService.getUserProfile();
-    this.greetUser();
+  // single merged constructor above already initializes services and host
+
+  // Resize handler bound to class so we can remove it later
+  private resizeHandler = () => this.updateWrapperHeight();
+  public wrapperHeight: number = window.innerHeight;
+
+  ngAfterViewInit() {
+    // Ensure height is set after view renders
+    this.updateWrapperHeight();
+    window.addEventListener('resize', this.resizeHandler);
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('resize', this.resizeHandler);
+  }
+
+  /**
+   * Compute available vertical space for the component wrapper and set
+   * the CSS variable `--ai-wrapper-height` on the host element.
+   */
+  updateWrapperHeight() {
+    try {
+      const hostEl = (this.host && this.host.nativeElement) ? this.host.nativeElement as HTMLElement : document.documentElement;
+      const hostRect = hostEl.getBoundingClientRect();
+      const footerEl = document.querySelector('.govently-footer') as HTMLElement | null;
+      const footerHeight = footerEl ? footerEl.getBoundingClientRect().height : 0;
+
+      // available space is viewport height minus host top offset and footer height
+      const available = Math.max(window.innerHeight - hostRect.top - footerHeight, 200);
+      hostEl.style.setProperty('--ai-wrapper-height', `${Math.round(available)}px`);
+      // also set wrapperHeight for template binding (px)
+      this.wrapperHeight = Math.round(available);
+    } catch (e) {
+      // silent fallback if calculation fails
+      // host will then use CSS fallback var (--ai-wrapper-height, 100vh)
+      console.warn('Failed to update AI wrapper height', e);
+    }
+  }
+
+  @HostListener('window:resize', [])
+  onWindowResize() {
+    this.updateWrapperHeight();
   }
 
   ngAfterViewChecked() {

@@ -26,6 +26,7 @@ import { TherapistSignupComponent } from '../../feature/therapist-signup.compone
 })
 export class NavComponent implements OnInit {
   public currentUser$!: Observable<UserProfile | null>;
+  public sidebarOpen: boolean = true;
 
   constructor(
     private router: Router,
@@ -35,7 +36,10 @@ export class NavComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser$ = this.auth.getUserProfile();
+  }
 
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   public openLoginModal() {

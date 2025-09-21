@@ -4,6 +4,10 @@ import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
+  {
+    path: 'about',
+    loadComponent: () => import('./feature/about-us/about-us.component').then(m => m.AboutUsComponent)
+  },
   { 
     path: 'journaling', 
     loadComponent: () => import('./feature/journaling-component/journaling-component').then(m => m.JournalingComponent)

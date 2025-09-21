@@ -28,6 +28,7 @@
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
     "@ng-bootstrap/ng-bootstrap": "^19.0.1",
+    "@supabase/realtime-js": "^2.15.5",
     "@supabase/supabase-js": "^2.54.0",
     "aos": "^2.3.4",
     "bootstrap": "^5.3.7",
