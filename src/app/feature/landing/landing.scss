@@ -1,48 +1,156 @@
-@use "sass:color";
-
-/* Theme variables kept here for consistency */
-$govently-primary: #4CA6A8;
-$govently-secondary: #B9A5D9;
-$govently-light: #FDF8F3;
-$govently-dark: #2E3B4E;
-
-/* Dark Gen-Z friendly palette */
-$dark-1: #0f2540; /* softened navy (lighter) */
-$dark-2: #2a1840; /* softened plum (lighter) */
-$accent-magenta: #ff4d9b;
-$accent-cyan: #48e3ff;
-$accent-indigo: #6c5ce7;
+/* Professional landing page styling using new color system */
 
 /* Minimal landing styles — prefer Bootstrap utilities in templates */
 .landing-page-root {
-  // NOTE: `position: relative` used for footer anchoring. Prefer Flex/Grid
-  // layouts per `COPILOT_INSTRUCTIONS.md` when possible.
   height: 100vh; /* exact viewport height to avoid page scroll */
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
   --landing-footer-height: 4rem;
+  background: var(--color-bg-primary);
 }
 
-/* Center chat area; allow inner component to manage scrolling */
+/* Modern gradient background for hero section */
+.landing-hero {
+  background: linear-gradient(135deg, 
+    var(--color-primary) 0%, 
+    var(--color-secondary) 50%, 
+    var(--color-accent) 100%);
+  color: var(--color-text-inverse);
+  
+  .hero-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-xl);
+  }
+  
+  .hero-title {
+    color: var(--color-text-inverse);
+    font-weight: 700;
+    text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  }
+  
+  .hero-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+  }
+  
+  .cta-button {
+    background: var(--color-white);
+    color: var(--color-primary);
+    border: none;
+    font-weight: 600;
+    padding: 0.875rem 2rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:hover {
+      transform: translateY(-0.125rem);
+      box-shadow: var(--shadow-xl);
+      background: var(--color-gray-50);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Center chat area for AI interaction */
 .landing-chat-root {
   flex: 1 1 auto;
   display: flex;
   align-items: stretch;
   justify-content: center;
-  /* Softer layered gradient with slightly stronger accents */
-  background: radial-gradient(50rem 25rem at 10% 20%, rgba(108,92,231,0.12), transparent 22%),
-              radial-gradient(37.5rem 18.75rem at 85% 80%, rgba(255,77,155,0.10), transparent 24%),
-              linear-gradient(135deg, $dark-1 0%, $dark-2 60%);
-  color: #e6eef8; /* light text for contrast */
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
   overflow: hidden;
+  
+  app-ai-chat-component {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
 }
 
-.landing-chat-root app-ai-chat-component {
-  width: 100%;
-  height: 100%;
-  overflow: visible; /* inner chat handles overflow */
+/* Professional feature cards */
+.feature-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary-alpha-20);
+  }
+  
+  .feature-icon {
+    width: 3rem;
+    height: 3rem;
+    background: var(--color-primary-alpha-10);
+    color: var(--color-primary);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-title {
+    color: var(--color-text-primary);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  
+  .feature-description {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+}
+
+/* Professional testimonial section */
+.testimonial-section {
+  background: var(--color-bg-tertiary);
+  padding: 4rem 0;
+  
+  .testimonial-card {
+    background: var(--color-white);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    
+    .testimonial-quote {
+      color: var(--color-text-secondary);
+      font-style: italic;
+      margin-bottom: 1.5rem;
+      font-size: 1.125rem;
+      line-height: 1.6;
+    }
+    
+    .testimonial-author {
+      color: var(--color-text-primary);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .testimonial-role {
+      color: var(--color-text-tertiary);
+      font-size: 0.875rem;
+    }
+  }
 }
 
 /* Full screen overlay for the chat */

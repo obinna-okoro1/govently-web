@@ -1,109 +1,110 @@
-<div class="journal-wrapper d-flex align-items-start justify-content-center">
-
-  <div class="journal-card p-4 shadow-lg" [class.burned]="burning">
-    <div class="d-flex justify-content-between align-items-center gap-3">
-  <app-back-button-component></app-back-button-component>
-
-  <!-- Chat with AI Navigation -->
-  <a [routerLink]="'/ai-chat'" class="btn btn-chat-ai d-flex align-items-center gap-2 text-decoration-none">
-    <span>💬</span>
-    <span>Go To Chat</span>
-  </a>
-</div>
+<div class="journal-wrapper">
+  <div class="journal-card" [class.burned]="burning">
+    <!-- Header with navigation -->
+    <div class="journal-header">
+      <app-back-button-component></app-back-button-component>
+      
+      <!-- Chat with AI Navigation -->
+      <a [routerLink]="'/ai-chat'" class="btn-chat-ai">
+        <span>💬</span>
+        <span>Chat with AI</span>
+      </a>
+    </div>
     
-    <!-- Greeting -->
-    <div class="text-center mb-4">
-      <h1 class="fw-bold">{{ greeting }}</h1>
-      <p class="lead text-muted">How are you feeling today?</p>
+    <!-- Greeting Section -->
+    <div class="greeting-section">
+      <h1 class="greeting-title">{{ greeting }}</h1>
+      <p class="greeting-sub">How are you feeling today?</p>
     </div>
 
     <!-- Quick Mood Check -->
-    <div class="mood-section p-3 mb-4">
-      <h4 class="fw-semibold mb-3">Quick Mood Check</h4>
-      <div class="mood-selector d-flex justify-content-center gap-3">
+    <div class="mood-section">
+      <h4>Quick Mood Check</h4>
+      <div class="mood-selector">
         <div *ngFor="let m of moods" 
-     class="mood-btn"
-     [class.selected]="mood === m.label"
-     [ngStyle]="{'background-color': m.color}"
-     (click)="mood = m.label"
-     title="{{ m.label }}">
-
+             class="mood-btn"
+             [class.selected]="mood === m.label"
+             (click)="mood = m.label"
+             [title]="m.label">
           {{ m.emoji }}
         </div>
       </div>
     </div>
 
     <!-- Today's Reflection -->
-    <div class="reflection-section p-3 mb-3">
-      <h4 class="fw-semibold d-flex justify-content-center gap-3">
+    <div class="reflection-section">
+      <h4>
         📅 Today's Reflection
       </h4>
-      <div class="lead d-flex justify-content-center gap-3">
+      <div class="lead">
         {{todayPrompt$ | async}}
       </div>
     </div>
 
     <!-- Journal Input -->
-    <textarea class="form-control journal-input mt-2" 
-              placeholder="Let your thoughts flow freely... There's no judgement here, just space for you to be honest with yourself" 
-              [(ngModel)]="entry" 
-              rows="8">
-    </textarea>
+    <div class="form-group">
+      <textarea class="form-control journal-input" 
+                placeholder="Let your thoughts flow freely... There's no judgement here, just space for you to be honest with yourself." 
+                [(ngModel)]="entry" 
+                rows="8">
+      </textarea>
+    </div>
 
-    <!-- Buttons -->
-    <div class="text-center mt-4 d-flex justify-content-center gap-3">
+    <!-- Action Buttons -->
+    <div class="journal-actions">
       <ng-container *ngIf="todayPrompt$ | async as todayPrompt">
-        <button class="btn btn-save px-4 py-3" (click)="saveJournal(todayPrompt)" [disabled]="!entry">
+        <button class="btn-secondary" (click)="clearEntry()" [disabled]="!entry">
+          Clear
+        </button>
+        <button class="btn-save" (click)="saveJournal(todayPrompt)" [disabled]="!entry">
           💾 Save Reflection
         </button>
+        <button class="btn-burn" (click)="burnEntry()" [disabled]="!entry">
+          🔥 Burn
+        </button>
       </ng-container>
-      <button class="btn btn-burn px-4 py-3" (click)="burnEntry()" [disabled]="!entry">
-        🔥 Burn
-      </button>
     </div>
 
      <!-- Previous Reflections Section -->
-    <section class="previous-reflections mt-4">
-    <h4 class="section-title">
-        <i class="bi bi-journal-text me-2"></i> Your Reflections
-    </h4>
+    <section class="previous-reflections">
+      <h4 class="section-title">
+        📚 Your Reflections
+      </h4>
 
-    <!-- If there are journals -->
-    <div class="reflection-list">
+      <!-- Reflection List -->
+      <div class="reflection-list">
         <div class="reflection-card" *ngFor="let entry of pastReflections$ | async">
-  <div class="d-flex justify-content-between align-items-start w-100">
-    
-    <!-- Left: Mood + Info -->
-    <div class="reflection-left" (click)="viewReflection(entry)">
-      <div class="reflection-info">
-        <h6 class="reflection-title">{{ entry.prompt }}</h6>
-        <small class="text-muted">{{ entry.created_at | date:'mediumDate' }}</small>
+          <div class="reflection-left" (click)="viewReflection(entry)">
+            <div class="mood-icon">📝</div>
+            <div class="reflection-content">
+              <h6 class="reflection-title">{{ entry.prompt }}</h6>
+              <p class="reflection-date">{{ entry.created_at | date:'mediumDate' }}</p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="reflection-actions">
+            <button class="btn btn-sm btn-outline-primary" 
+                    (click)="editReflection(entry)"
+                    title="Edit reflection">
+              ✏️
+            </button>
+            <button class="btn btn-sm btn-outline-danger" 
+                    (click)="burnReflection(entry)"
+                    title="Delete reflection">
+              🔥
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Right: Action Buttons -->
-    <div class="d-flex gap-2">
-      <button class="btn btn-sm btn-outline-danger" (click)="burnReflection(entry)">
-        🔥
-      </button>
-      <button class="btn btn-sm btn-outline-primary" (click)="editReflection(entry)">
-        ✏️
-      </button>
-    </div>
-  </div>
-</div>
-
-    </div>
-
-    <!-- Empty state -->
-     <ng-container *ngIf="pastReflections$ | async as pastReflections">
-       <div *ngIf="pastReflections.length === 0" class="empty-reflections">
-           <p class="text-muted">No past reflections yet — start your first one today!</p>
-       </div>
-     </ng-container>
+      <!-- Empty state -->
+      <ng-container *ngIf="pastReflections$ | async as pastReflections">
+        <div *ngIf="pastReflections.length === 0" class="empty-reflections">
+          <div class="empty-img">📖</div>
+          <p class="empty-message">No past reflections yet — start your first one today!</p>
+        </div>
+      </ng-container>
     </section>
   </div>
 </div>
-
-
-

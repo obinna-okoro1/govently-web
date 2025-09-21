@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  HostListener,
 } from '@angular/core';
 
 import {
@@ -26,7 +27,7 @@ import { TherapistSignupComponent } from '../../feature/therapist-signup.compone
 })
 export class NavComponent implements OnInit {
   public currentUser$!: Observable<UserProfile | null>;
-  public sidebarOpen: boolean = true;
+  public sidebarOpen: boolean = false; // Start closed on mobile
 
   constructor(
     private router: Router,
@@ -36,6 +37,39 @@ export class NavComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser$ = this.auth.getUserProfile();
+    this.initializeSidebar();
+  }
+
+  initializeSidebar(): void {
+    try {
+      // Open sidebar by default only on larger screens
+      if (window && window.innerWidth >= 768) {
+        this.sidebarOpen = true;
+      } else {
+        this.sidebarOpen = false;
+      }
+    } catch (e) {
+      // Default to closed in non-browser environments
+      this.sidebarOpen = false;
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    try {
+      const width = event.target.innerWidth;
+      
+      // Auto-close sidebar on mobile, auto-open on desktop
+      if (width < 768 && this.sidebarOpen) {
+        this.sidebarOpen = false;
+        document.body.classList.remove('sidebar-open');
+      } else if (width >= 768 && !this.sidebarOpen) {
+        this.sidebarOpen = true;
+        document.body.classList.remove('sidebar-open');
+      }
+    } catch (e) {
+      // ignore in non-browser environments
+    }
   }
 
   toggleSidebar(): void {
@@ -95,9 +129,11 @@ export class NavComponent implements OnInit {
 
   startJournaling() {
    this.router.navigate(['/journaling']);
+   this.closeOnMobile();
   }
 
   chatWithAI() {
     this.router.navigate(['/ai-chat']);
+    this.closeOnMobile();
   }
 }

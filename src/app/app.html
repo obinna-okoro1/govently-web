@@ -1,5 +1,11 @@
 <div class="wrapper">
-	<app-nav></app-nav>
+	<app-nav #navComponent></app-nav>
+	
+	<!-- Mobile toggle button for when sidebar is closed -->
+	<button class="mobile-toggle-btn d-md-none" (click)="toggleSidebar()" aria-label="Open menu">
+		<i class="bi bi-list"></i>
+	</button>
+	
 	<div class="main-content">
 		<router-outlet></router-outlet>
 	</div>

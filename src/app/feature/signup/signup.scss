@@ -1,39 +1,137 @@
-@use "sass:color";
-
-$govently-primary: #0fb9c8;
-$govently-secondary: #ff7ab6;
-$govently-light-bg: #ffffff;
+/* Professional signup form styling using new color system */
 
 .signup-wrapper {
   max-width: 25rem;
-  margin: auto;
-}
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--color-white);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-light);
 
-.signup-wrapper h3 {
-  font-weight: 600;
-}
+  h3 {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
 
-.signup-wrapper .form-label {
-  font-size: 0.9rem;
-}
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
 
-.signup-wrapper .btn-primary {
-   background-color: $govently-secondary !important;
-    border-color: $govently-secondary !important;
-}
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
 
-.signup-wrapper .btn-primary:hover {
-  background-color: darken($govently-secondary, 10%);
-  border-color: darken($govently-secondary, 10%);
-}
+  .form-control {
+    border: 1px solid var(--color-border-medium);
+    border-radius: 0.5rem;
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+    background: var(--color-white);
+    color: var(--color-text-primary);
 
-a {
-    cursor: pointer;
-    text-decoration: none;
-    color: $govently-secondary !important;
+    &:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-alpha-10);
+      outline: none;
+    }
+
+    &::placeholder {
+      color: var(--color-text-tertiary);
+    }
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    color: var(--color-white);
+    font-weight: 600;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+    width: 100%;
+    margin-bottom: 1rem;
 
     &:hover {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary-light);
+      transform: translateY(-0.0625rem);
+    }
+
+    &:active {
+      background: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
+      transform: translateY(0);
+    }
+  }
+
+  .form-text {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  a {
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--color-primary);
+    font-weight: 500;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--color-primary-light);
       text-decoration: underline;
     }
   }
+
+  .password-requirements {
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    margin-top: 0.5rem;
+    
+    ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      
+      li {
+        margin-bottom: 0.25rem;
+        
+        &.valid {
+          color: var(--color-success);
+        }
+        
+        &.invalid {
+          color: var(--color-error);
+        }
+      }
+    }
+  }
+
+  .alert {
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    
+    &.alert-danger {
+      background: var(--color-error);
+      color: var(--color-white);
+      border: none;
+    }
+    
+    &.alert-success {
+      background: var(--color-success);
+      color: var(--color-white);
+      border: none;
+    }
+  }
+}
 
