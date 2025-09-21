@@ -15,12 +15,14 @@ $accent-indigo: #6c5ce7;
 
 /* Minimal landing styles — prefer Bootstrap utilities in templates */
 .landing-page-root {
+  // NOTE: `position: relative` used for footer anchoring. Prefer Flex/Grid
+  // layouts per `COPILOT_INSTRUCTIONS.md` when possible.
   height: 100vh; /* exact viewport height to avoid page scroll */
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  --landing-footer-height: 64px;
+  --landing-footer-height: 4rem;
 }
 
 /* Center chat area; allow inner component to manage scrolling */
@@ -30,8 +32,8 @@ $accent-indigo: #6c5ce7;
   align-items: stretch;
   justify-content: center;
   /* Softer layered gradient with slightly stronger accents */
-  background: radial-gradient(800px 400px at 10% 20%, rgba(108,92,231,0.12), transparent 22%),
-              radial-gradient(600px 300px at 85% 80%, rgba(255,77,155,0.10), transparent 24%),
+  background: radial-gradient(50rem 25rem at 10% 20%, rgba(108,92,231,0.12), transparent 22%),
+              radial-gradient(37.5rem 18.75rem at 85% 80%, rgba(255,77,155,0.10), transparent 24%),
               linear-gradient(135deg, $dark-1 0%, $dark-2 60%);
   color: #e6eef8; /* light text for contrast */
   overflow: hidden;
@@ -72,7 +74,7 @@ $accent-indigo: #6c5ce7;
 }
 
 /* Keep responsive tweaks minimal — prefer bootstrap utility classes */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .landing-chat-root { padding: 0.4rem 0; }
 }
 

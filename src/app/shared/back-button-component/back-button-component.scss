@@ -22,12 +22,12 @@
 
   &:hover .back-icon {
     animation: arrowBounce 0.3s ease infinite alternate;
-    transform: translateX(-5px);
+    transform: translateX(-0.3125rem);
   }
 }
 
 /* Arrow bounce animation */
 @keyframes arrowBounce {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-5px); }
+  100% { transform: translateX(-0.3125rem); }
 }

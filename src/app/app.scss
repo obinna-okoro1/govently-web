@@ -6,10 +6,10 @@ $govently-light-bg: #ffffff;
 
 .wrapper {
   /* Use the same softer layered gradient as the landing page for consistency */
-  background: radial-gradient(800px 400px at 10% 20%, rgba(108,92,231,0.12), transparent 22%),
-              radial-gradient(600px 300px at 85% 80%, rgba(255,77,155,0.10), transparent 24%),
+  background: radial-gradient(50rem 25rem at 10% 20%, rgba(108,92,231,0.12), transparent 22%),
+              radial-gradient(37.5rem 18.75rem at 85% 80%, rgba(255,77,155,0.10), transparent 24%),
               linear-gradient(135deg, #0f2540 0%, #2a1840 60%);
-  padding: 0 1rem;
+  padding: 0;
   margin: 0;
   min-height: 100vh;
   display: flex;
@@ -19,15 +19,5 @@ $govently-light-bg: #ffffff;
 
 .main-content {
   flex: 1;
-  margin-left: 220px;
-  transition: margin-left 0.2s cubic-bezier(.4,0,.2,1);
   padding: 0;
-}
-
-// Responsive: collapse sidebar
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 60px;
-    padding: 1rem 0.5rem;
-  }
 }

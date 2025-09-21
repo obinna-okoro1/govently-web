@@ -13,10 +13,12 @@ $govently-light-bg: #ffffff;
   justify-content: center;
 }
 
+// NOTE: uses `position: relative` to layer elements. Consider Flex/Grid
+// restructuring per `COPILOT_INSTRUCTIONS.md` where feasible.
 .chat-container {
   margin: auto;
   border-radius: 1.5rem;
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 7.5rem);
   padding: 1.25rem;
   animation: fadeInUp 0.6s ease;
   display: flex;
@@ -24,7 +26,7 @@ $govently-light-bg: #ffffff;
   overflow: hidden; /* don't show outer scroll */
   /* subtle card to separate chat from the landing gradient */
   background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 10px 30px rgba(16,24,40,0.10);
+  box-shadow: 0 0.625rem 1.875rem rgba(16,24,40,0.10);
   width: 100%;
   max-width: 100%;
   overflow-x: hidden; // prevents horizontal scroll
@@ -52,7 +54,7 @@ $govently-light-bg: #ffffff;
     transition: all 0.3s ease;
     background: rgba(255,255,255,0.95);
     border: 1px solid rgba(15,185,200,0.08);
-    box-shadow: 0 2px 8px rgba(15,30,45,0.04);
+  box-shadow: 0 0.125rem 0.5rem rgba(15,30,45,0.04);
     transform: scale(1);
     position: relative;
 
@@ -62,14 +64,14 @@ $govently-light-bg: #ffffff;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
     }
 
     &.active {
       background: linear-gradient(135deg, $govently-primary, $govently-secondary);
       color: white;
       transform: scale(1.05);
-      box-shadow: 0 8px 24px rgba(15,185,200,0.14);
+  box-shadow: 0 0.5rem 1.5rem rgba(15,185,200,0.14);
       border: none;
       animation: pulseGlow 1.5s infinite;
     }
@@ -92,7 +94,7 @@ $govently-light-bg: #ffffff;
     .bubble {
       background: #f4f6fb; /* light, cool background for AI messages */
       color: #0f2a3a; /* dark text for readability */
-      border-radius: 18px 18px 18px 4px;
+  border-radius: 1.125rem 1.125rem 1.125rem 0.25rem;
     }
   }
 
@@ -101,7 +103,7 @@ $govently-light-bg: #ffffff;
     .bubble {
       background: linear-gradient(135deg, $govently-primary, $govently-secondary);
       color: #fff;
-      border-radius: 18px 18px 4px 18px;
+  border-radius: 1.125rem 1.125rem 0.25rem 1.125rem;
     }
   }
 
@@ -109,7 +111,7 @@ $govently-light-bg: #ffffff;
     padding: 0.7rem 1rem;
     max-width: 75%;
     word-wrap: break-word;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.05);
     animation: fadeIn 0.3s ease forwards;
   overflow-wrap: break-word;
   white-space: normal;
@@ -121,8 +123,8 @@ $govently-light-bg: #ffffff;
   gap: 0.3rem;
   margin: 0.5rem;
   span {
-    width: 6px;
-    height: 6px;
+    width: 0.375rem;
+    height: 0.375rem;
     background: #bbb;
     border-radius: 50%;
     animation: blink 1s infinite;
@@ -135,23 +137,23 @@ $govently-light-bg: #ffffff;
   display: flex;
   padding: 0.8rem;
 
-  input {
+    input {
     flex: 1;
     padding: 0.6rem;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     border: none;
     background: #f0f0f0;
     font-size: 1rem;
     outline: none;
   }
 
-  .send-btn {
+    .send-btn {
     margin-left: 0.5rem;
     background: linear-gradient(135deg, $govently-primary, $govently-secondary);
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 2.5rem;
+    height: 2.5rem;
     color: white;
     font-size: 1.1rem;
     cursor: pointer;
@@ -159,7 +161,7 @@ $govently-light-bg: #ffffff;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(0.625rem); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -213,9 +215,9 @@ $govently-light-bg: #ffffff;
 .burn-btn {
   background-color: #ff4d4d;
   color: white;
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border: none;
-  border-radius: 20px;
+  border-radius: 1.25rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -234,7 +236,7 @@ $govently-light-bg: #ffffff;
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .chat-container {
     width: 100%; // ✅ requested
     padding: 0.6rem;

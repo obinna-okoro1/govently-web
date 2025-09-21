@@ -21,17 +21,17 @@ import { Signup } from '../signup/signup';
   styleUrl: './journaling-component.scss'
 })
 export class JournalingComponent implements OnInit {
-currentUser!: UserProfile | null; // Replace with actual user ID
-greeting = '';
-  todayPrompt$: Observable<string>;
-  entry = '';
-  mood = '';
+  public currentUser!: UserProfile | null; // Replace with actual user ID
+  public greeting = '';
+  public todayPrompt$: Observable<string>;
+  public entry = '';
+  public mood = '';
 
-  pastReflections$!: Observable<JournalEntry[]>;
+  public pastReflections$!: Observable<JournalEntry[]>;
 
-  moods = moods;
+  public moods = moods;
 
-  burning = false;
+  public burning = false;
 
   constructor(
     // private router: Router,
@@ -51,17 +51,17 @@ greeting = '';
     });
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.setGreeting();
   }
 
-  refreshEntries() {
+  public refreshEntries() {
  if (this.currentUser) {
       this.pastReflections$ = this.journalingService.getEntries(this.currentUser.userId);
     }
   }
 
-  setGreeting() {
+  public setGreeting() {
     const hour = new Date().getHours();
     if (hour < 12) {
       this.greeting = 'Good Morning';
@@ -72,7 +72,7 @@ greeting = '';
     }
   }
 
- saveJournal(todayPrompt: string) {
+ public saveJournal(todayPrompt: string) {
   if (!this.currentUser) {
     console.error('No user profile available');
     setTimeout(() => {
@@ -128,7 +128,7 @@ greeting = '';
 }
 
 
-  burnEntry() {
+  public burnEntry() {
     if (this.entry.trim()) {
       this.burning = true;
       setTimeout(() => {
@@ -139,13 +139,13 @@ greeting = '';
     }
   }
 
-  viewReflection(entry: JournalEntry) {
+  public viewReflection(entry: JournalEntry) {
     // Navigate to reflection detail page or open modal
     console.log('Viewing reflection:', entry);
     // Example: this.router.navigate(['/reflection', entry.id]);
   }
 
-  burnReflection(entry: JournalEntry) {
+  public burnReflection(entry: JournalEntry) {
   // Show confirmation, then call service to delete
   if (confirm('Are you sure you want to burn this reflection?')) {
     this.journalingService.deleteEntry(entry.id).subscribe(() => {
@@ -156,7 +156,7 @@ greeting = '';
   }
 }
 
-editReflection(entry: JournalEntry) {
+  public editReflection(entry: JournalEntry) {
    const modalRef = this.modalService.open(EditJournal, 'Edit Journal', {
     entry,
   });

@@ -1,6 +1,9 @@
 <nav class="sidebar-nav" [class.open]="sidebarOpen">
   <div class="sidebar-header">
-    <button class="sidebar-toggle" (click)="toggleSidebar()">
+    <button class="sidebar-toggle d-md-none" (click)="toggleSidebar()" aria-label="Toggle menu">
+      <i class="bi bi-list"></i>
+    </button>
+    <button class="sidebar-toggle d-none d-md-block" (click)="toggleSidebar()">
       <i class="bi" [ngClass]="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
     </button>
     <a [routerLink]="'/'" class="sidebar-logo">
@@ -20,12 +23,12 @@
     </button>
     <button class="btn btn-light text-dark sidebar-btn"
             *ngIf="!(currentUser$ | async)"
-            (click)="openLoginModal()">
+            (click)="openLoginModal(); closeOnMobile()">
       <i class="bi bi-box-arrow-in-right"></i> <span *ngIf="sidebarOpen">Login</span>
     </button>
     <button class="btn btn-danger sidebar-btn"
             *ngIf="currentUser$ | async"
-            (click)="logOut()">
+            (click)="logOut(); closeOnMobile()">
       <i class="bi bi-box-arrow-right"></i> <span *ngIf="sidebarOpen">Log Out</span>
     </button>
     <button class="btn btn-outline-light sidebar-btn govently-therapist-link" (click)="openTherapistSignup()">
@@ -33,4 +36,7 @@
     </button>
   </div>
  </nav>
+ 
+<!-- Mobile overlay: closes sidebar when tapped -->
+<div class="mobile-overlay d-md-none" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
 <!-- Removed leftover mobile nav and dropdown HTML. Sidebar-only layout is above. -->

@@ -14,11 +14,11 @@ import { take } from 'rxjs/internal/operators/take';
   styleUrl: './password-reset.component.scss'
 })
 export class PasswordResetComponent {
-  newPassword = '';
-  confirmPassword = '';
-  errorMessage = '';
-  successMessage = '';
-  resetToken: string | null = null;
+  public newPassword = '';
+  public confirmPassword = '';
+  public errorMessage = '';
+  public successMessage = '';
+  public resetToken: string | null = null;
 
    constructor(
     private authService: AuthService,
@@ -27,7 +27,7 @@ export class PasswordResetComponent {
     private route: ActivatedRoute
   ) {}
 
-    ngOnInit() {
+  public ngOnInit() {
     // Get the reset token from URL if present
     this.route.queryParams.subscribe(params => {
       if (params['token']) {
@@ -37,7 +37,7 @@ export class PasswordResetComponent {
     });
   }
 
-  onSubmit() {
+  public onSubmit() {
     if (this.newPassword !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match.';
       this.successMessage = '';

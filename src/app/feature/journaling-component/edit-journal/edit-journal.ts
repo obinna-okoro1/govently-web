@@ -18,9 +18,9 @@ import { ConfettiService } from '../../../shared/confetti-service';
 export class EditJournal {
  @Input() entry!: JournalEntry;
 
-  moods = moods;
+  public moods = moods;
 
-  updatedEntry: Partial<JournalEntry> = {};
+  public updatedEntry: Partial<JournalEntry> = {};
 
   @ViewChild('textareaRef') textareaRef!: ElementRef;
 
@@ -30,15 +30,15 @@ export class EditJournal {
     private confettiService: ConfettiService
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit() : void {
     this.updatedEntry = { ...this.entry };
   }
 
-  ngAfterViewInit() {
+  public ngAfterViewInit() {
     setTimeout(() => this.textareaRef?.nativeElement?.focus(), 100);
   }
 
-  save() {
+  public save() {
     const entryText = this.updatedEntry.entry;
     if (!entryText) return;
 
@@ -48,7 +48,7 @@ export class EditJournal {
     });
   }
 
-  cancel() {
+  public cancel() {
     this.modal.dismiss();
   }
 }

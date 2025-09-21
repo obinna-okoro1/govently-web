@@ -17,7 +17,7 @@ import { AiChatComponent } from '../ai-chat-component/ai-chat-component';
   styleUrls: ['./landing.scss']
 })
 export class LandingComponent {
-  todayPrompt: Observable<string>;
+  public todayPrompt: Observable<string>;
   public showChatOverlay: boolean = false;
   // height in pixels bound to the landing root to ensure it fits viewport
   public landingHeight: number = window.innerHeight;
@@ -32,25 +32,25 @@ export class LandingComponent {
   }
 
   @HostListener('window:resize', [])
-  updateLandingHeight() {
+  public updateLandingHeight() {
     // subtract nothing here — footer is positioned absolute within the root
     this.landingHeight = window.innerHeight;
   }
 
-  startJournaling() {
+  public startJournaling() {
     this.router.navigate(['/journaling']);
   }
 
-  chatWithAI() {
+  public chatWithAI() {
     // open full-screen chat overlay on landing
     this.showChatOverlay = true;
   }
 
-  closeChatOverlay() {
+  public closeChatOverlay() {
     this.showChatOverlay = false;
   }
 
-openLegalModal() {
-  this.modalService.open(GoventlyLegalComponent, 'Privacy & Terms', {});
-}
+  public openLegalModal() {
+    this.modalService.open(GoventlyLegalComponent, 'Privacy & Terms', {});
+  }
 }

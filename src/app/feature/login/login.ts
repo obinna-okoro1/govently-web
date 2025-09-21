@@ -17,10 +17,10 @@ import { take } from 'rxjs';
 })
 export class Login {
 
-  email = '';
-  password = '';
+  public email = '';
+  public password = '';
 
-  errorMessage = '';
+  public errorMessage = '';
 
   constructor(
     private router: Router,
@@ -29,7 +29,7 @@ export class Login {
     private confettiService: ConfettiService
    ) {}
 
-  onSubmit() {
+  public onSubmit() {
   this.authService.signIn({ email: this.email, password: this.password })
     .pipe(take(1))
     .subscribe({
@@ -56,7 +56,7 @@ export class Login {
 }
 
 
-  onForgotPassword() {
+  public onForgotPassword() {
     this.authService.passwordReset(this.email).subscribe({
       next: (response) => {
         if (response.error) {
@@ -71,7 +71,7 @@ export class Login {
     });
   }
 
-  goToSignup() {
+  public goToSignup() {
   // Close the current modal
   this.modalService.close();
 

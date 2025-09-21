@@ -16,17 +16,17 @@ import { take } from 'rxjs';
   styleUrl: './signup.scss'
 })
 export class Signup {
-  name = '';
-  email = '';
-  password = '';
-  confirmPassword = '';
-  age = 18; // Placeholder, you might want to add an input for age
-  gender: Gender = 'other';
-  country = '';
-  city = '';
-  countries: string[] = [];
-  cities: string[] = [];
-  errorMessage = '';
+  public name = '';
+  public email = '';
+  public password = '';
+  public confirmPassword = '';
+  public age = 18; // Placeholder, you might want to add an input for age
+  public gender: Gender = 'other';
+  public country = '';
+  public city = '';
+  public countries: string[] = [];
+  public cities: string[] = [];
+  public errorMessage = '';
 
   constructor(
     private modalService: ModalService,
@@ -34,7 +34,7 @@ export class Signup {
     private confettiService: ConfettiService
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     // this.locationService.getCountries().subscribe((res: any) => {
     //   if (res?.data) {
     //     this.countries = res.data.map((c: any) => c.country);
@@ -56,7 +56,7 @@ export class Signup {
   //   }
   // }
 
- onSubmit(): void {
+ public onSubmit(): void {
     
     this.authService.signUp({
       name: this.name,

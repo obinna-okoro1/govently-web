@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './govently-legal.component.scss'
 })
 export class GoventlyLegalComponent {
-activeTab: 'privacy' | 'terms' = 'privacy';
+  public activeTab: 'privacy' | 'terms' = 'privacy';
 }

@@ -9,20 +9,20 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class Modal implements AfterViewInit, OnDestroy {
   @Input() 
-  title = '';
+  public title = '';
 
   @Input() 
-  contentComponent!: Type<unknown>;
+  public contentComponent!: Type<unknown>;
 
   @Input() 
-  inputs?: Record<string, any>;
+  public inputs?: Record<string, any>;
 
   @ViewChild('dynamicContent', { read: ViewContainerRef, static: true })
   dynamicContent!: ViewContainerRef;
 
   constructor(public activeModal: NgbActiveModal) {}
 
-  ngAfterViewInit() {
+  public ngAfterViewInit() {
     if (this.contentComponent) {
       const compRef = this.dynamicContent.createComponent(this.contentComponent);
       if (this.inputs) {
@@ -31,7 +31,7 @@ export class Modal implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.dynamicContent.clear();
   }
 }

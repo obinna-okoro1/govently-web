@@ -39,19 +39,19 @@ export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewCheck
     this.greetUser();
   }
 
-  currentUser$: Observable<UserProfile | null>;
+  public currentUser$: Observable<UserProfile | null>;
 
-  companions: Companion[] = [
+  public companions: Companion[] = [
     { name: 'Tired Therapist', value: 'tired_therapist', emoji: '😌' },
     { name: 'Empathetic Friend', value: 'empathetic_friend', emoji: '💜' },
     { name: 'Chill Listener', value: 'chill_listener', emoji: '🎧' }
   ];
 
-  activeCompanion = this.companions[0];
-  messages: { sender: 'user' | 'ai', text: string }[] = [];
-  userMessage = '';
-  isTyping = false;
-  isBurning = false;
+  public activeCompanion = this.companions[0];
+  public messages: { sender: 'user' | 'ai', text: string }[] = [];
+  public userMessage = '';
+  public isTyping = false;
+  public isBurning = false;
 
   // single merged constructor above already initializes services and host
 
@@ -59,13 +59,13 @@ export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewCheck
   private resizeHandler = () => this.updateWrapperHeight();
   public wrapperHeight: number = window.innerHeight;
 
-  ngAfterViewInit() {
+  public ngAfterViewInit() {
     // Ensure height is set after view renders
     this.updateWrapperHeight();
     window.addEventListener('resize', this.resizeHandler);
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     window.removeEventListener('resize', this.resizeHandler);
   }
 
@@ -73,7 +73,7 @@ export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewCheck
    * Compute available vertical space for the component wrapper and set
    * the CSS variable `--ai-wrapper-height` on the host element.
    */
-  updateWrapperHeight() {
+  public updateWrapperHeight() {
     try {
       const hostEl = (this.host && this.host.nativeElement) ? this.host.nativeElement as HTMLElement : document.documentElement;
       const hostRect = hostEl.getBoundingClientRect();
@@ -93,28 +93,28 @@ export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewCheck
   }
 
   @HostListener('window:resize', [])
-  onWindowResize() {
+  public onWindowResize() {
     this.updateWrapperHeight();
   }
 
-  ngAfterViewChecked() {
+  public ngAfterViewChecked() {
     this.scrollToBottom();
   }
 
-  selectCompanion(c: any) {
+  public selectCompanion(c: any) {
     this.activeCompanion = c;
     this.messages = [];
     this.greetUser();
   }
 
-  greetUser() {
+  public greetUser() {
     this.messages.push({
       sender: 'ai',
       text: `${this.activeCompanion.emoji} ${this.activeCompanion.name} — Joined the chat!`
     });
   }
 
-sendMessage(): void {
+  public sendMessage(): void {
   if (!this.userMessage.trim()) return;
 
   // Store message immediately for responsive UI
@@ -186,7 +186,7 @@ sendMessage(): void {
   });
 }
 
-burnChat(): any {
+  public burnChat(): any {
   if (this.messages.length === 0) return;
 
   this.currentUser$.pipe(
@@ -221,7 +221,7 @@ burnChat(): any {
 }
 
 
-  scrollToBottom() {
+  public scrollToBottom() {
     if (this.chatBody) {
       this.chatBody.nativeElement.scrollTo({
         top: this.chatBody.nativeElement.scrollHeight,

@@ -40,6 +40,24 @@ export class NavComponent implements OnInit {
 
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
+    try {
+      if (this.sidebarOpen) document.body.classList.add('sidebar-open');
+      else document.body.classList.remove('sidebar-open');
+    } catch (e) {
+      // ignore in non-browser environments
+    }
+  }
+
+  // Close sidebar when navigation happens on small screens
+  closeOnMobile(): void {
+    try {
+      if (window && window.innerWidth < 768) {
+        this.sidebarOpen = false;
+        document.body.classList.remove('sidebar-open');
+      }
+    } catch (e) {
+      // ignore in non-browser environments
+    }
   }
 
   public openLoginModal() {
