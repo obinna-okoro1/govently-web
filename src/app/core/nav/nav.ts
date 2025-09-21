@@ -61,8 +61,7 @@ export class NavComponent implements OnInit {
       
       // Auto-close sidebar on mobile, auto-open on desktop
       if (width < 768 && this.sidebarOpen) {
-        this.sidebarOpen = false;
-        document.body.classList.remove('sidebar-open');
+        this.closeSidebar();
       } else if (width >= 768 && !this.sidebarOpen) {
         this.sidebarOpen = true;
         document.body.classList.remove('sidebar-open');
@@ -82,12 +81,25 @@ export class NavComponent implements OnInit {
     }
   }
 
+  closeSidebar(): void {
+    this.sidebarOpen = false;
+    try {
+      document.body.classList.remove('sidebar-open');
+    } catch (e) {
+      // ignore in non-browser environments
+    }
+  }
+
+  onOverlayClick(): void {
+    // Close sidebar when overlay is clicked on mobile
+    this.closeSidebar();
+  }
+
   // Close sidebar when navigation happens on small screens
   closeOnMobile(): void {
     try {
       if (window && window.innerWidth < 768) {
-        this.sidebarOpen = false;
-        document.body.classList.remove('sidebar-open');
+        this.closeSidebar();
       }
     } catch (e) {
       // ignore in non-browser environments

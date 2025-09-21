@@ -24,8 +24,8 @@ $govently-secondary: #ff7ab6;
 }
 
 .btn-gradient {
-  background: linear-gradient(135deg, lighten($govently-primary, 5%), $govently-secondary);
-  color: white;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-secondary));
+  color: var(--color-white);
   border: none;
   border-radius: 50rem;
   padding: 0.75rem 1.5rem;

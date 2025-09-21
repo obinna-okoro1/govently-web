@@ -53,9 +53,6 @@
     <!-- Action Buttons -->
     <div class="journal-actions">
       <ng-container *ngIf="todayPrompt$ | async as todayPrompt">
-        <button class="btn-secondary" (click)="clearEntry()" [disabled]="!entry">
-          Clear
-        </button>
         <button class="btn-save" (click)="saveJournal(todayPrompt)" [disabled]="!entry">
           💾 Save Reflection
         </button>

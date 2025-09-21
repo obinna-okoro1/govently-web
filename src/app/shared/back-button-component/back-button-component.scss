@@ -9,9 +9,10 @@
   gap: 0.5rem;
   cursor: pointer;
   transition: color 0.3s ease;
+  color: var(--color-primary);
 
   &:hover {
-    color: darken(#4CA6A8, 10%);
+    color: var(--color-primary-dark);
   }
 
   .back-icon {

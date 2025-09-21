@@ -1,8 +1,11 @@
 <nav class="sidebar-nav" [class.open]="sidebarOpen">
+  <!-- Mobile close button -->
+  <button class="sidebar-close d-md-none" (click)="toggleSidebar()" aria-label="Close menu">
+    <i class="bi bi-x"></i>
+  </button>
+  
   <div class="sidebar-header">
-    <button class="sidebar-toggle d-md-none" (click)="toggleSidebar()" aria-label="Toggle menu">
-      <i class="bi bi-list"></i>
-    </button>
+    <!-- Desktop toggle button -->
     <button class="sidebar-toggle d-none d-md-block" (click)="toggleSidebar()">
       <i class="bi" [ngClass]="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
     </button>
@@ -12,31 +15,36 @@
     </a>
   </div>
   <div class="sidebar-content">
-    <a [routerLink]="'/'" class="btn btn-primary sidebar-btn">
-      <i class="bi bi-house-door"></i> <span *ngIf="sidebarOpen">Home</span>
+    <a [routerLink]="'/'" class="sidebar-btn" (click)="closeOnMobile()">
+      <i class="bi bi-house-door"></i> 
+      <span>Home</span>
     </a>
-    <button (click)="chatWithAI()" class="btn btn-success sidebar-btn">
-      <i class="bi bi-chat-dots"></i> <span *ngIf="sidebarOpen">Vent in Chat</span>
+    <button (click)="chatWithAI()" class="sidebar-btn">
+      <i class="bi bi-chat-dots"></i> 
+      <span>Vent in Chat</span>
     </button>
-    <button (click)="startJournaling()" class="btn btn-warning sidebar-btn">
-      <i class="bi bi-journal-text"></i> <span *ngIf="sidebarOpen">Vent Journaling</span>
+    <button (click)="startJournaling()" class="sidebar-btn">
+      <i class="bi bi-journal-text"></i> 
+      <span>Vent Journaling</span>
     </button>
-    <button class="btn btn-light text-dark sidebar-btn"
+    <button class="sidebar-btn"
             *ngIf="!(currentUser$ | async)"
             (click)="openLoginModal(); closeOnMobile()">
-      <i class="bi bi-box-arrow-in-right"></i> <span *ngIf="sidebarOpen">Login</span>
+      <i class="bi bi-box-arrow-in-right"></i> 
+      <span>Login</span>
     </button>
-    <button class="btn btn-danger sidebar-btn"
+    <button class="sidebar-btn"
             *ngIf="currentUser$ | async"
             (click)="logOut(); closeOnMobile()">
-      <i class="bi bi-box-arrow-right"></i> <span *ngIf="sidebarOpen">Log Out</span>
+      <i class="bi bi-box-arrow-right"></i> 
+      <span>Log Out</span>
     </button>
-    <button class="btn btn-outline-light sidebar-btn govently-therapist-link" (click)="openTherapistSignup()">
-      <i class="bi bi-person-heart"></i> <span *ngIf="sidebarOpen">therapist?</span>
+    <button class="sidebar-btn govently-therapist-link" (click)="openTherapistSignup(); closeOnMobile()">
+      <i class="bi bi-person-heart"></i> 
+      <span>Therapist?</span>
     </button>
   </div>
- </nav>
+</nav>
  
 <!-- Mobile overlay: closes sidebar when tapped -->
-<div class="mobile-overlay d-md-none" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
-<!-- Removed leftover mobile nav and dropdown HTML. Sidebar-only layout is above. -->
+<div class="mobile-overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
