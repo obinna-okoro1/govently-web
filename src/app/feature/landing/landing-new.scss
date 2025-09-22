@@ -1,13 +1,9 @@
-/* Professional landing page optimized for conversion and user psychology */
-
-// ===== Base Layout =====
+/* Landing page optimized for conversion */
 .landing-page-root {
   min-height: 100vh;
   background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-subtle) 100%);
-  overflow-y: auto;
 }
 
-// ===== Hero Section =====
 .hero-section {
   min-height: 90vh;
   display: flex;
@@ -18,18 +14,6 @@
     rgba(59, 130, 246, 0.03) 50%, 
     rgba(16, 185, 129, 0.05) 100%);
   position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%239CA3AF" fill-opacity="0.1"><circle cx="30" cy="30" r="1.5"/></g></g></svg>') repeat;
-    opacity: 0.3;
-    pointer-events: none;
-  }
 }
 
 .hero-content {
@@ -38,14 +22,8 @@
 }
 
 .trust-badge {
-  display: inline-flex;
-  align-items: center;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
-  border-radius: 2rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
   box-shadow: var(--shadow-sm);
 }
 
@@ -62,10 +40,7 @@
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
-  line-height: 1.6;
   color: var(--color-text-secondary);
-  margin-bottom: 2rem;
   max-width: 38rem;
   
   @media (max-width: 48rem) {
@@ -73,21 +48,24 @@
   }
 }
 
-// ===== Social Proof Section =====
 .social-proof {
   .stats-row {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
     gap: 2rem;
-    margin-bottom: 1.5rem;
     
     @media (max-width: 48rem) {
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
     }
   }
   
   .stat-item {
     text-align: center;
+    flex: 1;
     
     @media (max-width: 48rem) {
       display: flex;
@@ -95,6 +73,7 @@
       justify-content: center;
       gap: 0.5rem;
       text-align: left;
+      width: 100%;
     }
     
     .stat-number {
@@ -102,22 +81,26 @@
       font-size: 2rem;
       font-weight: 700;
       color: var(--color-primary);
-      line-height: 1;
+      margin-bottom: 0.25rem;
       
       @media (max-width: 48rem) {
-        display: inline;
-        font-size: 1.5rem;
+        font-size: 1.75rem;
+        margin-bottom: 0;
       }
     }
     
     .stat-label {
       display: block;
-      font-size: 0.875rem;
       color: var(--color-text-secondary);
       font-weight: 500;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
       
       @media (max-width: 48rem) {
-        display: inline;
+        font-size: 1rem;
+        text-transform: none;
+        letter-spacing: normal;
       }
     }
   }
@@ -126,36 +109,42 @@
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border-light);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem 1.5rem;
+    margin-top: 1rem;
     position: relative;
     
     &::before {
       content: '"';
       position: absolute;
-      top: -0.5rem;
+      top: -0.25rem;
       left: 1rem;
-      font-size: 3rem;
+      font-size: 2.5rem;
       color: var(--color-primary);
       font-weight: 700;
       background: var(--color-bg-secondary);
-      padding: 0 0.5rem;
+      padding: 0 0.25rem;
+      line-height: 1;
     }
     
     .testimonial-text {
-      font-style: italic;
       color: var(--color-text-primary);
+      line-height: 1.6;
       margin-bottom: 1rem;
-      line-height: 1.5;
+      font-style: italic;
     }
     
     .testimonial-author {
       color: var(--color-text-secondary);
       font-size: 0.875rem;
+      font-weight: 500;
+      
+      strong {
+        color: var(--color-text-primary);
+      }
     }
   }
 }
 
-// ===== CTA Section =====
 .cta-section {
   margin-bottom: 1rem;
   
@@ -167,14 +156,14 @@
     box-shadow: var(--shadow-sm);
     
     &.btn-primary {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      background: var(--color-primary);
       border: none;
       color: var(--color-white);
       
       &:hover {
         transform: translateY(-0.125rem);
         box-shadow: var(--shadow-lg);
-        background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+        background: var(--color-primary-light);
       }
       
       &:active {
@@ -182,11 +171,9 @@
       }
     }
     
-    &.btn-outline-primary {
-      &:hover {
-        transform: translateY(-0.125rem);
-        box-shadow: var(--shadow-md);
-      }
+    &.btn-outline-primary:hover {
+      transform: translateY(-0.125rem);
+      box-shadow: var(--shadow-md);
     }
     
     @media (max-width: 48rem) {
@@ -201,7 +188,6 @@
   font-size: 0.875rem;
 }
 
-// ===== Hero Demo Section =====
 .hero-demo {
   position: relative;
   z-index: 2;
@@ -336,7 +322,6 @@
   }
 }
 
-// ===== Features Section =====
 .features-section {
   background: var(--color-white);
 }
@@ -440,7 +425,6 @@
   }
 }
 
-// ===== Testimonials Section =====
 .testimonials-section {
   background: var(--color-bg-subtle);
 }
@@ -481,7 +465,6 @@
   }
 }
 
-// ===== How It Works Section =====
 .how-it-works-section {
   background: var(--color-white);
 }
@@ -550,7 +533,6 @@
   }
 }
 
-// ===== Crisis Support Banner =====
 .crisis-banner {
   background: linear-gradient(135deg, var(--color-warning-light) 0%, var(--color-warning) 100%);
   border-top: 2px solid var(--color-warning);
@@ -602,7 +584,6 @@
   }
 }
 
-// ===== Chat Overlay =====
 .chat-overlay {
   position: fixed;
   inset: 0;
@@ -653,7 +634,6 @@
   }
 }
 
-// ===== Footer =====
 .govently-footer {
   background: var(--color-bg-primary);
   border-top: 1px solid var(--color-border-light);
@@ -706,15 +686,30 @@
   }
 }
 
-// ===== Responsive Design =====
 @media (max-width: 48rem) {
   .hero-section {
     padding: 2rem 0;
     text-align: center;
   }
   
-  .social-proof .stats-row {
-    justify-content: center;
+  .social-proof {
+    text-align: center;
+    
+    .stats-row {
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .stat-item {
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      
+      .stat-number, .stat-label {
+        display: block;
+        text-align: center;
+      }
+    }
   }
   
   .cta-section {
@@ -739,7 +734,6 @@
   }
 }
 
-// ===== Accessibility Enhancements =====
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -748,7 +742,6 @@
   }
 }
 
-// ===== Focus States =====
 .btn:focus,
 .quick-reply:focus,
 .demo-cta-btn:focus {
@@ -756,7 +749,6 @@
   outline-offset: 2px;
 }
 
-// ===== Loading States =====
 .loading {
   opacity: 0.7;
   pointer-events: none;
