@@ -1,0 +1,468 @@
+<!-- Mental Health Assessment Component -->
+<div class="assessment-container min-vh-100 d-flex flex-column" *ngIf="!showSupportMessage">
+  
+  <!-- Assessment Header -->
+  <div class="assessment-header bg-primary text-white py-4" *ngIf="assessmentState.isStarted && !assessmentState.isCompleted">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1 class="h3 mb-1">Mental Health Assessment</h1>
+          <p class="mb-0 opacity-75">{{ assessmentState.currentSection?.description }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+          <div class="progress-info">
+            <small class="d-block">Question {{ assessmentState.progress.currentQuestion }} of {{ assessmentState.progress.totalQuestions }}</small>
+            <small class="d-block">~{{ assessmentState.progress.estimatedTimeRemaining }} min remaining</small>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="progress mt-3" style="height: 0.375rem;">
+        <div 
+          class="progress-bar bg-success" 
+          role="progressbar" 
+          [style.width.%]="assessmentState.progress.percentComplete"
+          [attr.aria-valuenow]="assessmentState.progress.percentComplete"
+          aria-valuemin="0" 
+          aria-valuemax="100">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assessment Welcome Screen -->
+  <div class="welcome-screen flex-grow-1 d-flex align-items-center" *ngIf="!assessmentState.isStarted">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6 text-center">
+          <div class="welcome-card bg-white p-5 rounded-3 shadow-sm">
+            <div class="welcome-icon mb-4">
+              <i class="bi bi-heart-pulse text-primary" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h1 class="h2 mb-4">Your Mental Health Journey Starts Here</h1>
+            <p class="lead mb-4 text-muted">
+              This comprehensive assessment will help us understand your current mental health and well-being. 
+              Your responses are completely confidential and will be used to provide personalized recommendations.
+            </p>
+            
+            <div class="assessment-details mb-4">
+              <div class="row g-3">
+                <div class="col-sm-4">
+                  <div class="detail-item">
+                    <i class="bi bi-clock text-primary"></i>
+                    <div class="ms-2">
+                      <strong>10 minutes</strong>
+                      <small class="d-block text-muted">Estimated time</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="detail-item">
+                    <i class="bi bi-shield-check text-success"></i>
+                    <div class="ms-2">
+                      <strong>Confidential</strong>
+                      <small class="d-block text-muted">Private & secure</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="detail-item">
+                    <i class="bi bi-award text-warning"></i>
+                    <div class="ms-2">
+                      <strong>Evidence-based</strong>
+                      <small class="d-block text-muted">Clinical tools</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="important-note mb-4 p-3 bg-light rounded">
+              <h6 class="text-primary mb-2">
+                <i class="bi bi-info-circle me-2"></i>Important Note
+              </h6>
+              <p class="small mb-0 text-start">
+                This assessment uses validated clinical screening tools (PHQ-9, GAD-7, PSS-10, WHO-5) 
+                but is not a substitute for professional diagnosis. If you're experiencing thoughts of 
+                self-harm or crisis, please seek immediate help by calling 988 (Suicide & Crisis Lifeline).
+              </p>
+            </div>
+            
+            <button 
+              class="btn btn-primary btn-lg px-5"
+              (click)="startAssessment()"
+              [disabled]="isLoading">
+              <i class="bi bi-play-circle me-2"></i>
+              Begin Assessment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assessment Questions -->
+  <div class="question-screen flex-grow-1" *ngIf="assessmentState.isStarted && !assessmentState.isCompleted && currentQuestion">
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+          
+          <!-- Section Navigation -->
+          <div class="section-nav mb-4">
+            <nav class="d-flex justify-content-between align-items-center">
+              <div class="section-info">
+                <h5 class="mb-1 text-primary">{{ assessmentState.currentSection?.title }}</h5>
+                <small class="text-muted">
+                  Section {{ assessmentState.progress.currentSection + 1 }} of {{ assessmentState.progress.totalSections }}
+                </small>
+              </div>
+              <div class="section-progress">
+                <div class="progress" style="width: 4rem; height: 0.25rem;">
+                  <div 
+                    class="progress-bar bg-primary" 
+                    [style.width.%]="currentSectionProgress">
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+
+          <!-- Question Card -->
+          <div class="question-card bg-white p-4 p-md-5 rounded-3 shadow-sm">
+            
+            <!-- Question -->
+            <div class="question mb-4">
+              <h3 class="h4 mb-3">{{ currentQuestion.question }}</h3>
+              <div class="help-text" *ngIf="currentQuestion.helpText">
+                <small class="text-muted">
+                  <i class="bi bi-lightbulb me-1"></i>
+                  {{ currentQuestion.helpText }}
+                </small>
+              </div>
+            </div>
+
+            <!-- Answer Options -->
+            <div class="answer-options mb-4">
+              
+              <!-- Scale Questions -->
+              <div class="scale-options" *ngIf="currentQuestion.type === 'scale'">
+                <div class="row g-2">
+                  <div 
+                    class="col-12" 
+                    *ngFor="let option of currentQuestion.options; trackBy: trackByValue">
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="radio" 
+                        [id]="'option-' + option.value"
+                        [value]="option.value"
+                        [checked]="currentResponse === option.value"
+                        (change)="onResponseChanged(option.value)"
+                        name="assessment-response">
+                      <label 
+                        class="form-check-label w-100 p-3 border rounded d-flex justify-content-between align-items-center"
+                        [for]="'option-' + option.value">
+                        <div>
+                          <strong>{{ option.label }}</strong>
+                          <div class="option-description" *ngIf="option.description">
+                            <small class="text-muted">
+                              {{ option.description }}
+                            </small>
+                          </div>
+                        </div>
+                        <i class="bi bi-check-circle-fill text-primary" 
+                           *ngIf="currentResponse === option.value" 
+                           style="font-size: 1.25rem;"></i>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Multiple Choice Questions -->
+              <div class="multiple-choice-options" *ngIf="currentQuestion.type === 'multiple-choice'">
+                <div class="row g-2">
+                  <div 
+                    class="col-12" 
+                    *ngFor="let option of currentQuestion.options; trackBy: trackByValue">
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="radio" 
+                        [id]="'option-' + option.value"
+                        [value]="option.value"
+                        [checked]="currentResponse === option.value"
+                        (change)="onResponseChanged(option.value)"
+                        name="assessment-response">
+                      <label 
+                        class="form-check-label w-100 p-3 border rounded d-flex justify-content-between align-items-center"
+                        [for]="'option-' + option.value">
+                        <strong>{{ option.label }}</strong>
+                        <i class="bi bi-check-circle-fill text-primary" 
+                           *ngIf="currentResponse === option.value" 
+                           style="font-size: 1.25rem;"></i>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Boolean Questions -->
+              <div class="boolean-options" *ngIf="currentQuestion.type === 'boolean'">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="radio" 
+                        id="option-yes"
+                        [value]="true"
+                        [(ngModel)]="currentResponse"
+                        (change)="onResponseChanged(true)"
+                        name="assessment-response">
+                      <label 
+                        class="form-check-label w-100 p-3 border rounded text-center"
+                        [class.border-success]="currentResponse === true"
+                        [class.bg-success]="currentResponse === true"
+                        [class.text-white]="currentResponse === true"
+                        for="option-yes">
+                        <i class="bi bi-check-circle me-2"></i>
+                        <strong>Yes</strong>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="radio" 
+                        id="option-no"
+                        [value]="false"
+                        [(ngModel)]="currentResponse"
+                        (change)="onResponseChanged(false)"
+                        name="assessment-response">
+                      <label 
+                        class="form-check-label w-100 p-3 border rounded text-center"
+                        [class.border-secondary]="currentResponse === false"
+                        [class.bg-secondary]="currentResponse === false"
+                        [class.text-white]="currentResponse === false"
+                        for="option-no">
+                        <i class="bi bi-x-circle me-2"></i>
+                        <strong>No</strong>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Text Questions -->
+              <div class="text-options" *ngIf="currentQuestion.type === 'text'">
+                <div class="form-group">
+                  <textarea 
+                    class="form-control" 
+                    rows="4"
+                    placeholder="Please share your thoughts..."
+                    [(ngModel)]="currentResponse"
+                    (input)="onTextAreaInput($event)"
+                    maxlength="500">
+                  </textarea>
+                  <div class="form-text">
+                    <small class="text-muted">Optional - share as much or as little as you'd like</small>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+
+            <!-- Error Message -->
+            <div class="alert alert-warning" *ngIf="errorMessage" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ errorMessage }}
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="navigation-buttons d-flex justify-content-between">
+              <button 
+                class="btn btn-outline-secondary"
+                (click)="previousQuestion()"
+                [disabled]="!canGoBack || isLoading">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back
+              </button>
+              
+              <button 
+                class="btn btn-primary px-4"
+                (click)="nextQuestion()"
+                [disabled]="isLoading || !isCurrentQuestionAnswered()">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ nextButtonText }}
+                <i class="bi bi-arrow-right ms-2" *ngIf="!isLoading"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assessment Complete -->
+  <div class="results-screen flex-grow-1 d-flex align-items-center" *ngIf="assessmentState.isCompleted && assessmentResult">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+          <div class="results-card bg-white p-5 rounded-3 shadow-sm text-center">
+            
+            <div class="celebration-icon mb-4">
+              <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+            </div>
+            
+            <h1 class="h2 mb-4">Assessment Complete!</h1>
+            <p class="lead mb-4 text-muted">
+              Thank you for taking the time to complete your mental health assessment. 
+              Your responses have been securely saved and analyzed.
+            </p>
+
+            <!-- Risk Level Summary -->
+            <div class="risk-summary mb-4 p-4 rounded" 
+                 [class.bg-success-subtle]="assessmentResult.riskLevel === 'minimal'"
+                 [class.bg-info-subtle]="assessmentResult.riskLevel === 'mild'"
+                 [class.bg-warning-subtle]="assessmentResult.riskLevel === 'moderate'"
+                 [class.bg-danger-subtle]="assessmentResult.riskLevel === 'severe' || assessmentResult.riskLevel === 'moderately-severe'">
+              <h5 class="mb-2">
+                <span class="text-capitalize">{{ assessmentResult.riskLevel }}</span> Support Level Indicated
+              </h5>
+              <p class="small mb-0">
+                Based on your responses, we've identified your current support needs and prepared personalized recommendations.
+              </p>
+            </div>
+
+            <!-- Score Summary -->
+            <div class="score-summary mb-4">
+              <div class="row g-3 text-start">
+                <div class="col-6">
+                  <div class="score-item p-3 bg-light rounded">
+                    <small class="text-muted d-block">Depression Screening</small>
+                    <strong>{{ assessmentResult.scores.phq9Score }}/27</strong>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="score-item p-3 bg-light rounded">
+                    <small class="text-muted d-block">Anxiety Screening</small>
+                    <strong>{{ assessmentResult.scores.gad7Score }}/21</strong>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="score-item p-3 bg-light rounded">
+                    <small class="text-muted d-block">Stress Level</small>
+                    <strong>{{ assessmentResult.scores.pss10Score }}/20</strong>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="score-item p-3 bg-light rounded">
+                    <small class="text-muted d-block">Well-being</small>
+                    <strong>{{ assessmentResult.scores.whoWellBeingScore }}/100</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="next-steps mb-4">
+              <h6 class="text-start mb-3">Your Next Steps:</h6>
+              <div class="row g-2">
+                <div class="col-12">
+                  <button 
+                    class="btn btn-primary btn-lg w-100"
+                    (click)="connectWithTherapist()">
+                    <i class="bi bi-person-heart me-2"></i>
+                    Connect with a Licensed Therapist
+                  </button>
+                </div>
+                <div class="col-12">
+                  <button 
+                    class="btn btn-outline-primary w-100"
+                    (click)="viewDetailedResults()">
+                    <i class="bi bi-file-text me-2"></i>
+                    View Detailed Results & Recommendations
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="additional-actions">
+              <button 
+                class="btn btn-link text-muted"
+                (click)="restartAssessment()">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                Retake Assessment
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Suicide Risk Support Modal -->
+<div class="support-modal-overlay" *ngIf="showSupportMessage">
+  <div class="support-modal d-flex align-items-center justify-content-center min-vh-100 p-3">
+    <div class="modal-content bg-white p-5 rounded-3 shadow-lg" style="max-width: 500px;">
+      <div class="text-center mb-4">
+        <i class="bi bi-heart-fill text-danger" style="font-size: 3rem;"></i>
+      </div>
+      
+      <h3 class="text-center mb-4">We're Here for You</h3>
+      
+      <div class="support-message mb-4">
+        <p>
+          Thank you for being honest about your feelings. Having thoughts of death or self-harm 
+          can be frightening, but you're not alone. These feelings are treatable, and help is available.
+        </p>
+        
+        <div class="crisis-resources bg-danger-subtle p-3 rounded mb-3">
+          <h6 class="text-danger mb-2">
+            <i class="bi bi-telephone-fill me-2"></i>
+            Immediate Help Available 24/7
+          </h6>
+          <p class="small mb-2">
+            <strong>National Suicide Prevention Lifeline:</strong><br>
+            Call or text <strong>988</strong> for free, confidential support
+          </p>
+          <p class="small mb-0">
+            <strong>Crisis Text Line:</strong><br>
+            Text <strong>HOME</strong> to <strong>741741</strong>
+          </p>
+        </div>
+        
+        <p class="small text-muted">
+          Completing this assessment will help us connect you with appropriate professional support. 
+          Your safety and well-being are our priority.
+        </p>
+      </div>
+
+      <div class="support-actions">
+        <div class="row g-2">
+          <div class="col-12">
+            <button 
+              class="btn btn-danger w-100"
+              (click)="getCrisisHelp()">
+              <i class="bi bi-telephone me-2"></i>
+              Get Crisis Support Now (988)
+            </button>
+          </div>
+          <div class="col-12">
+            <button 
+              class="btn btn-primary w-100"
+              (click)="continueAfterSupport()">
+              <i class="bi bi-arrow-right me-2"></i>
+              Continue Assessment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

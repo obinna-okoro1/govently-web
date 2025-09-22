@@ -17,6 +17,11 @@ export const routes: Routes = [
     loadComponent: () => import('./feature/ai-chat-component/ai-chat-component').then(m => m.AiChatComponent)
   },
   { 
+    path: 'assessment', 
+    loadComponent: () => import('./feature/mental-health-assessment/mental-health-assessment.component').then(m => m.MentalHealthAssessmentComponent),
+    canActivate: [authGuard]
+  },
+  { 
     path: 'new-password', 
     loadComponent: () => import('./feature/password-reset.component/password-reset.component').then(m => m.PasswordResetComponent),
     canActivate: [authGuard]

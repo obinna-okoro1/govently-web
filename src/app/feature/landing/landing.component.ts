@@ -4,6 +4,7 @@ import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { ModalService } from '../../shared/modal/modal.service';
 import { DailyPromptService } from '../../shared/daily-prompt.service';
+import { AuthService } from '../../core/auth/auth-service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { GoventlyLegalComponent } from '../govently-legal.component/govently-legal.component';
@@ -53,7 +54,8 @@ export class LandingComponent implements OnInit {
   constructor(
     private router: Router,
     private modalService: ModalService,
-    private dailyPromptService: DailyPromptService
+    private dailyPromptService: DailyPromptService,
+    private authService: AuthService
   ) {
     this.todayPrompt = this.dailyPromptService.getPrompt();
     this.updateLandingHeight();
@@ -73,11 +75,24 @@ export class LandingComponent implements OnInit {
 
   // Primary CTA - Start Free Assessment
   public startFreeAssessment() {
-    // This should lead to a progressive onboarding flow
-    // For now, we'll open the signup modal with assessment context
-    this.modalService.open(Signup, 'Start Your Free Mental Health Assessment', {
-      isAssessment: true,
-      skipToAssessment: true
+    // Check if user is authenticated
+    this.authService.getSession().subscribe(session => {
+      if (session?.user) {
+        // User is authenticated, navigate directly to assessment
+        this.router.navigate(['/assessment']);
+      } else {
+        // User is not authenticated, show signup modal with assessment context
+        this.modalService.open(Signup, 'Start Your Free Mental Health Assessment', {
+          isAssessment: true,
+          skipToAssessment: true,
+          onSuccess: () => {
+            // After successful signup, navigate to assessment
+            setTimeout(() => {
+              this.router.navigate(['/assessment']);
+            }, 1000);
+          }
+        });
+      }
     });
   }
 
@@ -109,11 +124,36 @@ export class LandingComponent implements OnInit {
   // Navigation methods
   public startJournaling() {
     // Check if user is logged in, if not prompt signup
-    this.router.navigate(['/journaling']);
+    this.authService.getSession().subscribe(session => {
+      if (session?.user) {
+        this.router.navigate(['/journaling']);
+      } else {
+        this.modalService.open(Signup, 'Sign Up to Start Journaling', {
+          onSuccess: () => {
+            setTimeout(() => {
+              this.router.navigate(['/journaling']);
+            }, 1000);
+          }
+        });
+      }
+    });
   }
 
   public chatWithAI() {
-    this.showChatOverlay = true;
+    // Check if user is logged in, if not prompt signup
+    this.authService.getSession().subscribe(session => {
+      if (session?.user) {
+        this.showChatOverlay = true;
+      } else {
+        this.modalService.open(Signup, 'Sign Up to Chat with AI', {
+          onSuccess: () => {
+            setTimeout(() => {
+              this.showChatOverlay = true;
+            }, 1000);
+          }
+        });
+      }
+    });
   }
 
   public closeChatOverlay() {
