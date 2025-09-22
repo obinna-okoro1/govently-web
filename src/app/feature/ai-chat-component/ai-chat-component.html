@@ -1,52 +1,56 @@
-<div class="wrapper d-flex align-items-start justify-content-center">
-  <div class="chat-container px-4 shadow-lg" [class.burning]="isBurning">
-    <div class="container position-sticky top-0" style="z-index: 10;">
-      <div class="d-flex justify-content-between align-items-center">
-        <app-back-button-component></app-back-button-component>
+<div class="chat-container">
+  <div class="chat-header">
+    <app-back-button-component></app-back-button-component>
+    <h1>AI Chat</h1>
+    <button class="clear-btn" (click)="burnChat()" title="Clear conversation">
+      Clear Chat
+    </button>
+  </div>
 
-        <div class="burn-chat-button-wrapper text-center my-3">
-  <button 
-    class="burn-btn" 
-    [class.burning]="isBurning" 
-    (click)="burnChat()">
-    🔥 Burn Chat
-  </button>
-</div>
-
-      </div>
-      <div class="companion-bar">
-        <div 
-          *ngFor="let c of companions" 
-          class="companion-pill" 
-          [class.active]="c.name === activeCompanion.name"
-          (click)="selectCompanion(c)">
-          <span class="emoji">{{ c.emoji }}</span>
-          <span class="label">{{ c.name }}</span>
-        </div>
+  <div class="chat-messages" #chatBody>
+    <div class="welcome-message" *ngIf="messages.length === 0">
+      <div class="welcome-content">
+        <h3>👋 Hi there!</h3>
+        <p>I'm here to listen and support you. What's on your mind?</p>
       </div>
     </div>
-    <!-- Companion Selector -->
 
-    <!-- Chat Messages -->
-    <div class="chat-body" #chatBody>
-      <div 
-        *ngFor="let msg of messages" 
-        class="chat-message" 
-        [ngClass]="{'from-ai': msg.sender === 'ai', 'from-user': msg.sender === 'user'}">
-        <div class="bubble">{{ msg.text }}</div>
+    <div *ngFor="let msg of messages" 
+         class="message" 
+         [class.user-message]="msg.sender === 'user'"
+         [class.ai-message]="msg.sender === 'ai'">
+      <div class="message-content">
+        {{ msg.text }}
       </div>
+    </div>
 
-      <!-- Typing Indicator -->
-      <div *ngIf="isTyping" class="typing-indicator">
+    <div *ngIf="isTyping" class="typing-indicator">
+      <div class="typing-dots">
         <span></span><span></span><span></span>
       </div>
+      <span>AI is typing...</span>
     </div>
+  </div>
 
-    <!-- Input -->
-    <form (ngSubmit)="sendMessage()" class="chat-input">
-  <input type="text" [(ngModel)]="userMessage" name="msg" placeholder="Type your feels here..." />
-  <button type="submit" class="send-btn">➤</button>
-</form>
+  <div class="chat-input">
+    <form (ngSubmit)="sendMessage()" class="input-form">
+      <div class="input-wrapper">
+        <textarea 
+          [(ngModel)]="userMessage" 
+          name="message"
+          placeholder="Type your message here..."
+          class="message-input"
+          rows="1"
+          (input)="adjustTextareaHeight($event)"
+          (keydown)="handleEnterKey($event)"></textarea>
+        <button 
+          type="submit" 
+          class="send-button" 
+          [disabled]="!userMessage.trim() || isTyping">
+          Send
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 

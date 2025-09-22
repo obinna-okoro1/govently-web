@@ -1,6 +1,5 @@
-/* Professional journaling component styling using new color system */
+/* Enhanced journaling component with all original features */
 
-// Main wrapper - remove gradient background that conflicts with main app
 .journal-wrapper {
   min-height: calc(100vh - 2rem);
   background: var(--color-bg-primary);
@@ -15,7 +14,6 @@
   }
 }
 
-// Main card container
 .journal-card {
   background: var(--color-white);
   border: 1px solid var(--color-border-light);
@@ -29,87 +27,42 @@
   @media (min-width: 48rem) {
     padding: 2rem;
   }
-}
 
-// Header section with navigation
-.journal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  gap: 1rem;
-  
-  .btn-chat-ai {
-    background: var(--color-secondary-alpha-10);
-    color: var(--color-secondary);
-    border: 1px solid var(--color-secondary-alpha-20);
-    border-radius: 0.75rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.15s ease;
-    text-decoration: none !important;
-    
-    &:hover {
-      background: var(--color-secondary);
-      color: var(--color-white);
-      transform: translateY(-0.0625rem);
-    }
+  &.burned {
+    animation: burn 0.8s ease-out;
   }
 }
 
-// Greeting section
-.greeting-section {
-  text-align: center;
-  margin-bottom: 2rem;
-  
-  .greeting-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 0.5rem;
-    
-    @media (min-width: 48rem) {
-      font-size: 2.5rem;
-    }
-  }
+.btn-chat-ai {
+  background: var(--color-secondary-alpha-10);
+  color: var(--color-secondary);
+  border: 1px solid var(--color-secondary-alpha-20);
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
 
-  .greeting-sub {
-    font-size: 1rem;
-    color: var(--color-text-secondary);
-    margin-bottom: 0;
-    
-    @media (min-width: 48rem) {
-      font-size: 1.125rem;
-    }
+  &:hover {
+    background: var(--color-secondary);
+    color: var(--color-white);
+    transform: translateY(-0.0625rem);
   }
 }
 
-// Quick Mood Check section
 .mood-section {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
 
   h4 {
     font-weight: 600;
     color: var(--color-text-primary);
     margin-bottom: 1rem;
-    text-align: center;
-    font-size: 1.125rem;
   }
-  }
+}
 
 .mood-selector {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(3.75rem, 1fr));
-  gap: 1rem;
-  justify-items: center;
-  max-width: 25rem;
-  margin: 0 auto;
-
   .mood-btn {
     width: 3.75rem;
     height: 3.75rem;
@@ -124,7 +77,6 @@
     border: 2px solid var(--color-border-medium);
     box-shadow: var(--shadow-sm);
     transform: scale(1);
-    position: relative;
 
     &:hover {
       transform: scale(1.05);
@@ -138,48 +90,21 @@
       border-color: var(--color-primary);
       background: var(--color-primary-alpha-10);
     }
-
-    // Override inline styles from component
-    &[style*="background-color"] {
-      background: var(--color-white) !important;
-      
-      &.selected {
-        background: var(--color-primary-alpha-10) !important;
-      }
-    }
   }
 }
 
-// Today's Reflection section
 .reflection-section {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
 
   h4 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
     font-weight: 600;
     color: var(--color-text-primary);
     margin-bottom: 1rem;
-    font-size: 1.125rem;
-    text-align: center;
-  }
-
-  .lead {
-    color: var(--color-text-secondary);
-    font-size: 1rem;
-    line-height: 1.6;
-    text-align: center;
-    margin-bottom: 0;
   }
 }
 
-// Professional textarea styling
 .journal-input {
   resize: vertical;
   border-radius: 0.75rem;
@@ -205,19 +130,6 @@
   }
 }
 
-// Form actions
-.journal-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  
-  @media (max-width: 48rem) {
-    flex-direction: column-reverse;
-  }
-}
-
-// Professional save button
 .btn-save {
   background: var(--color-primary);
   color: var(--color-white);
@@ -228,22 +140,11 @@
   padding: 0.875rem 2rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
-  min-width: 8rem;
 
   &:hover {
     background: var(--color-primary-light);
     transform: translateY(-0.0625rem);
     box-shadow: var(--shadow-md);
-  }
-
-  &:active {
-    background: var(--color-primary-dark);
-    transform: translateY(0);
-  }
-
-  &:focus {
-    outline: 2px solid var(--color-primary-alpha-20);
-    outline-offset: 2px;
   }
 
   &:disabled {
@@ -253,36 +154,89 @@
     transform: none;
     box-shadow: none;
   }
-
-  @media (max-width: 48rem) {
-    width: 100%;
-  }
 }
 
-// Secondary action button
-.btn-secondary {
-  background: var(--color-white);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border-medium);
+.btn-burn {
+  background: linear-gradient(135deg, var(--color-error), var(--color-warning));
+  color: var(--color-white);
   border-radius: 0.75rem;
+  border: none;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 0.875rem 2rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 8rem;
+  box-shadow: var(--shadow-sm);
 
   &:hover {
-    background: var(--color-gray-50);
-    border-color: var(--color-gray-300);
-    color: var(--color-text-primary);
-  }
-
-  @media (max-width: 48rem) {
-    width: 100%;
+    background: linear-gradient(135deg, var(--color-error-light), var(--color-warning-light));
+    transform: translateY(-0.0625rem);
+    box-shadow: var(--shadow-md);
   }
 }
 
-// Animation keyframes
+.previous-reflections {
+  .section-title {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .reflection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .reflection-card {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    transition: all 0.15s ease;
+
+    &:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-0.0625rem);
+    }
+
+    .reflection-left {
+      cursor: pointer;
+      
+      .reflection-title {
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .reflection-preview {
+        color: var(--color-text-secondary);
+        line-height: 1.5;
+      }
+
+      .mood-badge {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  .empty-reflections {
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-text-secondary);
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+
+    h5 {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -294,320 +248,17 @@
   }
 }
 
-// Loading state
-.journal-card.loading {
-  .journal-input {
-    opacity: 0.6;
-    pointer-events: none;
+@keyframes burn {
+  0% {
+    transform: scale(1);
+    opacity: 1;
   }
-  
-  .btn-save {
-    opacity: 0.6;
-    cursor: not-allowed;
-    
-    &::after {
-      content: '';
-      display: inline-block;
-      width: 1rem;
-      height: 1rem;
-      border: 2px solid transparent;
-      border-top: 2px solid currentColor;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-left: 0.5rem;
-    }
+  50% {
+    transform: scale(1.05);
+    background: linear-gradient(45deg, #ff6b35, #f7931e);
   }
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-// Success/error states
-.alert {
-  border-radius: 0.75rem;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
-  border: none;
-  
-  &.alert-success {
-    background: var(--color-success);
-    color: var(--color-white);
-  }
-  
-  &.alert-danger {
-    background: var(--color-error);
-    color: var(--color-white);
-  }
-}
-
-// Professional burn button for special actions
-.btn-burn {
-  background: linear-gradient(135deg, var(--color-error), var(--color-warning));
-  color: var(--color-white);
-  border-radius: 0.75rem;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 0.875rem 2rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
-  min-width: 8rem;
-
-  &:hover {
-    background: linear-gradient(135deg, var(--color-error-light), var(--color-warning-light));
-    transform: translateY(-0.0625rem);
-    box-shadow: var(--shadow-md);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 48rem) {
-    width: 100%;
-  }
-}
-
-// Previous reflections section
-.previous-reflections {
-  background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-top: 2rem;
-
-  .section-title {
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-size: 1.125rem;
-  }
-
-  .reflection-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    max-height: 25rem; // Limit height to prevent page overflow
-    overflow-y: auto; // Add scroll when needed
-    
-    // Custom scrollbar styling
-    &::-webkit-scrollbar {
-      width: 0.375rem;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background: var(--color-gray-100);
-      border-radius: 0.1875rem;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: var(--color-gray-300);
-      border-radius: 0.1875rem;
-      
-      &:hover {
-        background: var(--color-gray-400);
-      }
-    }
-  }
-
-  .reflection-card {
-    background: var(--color-white);
-    border: 1px solid var(--color-border-light);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: auto;
-    overflow: hidden; // Prevent content from overflowing
-
-    &:hover {
-      transform: translateY(-0.0625rem);
-      box-shadow: var(--shadow-md);
-      border-color: var(--color-primary-alpha-20);
-    }
-
-    .reflection-left {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      flex: 1;
-      min-width: 0; // Allow flex item to shrink below content size
-      cursor: pointer;
-    }
-
-    .mood-icon {
-      font-size: 1.25rem;
-      flex-shrink: 0; // Don't let the icon shrink
-    }
-
-    .reflection-content {
-      flex: 1;
-      min-width: 0; // Allow content to shrink and wrap
-      overflow: hidden; // Prevent overflow
-    }
-
-    .reflection-title {
-      margin: 0 0 0.25rem 0;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--color-text-primary);
-      line-height: 1.4;
-      word-wrap: break-word; // Break long words
-      overflow-wrap: break-word; // Modern alternative
-      hyphens: auto; // Add hyphens for better breaking
-      
-      // Limit to 2 lines with ellipsis
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2; // Standard property
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .reflection-date {
-      font-size: 0.75rem;
-      color: var(--color-text-tertiary);
-      margin: 0;
-      white-space: nowrap; // Keep date on one line
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    // Action buttons container
-    .reflection-actions {
-      display: flex;
-      gap: 0.375rem;
-      flex-shrink: 0; // Don't let buttons shrink
-      align-items: flex-start;
-      margin-left: 0.75rem;
-      
-      .btn {
-        font-size: 0.75rem;
-        padding: 0.375rem 0.5rem;
-        border-radius: 0.375rem;
-        line-height: 1;
-        min-width: auto;
-        
-        &.btn-sm {
-          font-size: 0.75rem;
-          padding: 0.25rem 0.5rem;
-        }
-      }
-    }
-  }
-
-  .empty-reflections {
-    text-align: center;
-    padding: 2rem 1rem;
-    color: var(--color-text-secondary);
-
-    .empty-img {
-      height: 4rem;
-      margin-bottom: 1rem;
-      opacity: 0.6;
-    }
-
-    .empty-message {
-      font-size: 0.875rem;
-      color: var(--color-text-tertiary);
-      line-height: 1.5;
-    }
-  }
-}
-
-// Burn animation effects
-.burned {
-  animation: burnEffect 0.8s ease forwards;
-}
-
-@keyframes burnEffect {
-  0% { opacity: 1; transform: rotate(0deg); }
-  20% { transform: rotate(-2deg); }
-  40% { transform: rotate(2deg); }
-  60% { transform: rotate(-1deg); opacity: 0.7; }
-  80% { opacity: 0.4; transform: scale(0.98); }
-  100% { opacity: 0; transform: scale(0.95); }
-}
-
-// Celebration effects
-.confetti {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  width: 0.625rem;
-  height: 0.625rem;
-  background: var(--color-accent);
-  animation: drop 1.5s ease forwards;
-  z-index: 9999;
-}
-
-@keyframes drop {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(31.25rem) rotate(720deg); opacity: 0; }
-}
-
-// Mobile responsive adjustments
-@media (max-width: 48rem) {
-  .journal-card {
-    margin: 1rem;
-    padding: 1rem;
-  }
-
-  .greeting-section .greeting-title {
-    font-size: 1.75rem;
-  }
-
-  .mood-selector .mood-btn {
-    width: 3.125rem;
-    height: 3.125rem;
-    font-size: 1.25rem;
-  }
-
-  .reflection-card {
-    padding: 0.75rem;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-
-    .reflection-left {
-      flex-direction: row;
-      align-items: flex-start;
-      gap: 0.75rem;
-    }
-
-    .reflection-actions {
-      margin-left: 0;
-      justify-content: flex-end;
-      align-self: stretch;
-      
-      .btn {
-        flex: 1;
-        max-width: 3rem;
-      }
-    }
-
-    .reflection-title {
-      // Allow more lines on mobile
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-    }
-  }
-
-  .journal-actions {
-    flex-direction: column-reverse;
-    gap: 0.75rem;
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }

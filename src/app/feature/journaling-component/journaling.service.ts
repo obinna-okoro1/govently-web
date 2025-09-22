@@ -15,7 +15,7 @@ export interface JournalEntry {
 }
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class JournalingService {
 
   constructor(

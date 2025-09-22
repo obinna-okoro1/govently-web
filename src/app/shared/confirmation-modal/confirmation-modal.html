@@ -1,7 +1,11 @@
-<div class="modal-body">
-  <p>{{ message }}</p>
+<div class="modal-body text-center py-4">
+  <div class="mb-3">
+    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+  </div>
+  <p class="mb-4">{{ message }}</p>
 </div>
 
-<div class="d-flex justify-content-center" *ngIf="!hideButton">
-  <button type="button" class="btn btn-danger" (click)="confirm()">Yes</button>
+<div class="modal-footer justify-content-center gap-3" *ngIf="!hideButton">
+  <button type="button" class="btn btn-secondary px-4" (click)="dismiss()">Cancel</button>
+  <button type="button" class="btn btn-danger px-4" (click)="confirm()">Delete</button>
 </div>

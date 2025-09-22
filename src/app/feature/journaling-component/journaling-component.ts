@@ -12,29 +12,26 @@ import { moods } from '../../shared/mood';
 import { ConfettiService } from '../../shared/confetti-service';
 import { RouterModule } from '@angular/router';
 import { Signup } from '../signup/signup';
+import { ConfirmationModal } from '../../shared/confirmation-modal/confirmation-modal';
 
 @Component({
   selector: 'app-journaling-component',
+  standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, BackButtonComponent],
-  providers: [JournalingService],
   templateUrl: './journaling-component.html',
   styleUrl: './journaling-component.scss'
 })
 export class JournalingComponent implements OnInit {
-  public currentUser!: UserProfile | null; // Replace with actual user ID
-  public greeting = '';
-  public todayPrompt$: Observable<string>;
-  public entry = '';
-  public mood = '';
-
-  public pastReflections$!: Observable<JournalEntry[]>;
-
-  public moods = moods;
-
-  public burning = false;
+  currentUser!: UserProfile | null;
+  greeting = '';
+  todayPrompt$: Observable<string>;
+  entry = '';
+  mood = '';
+  pastReflections$!: Observable<JournalEntry[]>;
+  moods = moods;
+  burning = false;
 
   constructor(
-    // private router: Router,
     private modalService: ModalService,
     private authService: AuthService,
     private journalingService: JournalingService,
@@ -43,25 +40,23 @@ export class JournalingComponent implements OnInit {
   ) {
     this.todayPrompt$ = this.dailyPromptService.getPrompt().pipe(take(1));
 
-    this.authService.getUserProfile()
-    .subscribe(profile => {
+    this.authService.getUserProfile().subscribe(profile => {
       this.currentUser = profile;
-
       this.refreshEntries();
     });
   }
 
-  public ngOnInit(): void {
+  ngOnInit(): void {
     this.setGreeting();
   }
 
-  public refreshEntries() {
- if (this.currentUser) {
+  refreshEntries() {
+    if (this.currentUser) {
       this.pastReflections$ = this.journalingService.getEntries(this.currentUser.userId);
     }
   }
 
-  public setGreeting() {
+  setGreeting() {
     const hour = new Date().getHours();
     if (hour < 12) {
       this.greeting = 'Good Morning';
@@ -72,63 +67,61 @@ export class JournalingComponent implements OnInit {
     }
   }
 
- public saveJournal(todayPrompt: string) {
-  if (!this.currentUser) {
-    console.error('No user profile available');
-    setTimeout(() => {
-          this.modalService.open(Signup, 'To save your reflection journal, please sign up.', {});
-        }, 300);
-
-        return;
-  }
-
-  if (!this.entry.trim()) {
-    alert('Please write something in your journal before saving.');
-    return;
-  }
-
-  const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
-
-  // First: Check if there's already an entry for today
-  this.journalingService.getEntriesByDate(this.currentUser.userId, today).subscribe(existingEntries => {
-    if (existingEntries && existingEntries.length > 0) {
-      const confirmEdit = confirm(
-        "You already have a journal entry for today, so let's edit it instead.\n We will append your new entry to the existing one."
-      );
-      if (confirmEdit) {
-  const entryToEdit = { ...existingEntries[0] };
-  entryToEdit.entry = (entryToEdit.entry || '') + '\n\n' + this.entry.trim(); // append user input
-  
-  if (this.mood) {
-    entryToEdit.mood = this.mood; // update mood if selected
-  }
-
-  this.editReflection(entryToEdit);
-  this.entry = ''; // clear input after editing
-  return;
-}
+  saveJournal(todayPrompt: string) {
+    if (!this.currentUser) {
+      console.error('No user profile available');
+      setTimeout(() => {
+        this.modalService.open(Signup, 'To save your reflection journal, please sign up.', {});
+      }, 300);
+      return;
     }
 
-    // Otherwise, proceed to create new entry
-    this.journalingService.createEntry({
-      user_id: this.currentUser?.userId,
-      prompt: todayPrompt,
-      entry: this.entry,
-      mood: this.mood,
-      burn_after: false
-    }).subscribe((data) => {
-      if (data) {
-        this.confettiService.launchConfetti();
-        this.entry = '';
-        this.mood = '';
-        this.refreshEntries();
+    if (!this.entry.trim()) {
+      alert('Please write something in your journal before saving.');
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+
+    // First: Check if there's already an entry for today
+    this.journalingService.getEntriesByDate(this.currentUser.userId, today).subscribe(existingEntries => {
+      if (existingEntries && existingEntries.length > 0) {
+        const confirmEdit = confirm(
+          "You already have a journal entry for today, so let's edit it instead.\n We will append your new entry to the existing one."
+        );
+        if (confirmEdit) {
+          const entryToEdit = { ...existingEntries[0] };
+          entryToEdit.entry = (entryToEdit.entry || '') + '\n\n' + this.entry.trim();
+          
+          if (this.mood) {
+            entryToEdit.mood = this.mood;
+          }
+
+          this.editReflection(entryToEdit);
+          this.entry = '';
+          return;
+        }
       }
+
+      // Otherwise, proceed to create new entry
+      this.journalingService.createEntry({
+        user_id: this.currentUser?.userId,
+        prompt: todayPrompt,
+        entry: this.entry,
+        mood: this.mood,
+        burn_after: false
+      }).subscribe((data) => {
+        if (data) {
+          this.confettiService.launchConfetti();
+          this.entry = '';
+          this.mood = '';
+          this.refreshEntries();
+        }
+      });
     });
-  });
-}
+  }
 
-
-  public burnEntry() {
+  burnEntry() {
     if (this.entry.trim()) {
       this.burning = true;
       setTimeout(() => {
@@ -139,32 +132,44 @@ export class JournalingComponent implements OnInit {
     }
   }
 
-  public viewReflection(entry: JournalEntry) {
-    // Navigate to reflection detail page or open modal
+  viewReflection(entry: JournalEntry) {
     console.log('Viewing reflection:', entry);
-    // Example: this.router.navigate(['/reflection', entry.id]);
   }
 
-  public burnReflection(entry: JournalEntry) {
-  // Show confirmation, then call service to delete
-  if (confirm('Are you sure you want to burn this reflection?')) {
-    this.journalingService.deleteEntry(entry.id).subscribe(() => {
-      
-      
-      this.refreshEntries();
+  burnReflection(entry: JournalEntry) {
+    const modalRef = this.modalService.open(ConfirmationModal, 'Delete Reflection', {
+      message: 'Are you sure you want to permanently delete this reflection? This action cannot be undone.'
+    });
+
+    modalRef.result.then((result) => {
+      if (result === 'confirm') {
+        this.journalingService.deleteEntry(entry.id).subscribe(() => {
+          this.refreshEntries();
+        });
+      }
+    }).catch(() => {
+      // User dismissed modal - do nothing
     });
   }
+
+  editReflection(entry: JournalEntry) {
+    const modalRef = this.modalService.open(EditJournal, 'Edit Journal', {
+      entry,
+    });
+
+    modalRef.result.then((changed) => {
+      if (changed) this.refreshEntries();
+    });
+  }
+
+  getPreview(text: string | null | undefined): string {
+    if (!text) return 'No content';
+    return text.length > 100 ? text.substring(0, 100) + '...' : text;
+  }
+
+  getMoodEmoji(mood: string | null | undefined): string {
+    if (!mood) return '';
+    const moodObj = this.moods.find(m => m.label === mood);
+    return moodObj ? moodObj.emoji : '';
+  }
 }
-
-  public editReflection(entry: JournalEntry) {
-   const modalRef = this.modalService.open(EditJournal, 'Edit Journal', {
-    entry,
-  });
-
-  modalRef.result.then((changed) => {
-    if (changed) this.refreshEntries();
-  });
-}
-}
-
-

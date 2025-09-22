@@ -15,6 +15,14 @@ interface Companion {
   name: string;
   value: string;
   emoji: string;
+  description: string;
+}
+
+interface EmotionalContext {
+  emoji: string;
+  label: string;
+  value: string;
+  description: string;
 }
 
 @Component({
@@ -23,7 +31,7 @@ interface Companion {
   imports: [CommonModule, FormsModule, BackButtonComponent],
   providers: [AiChatService],
   templateUrl: './ai-chat-component.html',
-  styleUrls: ['./ai-chat-component.scss']
+  styleUrls: ['./ai-chat-clean.scss']
 })
 export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewChecked {
   @ViewChild('chatBody') chatBody!: ElementRef;
@@ -42,16 +50,50 @@ export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewCheck
   public currentUser$: Observable<UserProfile | null>;
 
   public companions: Companion[] = [
-    { name: 'Tired Therapist', value: 'tired_therapist', emoji: '😌' },
-    { name: 'Empathetic Friend', value: 'empathetic_friend', emoji: '💜' },
-    { name: 'Chill Listener', value: 'chill_listener', emoji: '🎧' }
+    { 
+      name: 'Gentle Therapist', 
+      value: 'tired_therapist', 
+      emoji: '😌',
+      description: 'Calm, professional support with therapeutic techniques'
+    },
+    { 
+      name: 'Caring Friend', 
+      value: 'empathetic_friend', 
+      emoji: '💜',
+      description: 'Warm, understanding conversation like a close friend'
+    },
+    { 
+      name: 'Mindful Listener', 
+      value: 'chill_listener', 
+      emoji: '🎧',
+      description: 'Patient, non-judgmental space for you to process thoughts'
+    }
   ];
 
   public activeCompanion = this.companions[0];
-  public messages: { sender: 'user' | 'ai', text: string }[] = [];
+  public messages: { sender: 'user' | 'ai', text: string, timestamp?: Date }[] = [];
   public userMessage = '';
   public isTyping = false;
   public isBurning = false;
+
+  // Enhanced engagement features
+  public selectedContext = '';
+  public quickStarters = [
+    "I'm feeling overwhelmed today...",
+    "I need someone to talk to",
+    "Help me process my thoughts",
+    "I'm having a tough time with...",
+    "I'm grateful for... but also worried about..."
+  ];
+
+  public emotionalContexts: EmotionalContext[] = [
+    { emoji: '😊', label: 'Good', value: 'positive', description: 'Feeling generally positive' },
+    { emoji: '😐', label: 'Neutral', value: 'neutral', description: 'Feeling okay, neither good nor bad' },
+    { emoji: '😔', label: 'Down', value: 'negative', description: 'Feeling sad or low' },
+    { emoji: '😰', label: 'Anxious', value: 'anxious', description: 'Feeling worried or stressed' },
+    { emoji: '😤', label: 'Frustrated', value: 'angry', description: 'Feeling irritated or angry' },
+    { emoji: '😴', label: 'Tired', value: 'exhausted', description: 'Feeling drained or overwhelmed' }
+  ];
 
   // single merged constructor above already initializes services and host
 
@@ -107,84 +149,164 @@ export class AiChatComponent implements AfterViewInit, OnDestroy, AfterViewCheck
     this.greetUser();
   }
 
-  public greetUser() {
+  public greetUser(): void {
     this.messages.push({
       sender: 'ai',
-      text: `${this.activeCompanion.emoji} ${this.activeCompanion.name} — Joined the chat!`
+      text: `${this.activeCompanion.emoji} Hi, I'm your ${this.activeCompanion.name}. I'm here to provide ${this.activeCompanion.description.toLowerCase()}. What's on your mind today?`,
+      timestamp: new Date()
     });
   }
 
-  public sendMessage(): void {
-  if (!this.userMessage.trim()) return;
+  public selectContext(context: EmotionalContext): void {
+    this.selectedContext = this.selectedContext === context.value ? '' : context.value;
+  }
 
-  // Store message immediately for responsive UI
-  const sentMessage = this.userMessage;
-  this.messages.push({ sender: 'user', text: sentMessage });
-  this.userMessage = '';
-  this.isTyping = true;
-
-  this.authService.getSession().pipe(
-    switchMap((session) => {
-      if (!session?.access_token) {
-        setTimeout(() => {
-          this.messages.push({ sender: 'ai', text: 'To help you better, please sign up to continue.' });
-          this.isTyping = false;
-        }, 500);
-
-        setTimeout(() => {
-          this.modalService.open(Signup, 'Please sign up to continue', {});
-        }, 3000);
-
-        return EMPTY;
+  public useQuickStarter(starter: string): void {
+    this.userMessage = starter;
+    // Auto-focus the textarea after setting the message
+    setTimeout(() => {
+      const textarea = document.querySelector('.message-input') as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.focus();
+        this.adjustTextareaHeight({ target: textarea });
       }
-      return of(session);
-    }),
-    filter((session): session is Session => !!session?.access_token),
-    switchMap(session => {
-      
-      // Use the session token as the session ID
-      const session_id = session.access_token; 
-      
-      return this.currentUser$.pipe(
-        switchMap(profile => {
-          if (!profile) {
-            this.modalService.open(Signup, 'Sign Up', {});
-            return throwError(() => new Error('User profile not found'));
-          }
+    }, 100);
+  }
 
-          return this.aiChatService.sendMessage({
-            session_id, // Using session token as ID
-            content: sentMessage,
-            assistant_type: this.activeCompanion.value,
-            gender: profile.gender,
-            date: new Date().toISOString() // Using ISO string for consistency
-          });
-        })
-      );
-    })
-  ).subscribe({
-    next: (res) => {
-      this.messages.push({ sender: 'ai', text: res.reply });
-      this.isTyping = false;
-      
-      // Optional: Scroll to bottom of chat
-      setTimeout(() => {
-        const chatContainer = document.querySelector('.chat-container');
-        if (chatContainer) {
-          chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-      }, 50);
-    },
-    error: (err) => {
-      console.error('AI Chat Error:', err);
-      this.messages.push({
-        sender: 'ai',
-        text: 'Sorry, I encountered an error. Please try again.'
-      });
-      this.isTyping = false;
+  public adjustTextareaHeight(event: any): void {
+    const textarea = event.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+  }
+
+  public handleEnterKey(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
     }
-  });
-}
+  }
+
+  public getMessageTime(index: number): string {
+    const message = this.messages[index];
+    if (!message.timestamp) return '';
+    
+    const now = new Date();
+    const messageTime = new Date(message.timestamp);
+    const diffMinutes = Math.floor((now.getTime() - messageTime.getTime()) / (1000 * 60));
+    
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    
+    return messageTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  public markHelpful(messageIndex: number): void {
+    // Visual feedback for helpful responses
+    const messageElement = document.querySelectorAll('.chat-message')[messageIndex];
+    messageElement?.classList.add('marked-helpful');
+    
+    // Could send analytics or feedback to service here
+    console.log('Message marked as helpful:', messageIndex);
+  }
+
+  public askClarification(): void {
+    this.userMessage = "Could you explain that a bit more? I'd like to understand better.";
+    // Auto-send the clarification request
+    setTimeout(() => this.sendMessage(), 100);
+  }
+
+  public sendMessage(): void {
+    if (!this.userMessage.trim()) return;
+
+    // Store message immediately for responsive UI
+    const sentMessage = this.userMessage;
+    this.messages.push({ 
+      sender: 'user', 
+      text: sentMessage,
+      timestamp: new Date()
+    });
+    
+    // Clear input and reset context
+    this.userMessage = '';
+    const currentContext = this.selectedContext;
+    this.selectedContext = '';
+    this.isTyping = true;
+
+    // Reset textarea height
+    const textarea = document.querySelector('.message-input') as HTMLTextAreaElement;
+    if (textarea) {
+      textarea.style.height = 'auto';
+    }
+
+    this.authService.getSession().pipe(
+      switchMap((session) => {
+        if (!session?.access_token) {
+          setTimeout(() => {
+            this.messages.push({ 
+              sender: 'ai', 
+              text: 'To provide you with personalized support, please sign up to continue our conversation.',
+              timestamp: new Date()
+            });
+            this.isTyping = false;
+          }, 1000);
+
+          setTimeout(() => {
+            this.modalService.open(Signup, 'Continue Your Support Journey', {});
+          }, 3000);
+
+          return EMPTY;
+        }
+        return of(session);
+      }),
+      filter((session): session is Session => !!session?.access_token),
+      switchMap(session => {
+        const session_id = session.access_token; 
+        
+        return this.currentUser$.pipe(
+          switchMap(profile => {
+            if (!profile) {
+              this.modalService.open(Signup, 'Complete Your Profile', {});
+              return throwError(() => new Error('User profile not found'));
+            }
+
+            // Enhanced message with emotional context
+            const contextualMessage = currentContext ? 
+              `[Feeling: ${currentContext}] ${sentMessage}` : 
+              sentMessage;
+
+            return this.aiChatService.sendMessage({
+              session_id,
+              content: contextualMessage,
+              assistant_type: this.activeCompanion.value,
+              gender: profile.gender,
+              date: new Date().toISOString()
+            });
+          })
+        );
+      })
+    ).subscribe({
+      next: (res) => {
+        this.messages.push({ 
+          sender: 'ai', 
+          text: res.reply,
+          timestamp: new Date()
+        });
+        this.isTyping = false;
+        
+        // Smooth scroll to bottom
+        setTimeout(() => this.scrollToBottom(), 100);
+      },
+      error: (err) => {
+        console.error('AI Chat Error:', err);
+        this.messages.push({
+          sender: 'ai',
+          text: 'I apologize, but I encountered a technical issue. Please try sending your message again. Your thoughts are important to me.',
+          timestamp: new Date()
+        });
+        this.isTyping = false;
+      }
+    });
+  }
 
   public burnChat(): any {
   if (this.messages.length === 0) return;

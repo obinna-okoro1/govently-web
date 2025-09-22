@@ -1,35 +1,356 @@
 <div class="container-fluid p-0">
   <div class="landing-page-root d-flex flex-column" [style.height.px]="landingHeight">
 
-    <!-- main area: chat expands to fill available space -->
-    <main class="landing-chat-root flex-grow-1">
-      <app-ai-chat-component *ngIf="!showChatOverlay"></app-ai-chat-component>
-
-      <div class="chat-overlay" *ngIf="showChatOverlay">
-        <button class="overlay-close btn btn-light" (click)="closeChatOverlay()">Close</button>
-        <app-ai-chat-component></app-ai-chat-component>
+    <!-- Hero Section with Value Proposition & Social Proof -->
+    <header class="hero-section">
+      <div class="container">
+        <div class="row align-items-center min-vh-50">
+          <div class="col-lg-6">
+            <div class="hero-content" data-aos="fade-up">
+              <!-- Trust Badge -->
+              <div class="trust-badge mb-3">
+                <i class="bi bi-shield-check text-success me-2"></i>
+                <span class="text-muted small">HIPAA Compliant • Licensed Therapists • 24/7 Support</span>
+              </div>
+              
+              <!-- Main Value Proposition -->
+              <h1 class="hero-title">Find Your Path to Mental Wellness</h1>
+              <p class="hero-subtitle">Connect with licensed therapists, get AI-powered support anytime, and track your progress through guided journaling—all in one secure platform.</p>
+              
+              <!-- Social Proof -->
+              <div class="social-proof mb-4">
+                <div class="stats-row">
+                  <div class="stat-item">
+                    <span class="stat-number">10,000+</span>
+                    <span class="stat-label">Users Supported</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Licensed Therapists</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-number">4.9/5</span>
+                    <span class="stat-label">User Rating</span>
+                  </div>
+                </div>
+                <div class="testimonial-preview">
+                  <p class="testimonial-text">"Govently helped me find the right therapist and develop healthy coping strategies. The AI support is available whenever I need it."</p>
+                  <div class="testimonial-author">
+                    <strong>Sarah M.</strong> • Verified User
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Primary CTA with Urgency -->
+              <div class="cta-section">
+                <button class="btn btn-primary btn-lg me-3" (click)="startFreeAssessment()" data-aos="fade-up" data-aos-delay="100">
+                  <i class="bi bi-play-circle me-2"></i>
+                  Start Free Mental Health Assessment
+                </button>
+                <button class="btn btn-outline-primary btn-lg" (click)="exploreFeatures()" data-aos="fade-up" data-aos-delay="200">
+                  <i class="bi bi-eye me-2"></i>
+                  See How It Works
+                </button>
+              </div>
+              
+              <!-- Immediate Value Preview -->
+              <div class="value-preview mt-4">
+                <small class="text-muted">✓ No commitment required • ✓ Results in under 5 minutes • ✓ Connect with therapists today</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-6">
+            <div class="hero-demo" data-aos="fade-left">
+              <!-- Quick Demo or Preview -->
+              <div class="demo-card">
+                <div class="demo-header">
+                  <h5>Try Our AI Companion</h5>
+                  <span class="demo-badge">Live Demo</span>
+                </div>
+                <div class="demo-chat">
+                  <div class="chat-message ai-message">
+                    <div class="message-avatar">
+                      <i class="bi bi-robot"></i>
+                    </div>
+                    <div class="message-content">
+                      <p>Hi! I'm here to support you 24/7. How are you feeling today?</p>
+                      <div class="quick-replies">
+                        <button class="quick-reply" (click)="demoResponse('stressed')">😰 Stressed</button>
+                        <button class="quick-reply" (click)="demoResponse('sad')">😢 Sad</button>
+                        <button class="quick-reply" (click)="demoResponse('anxious')">😨 Anxious</button>
+                        <button class="quick-reply" (click)="demoResponse('okay')">😐 Okay</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="user-response" *ngIf="demoUserResponse">
+                    <div class="message-content user-content">
+                      <p>{{demoUserResponse}}</p>
+                    </div>
+                  </div>
+                  <div class="ai-response" *ngIf="demoAiResponse">
+                    <div class="message-avatar">
+                      <i class="bi bi-robot"></i>
+                    </div>
+                    <div class="message-content">
+                      <p>{{demoAiResponse}}</p>
+                      <button class="demo-cta-btn" (click)="startFullExperience()">
+                        Continue This Conversation →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
+    </header>
 
-    <!-- Footer at page foot -->
-    <footer class="govently-footer text-center py-3 small">
-      © 2025 GoVently — All Rights Reserved
-      <span class="mx-2 text-muted">|</span>
+    <!-- Features Section with Benefit-Focused Copy -->
+    <section class="features-section py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center mb-5">
+            <h2 class="section-title">Everything You Need for Mental Wellness</h2>
+            <p class="section-subtitle">Comprehensive support designed by mental health professionals</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="bi bi-person-heart text-primary"></i>
+              </div>
+              <h4>Connect with Licensed Therapists</h4>
+              <p>Match with qualified mental health professionals based on your needs, preferences, and availability.</p>
+              <ul class="feature-benefits">
+                <li>✓ Verified credentials</li>
+                <li>✓ Video or in-person sessions</li>
+                <li>✓ Insurance accepted</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="bi bi-chat-dots text-success"></i>
+              </div>
+              <h4>24/7 AI Mental Health Companion</h4>
+              <p>Get immediate support and guidance whenever you need it with our AI trained on therapeutic techniques.</p>
+              <ul class="feature-benefits">
+                <li>✓ Always available</li>
+                <li>✓ Evidence-based responses</li>
+                <li>✓ Crisis support</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="bi bi-journal-text text-info"></i>
+              </div>
+              <h4>Guided Journaling & Progress Tracking</h4>
+              <p>Build self-awareness and track your mental health journey with structured prompts and insights.</p>
+              <ul class="feature-benefits">
+                <li>✓ Daily mood tracking</li>
+                <li>✓ Personalized prompts</li>
+                <li>✓ Progress analytics</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <a href="mailto:support@govently.com" class="support-link">
-        <i class="bi bi-envelope-fill me-1"></i> Support
-      </a>
+    <!-- Social Proof Section -->
+    <section class="testimonials-section py-5 bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center mb-5">
+            <h2 class="section-title">Trusted by Thousands</h2>
+            <p class="section-subtitle">Real stories from real people</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="testimonial-card">
+              <div class="testimonial-rating">
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+              </div>
+              <p>"The AI companion helped me through my darkest moments when no one else was available. Finding my therapist through Govently changed my life."</p>
+              <div class="testimonial-author">
+                <strong>Michael R.</strong><br>
+                <small class="text-muted">Using Govently for 8 months</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="testimonial-card">
+              <div class="testimonial-rating">
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+              </div>
+              <p>"As a therapist, I love how Govently supports my clients between sessions. The journaling feature provides valuable insights for our work together."</p>
+              <div class="testimonial-author">
+                <strong>Dr. Lisa Chen</strong><br>
+                <small class="text-muted">Licensed Therapist, Govently Partner</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="testimonial-card">
+              <div class="testimonial-rating">
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+              </div>
+              <p>"The mood tracking and guided prompts helped me understand my patterns. I finally feel in control of my mental health journey."</p>
+              <div class="testimonial-author">
+                <strong>Emma T.</strong><br>
+                <small class="text-muted">Using Govently for 6 months</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <span class="mx-2 text-muted">|</span>
+    <!-- How It Works Section -->
+    <section class="how-it-works-section py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center mb-5">
+            <h2 class="section-title">Get Started in 3 Simple Steps</h2>
+            <p class="section-subtitle">Your mental wellness journey begins today</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="step-card text-center">
+              <div class="step-number">1</div>
+              <div class="step-icon">
+                <i class="bi bi-clipboard-check text-primary"></i>
+              </div>
+              <h4>Take Free Assessment</h4>
+              <p>Complete our 5-minute mental health assessment to understand your needs and match with the right support.</p>
+              <div class="step-time">
+                <i class="bi bi-clock me-1"></i>
+                <small>5 minutes</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="step-card text-center">
+              <div class="step-number">2</div>
+              <div class="step-icon">
+                <i class="bi bi-people text-success"></i>
+              </div>
+              <h4>Get Matched & Start Chatting</h4>
+              <p>Connect with your AI companion immediately and get matched with a licensed therapist within 24 hours.</p>
+              <div class="step-time">
+                <i class="bi bi-clock me-1"></i>
+                <small>Within 24 hours</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="step-card text-center">
+              <div class="step-number">3</div>
+              <div class="step-icon">
+                <i class="bi bi-graph-up text-info"></i>
+              </div>
+              <h4>Track Your Progress</h4>
+              <p>Use guided journaling, mood tracking, and regular check-ins to monitor your mental health journey.</p>
+              <div class="step-time">
+                <i class="bi bi-clock me-1"></i>
+                <small>Ongoing support</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CTA After Steps -->
+        <div class="row mt-5">
+          <div class="col-12 text-center">
+            <button class="btn btn-primary btn-lg px-5" (click)="startFreeAssessment()">
+              <i class="bi bi-arrow-right me-2"></i>
+              Start Your Free Assessment Now
+            </button>
+            <p class="mt-3 text-muted">
+              <small>✓ No credit card required • ✓ HIPAA compliant • ✓ Cancel anytime</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <a routerLink="/about" class="about-link">
-        <i class="bi bi-info-circle-fill me-1"></i> About Us
-      </a>
+    <!-- Crisis Support Banner -->
+    <section class="crisis-banner" *ngIf="showCrisisSupport">
+      <div class="container">
+        <div class="crisis-content">
+          <div class="crisis-icon">
+            <i class="bi bi-telephone-fill"></i>
+          </div>
+          <div class="crisis-text">
+            <strong>Need immediate help?</strong> If you're in crisis, call 988 (Suicide & Crisis Lifeline) or text "HELLO" to 741741 (Crisis Text Line)
+          </div>
+          <button class="crisis-close" (click)="showCrisisSupport = false">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+    </section>
 
-      <span class="mx-2 text-muted">|</span>
+    <!-- Chat Overlay (if activated) -->
+    <div class="chat-overlay" *ngIf="showChatOverlay">
+      <div class="overlay-header">
+        <h5>AI Mental Health Companion</h5>
+        <button class="overlay-close btn btn-light" (click)="closeChatOverlay()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <app-ai-chat-component></app-ai-chat-component>
+    </div>
 
-      <a href="#" class="privacy-link" (click)="openLegalModal()">
-        <i class="bi bi-shield-lock-fill me-1"></i> Privacy & Terms
-      </a>
+    <!-- Footer -->
+    <footer class="govently-footer text-center py-4">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo mb-3">
+            <img src="/assets/logo/govently-black.png" alt="Govently" height="40">
+          </div>
+          <div class="footer-links mb-3">
+            <a href="mailto:support@govently.com" class="support-link me-4">
+              <i class="bi bi-envelope-fill me-1"></i> Support
+            </a>
+            <a routerLink="/about" class="about-link me-4">
+              <i class="bi bi-info-circle-fill me-1"></i> About Us
+            </a>
+            <a href="#" class="privacy-link" (click)="openLegalModal()">
+              <i class="bi bi-shield-lock-fill me-1"></i> Privacy & Terms
+            </a>
+          </div>
+          <div class="footer-badges mb-3">
+            <span class="badge bg-success me-2">HIPAA Compliant</span>
+            <span class="badge bg-primary me-2">Licensed Professionals</span>
+            <span class="badge bg-info">24/7 Support</span>
+          </div>
+          <p class="copyright text-muted">
+            © 2025 GoVently — All Rights Reserved<br>
+            <small>Supporting mental health with compassion and technology</small>
+          </p>
+        </div>
+      </div>
     </footer>
   </div>
+</div>

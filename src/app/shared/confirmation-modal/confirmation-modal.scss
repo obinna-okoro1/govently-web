@@ -1,0 +1,42 @@
+.modal-body {
+  padding: 2rem 1.5rem;
+  
+  p {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+  
+  .bi-exclamation-triangle {
+    animation: pulse 2s infinite;
+  }
+}
+
+.modal-footer {
+  border-top: 1px solid var(--color-border-light);
+  padding: 1rem 1.5rem 2rem;
+  
+  .btn {
+    min-width: 100px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

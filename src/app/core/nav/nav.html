@@ -1,50 +1,168 @@
-<nav class="sidebar-nav" [class.open]="sidebarOpen">
-  <!-- Mobile close button -->
-  <button class="sidebar-close d-md-none" (click)="toggleSidebar()" aria-label="Close menu">
-    <i class="bi bi-x"></i>
-  </button>
+<!-- Professional navigation with optimized mobile experience -->
+<nav class="sidebar-nav" [class.open]="sidebarOpen" [class.mobile-open]="sidebarOpen && isMobile">
+  <!-- Mobile header with close button -->
+  <div class="mobile-nav-header d-md-none" *ngIf="sidebarOpen">
+    <div class="mobile-nav-brand">
+      <img src="/assets/logo/govently-black.png" alt="Govently" height="32">
+      <span class="brand-text">Mental Wellness</span>
+    </div>
+    <button class="mobile-close-btn" (click)="closeSidebar()" aria-label="Close navigation" type="button">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
   
-  <div class="sidebar-header">
-    <!-- Desktop toggle button -->
-    <button class="sidebar-toggle d-none d-md-block" (click)="toggleSidebar()">
+  <!-- Desktop header -->
+  <div class="sidebar-header d-none d-md-flex">
+    <button class="sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle sidebar" type="button">
       <i class="bi" [ngClass]="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
     </button>
-    <a [routerLink]="'/'" class="sidebar-logo">
-      <img src="/assets/logo/govently-black.png" alt="Govently" *ngIf="sidebarOpen" />
-      <img src="/assets/logo/govently-transparent.png" alt="G" *ngIf="!sidebarOpen" style="width:28px; height:28px;" />
+    <a [routerLink]="'/'" class="sidebar-logo" *ngIf="sidebarOpen">
+      <img src="/assets/logo/govently-black.png" alt="Govently">
     </a>
+    <div class="logo-collapsed" *ngIf="!sidebarOpen">
+      <img src="/assets/logo/govently-transparent.png" alt="G" width="28" height="28">
+    </div>
   </div>
+
+  <!-- Navigation Content -->
   <div class="sidebar-content">
-    <a [routerLink]="'/'" class="sidebar-btn" (click)="closeOnMobile()">
-      <i class="bi bi-house-door"></i> 
-      <span>Home</span>
-    </a>
-    <button (click)="chatWithAI()" class="sidebar-btn">
-      <i class="bi bi-chat-dots"></i> 
-      <span>Vent in Chat</span>
-    </button>
-    <button (click)="startJournaling()" class="sidebar-btn">
-      <i class="bi bi-journal-text"></i> 
-      <span>Vent Journaling</span>
-    </button>
-    <button class="sidebar-btn"
-            *ngIf="!(currentUser$ | async)"
-            (click)="openLoginModal(); closeOnMobile()">
-      <i class="bi bi-box-arrow-in-right"></i> 
-      <span>Login</span>
-    </button>
-    <button class="sidebar-btn"
-            *ngIf="currentUser$ | async"
-            (click)="logOut(); closeOnMobile()">
-      <i class="bi bi-box-arrow-right"></i> 
-      <span>Log Out</span>
-    </button>
-    <button class="sidebar-btn govently-therapist-link" (click)="openTherapistSignup(); closeOnMobile()">
-      <i class="bi bi-person-heart"></i> 
-      <span>Therapist?</span>
-    </button>
+    <!-- Quick Stats (Real Data from Supabase) -->
+    <div class="user-stats" *ngIf="sidebarOpen && (currentUser$ | async)">
+      <div class="stats-card">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="bi bi-journal-check text-success"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ currentStreak }}</span>
+            <span class="stat-label">Day Streak</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="bi bi-emoji-smile text-info"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ todayMood || 'None' }}</span>
+            <span class="stat-label">Today's Mood</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Primary Navigation -->
+    <nav class="nav-menu" role="navigation" aria-label="Main navigation">
+      <!-- Home -->
+      <a [routerLink]="'/'" 
+         class="nav-item" 
+         routerLinkActive="active"
+         (click)="closeOnMobile()">
+        <div class="nav-icon">
+          <i class="bi bi-house-door"></i>
+        </div>
+        <span class="nav-label" *ngIf="sidebarOpen">Home</span>
+      </a>
+
+      <!-- AI Chat with Badge (TODO: Replace with real unread messages count when AI chat backend exists) -->
+      <button class="nav-item nav-button" 
+              (click)="chatWithAI()">
+        <div class="nav-icon">
+          <i class="bi bi-chat-dots"></i>
+        </div>
+        <span class="nav-label" *ngIf="sidebarOpen">
+          AI Companion
+          <small class="nav-sublabel">24/7 Support</small>
+        </span>
+      </button>
+
+      <!-- Journaling with Real Progress -->
+      <button class="nav-item nav-button" 
+              (click)="startJournaling()">
+        <div class="nav-icon">
+          <i class="bi bi-journal-text"></i>
+        </div>
+        <span class="nav-label" *ngIf="sidebarOpen">
+          Journal
+          <small class="nav-sublabel">{{ totalJournalEntries }} entries • Week: {{ weeklyProgress }}%</small>
+        </span>
+      </button>
+
+      <!-- Divider -->
+      <div class="nav-divider" *ngIf="sidebarOpen"></div>
+
+      <!-- Authentication Actions -->
+      <button class="nav-item nav-button auth-action"
+              *ngIf="!(currentUser$ | async)"
+              (click)="openLoginModal(); closeOnMobile()">
+        <div class="nav-icon">
+          <i class="bi bi-box-arrow-in-right"></i>
+        </div>
+        <span class="nav-label" *ngIf="sidebarOpen">Sign In</span>
+      </button>
+
+      <button class="nav-item nav-button auth-action"
+              *ngIf="!(currentUser$ | async)"
+              (click)="openSignupModal(); closeOnMobile()">
+        <div class="nav-icon">
+          <i class="bi bi-person-plus"></i>
+        </div>
+        <span class="nav-label" *ngIf="sidebarOpen">
+          Get Started
+          <small class="nav-sublabel">Free mental health support</small>
+        </span>
+      </button>
+
+      <button class="nav-item nav-button"
+              *ngIf="currentUser$ | async"
+              (click)="logOut(); closeOnMobile()">
+        <div class="nav-icon">
+          <i class="bi bi-box-arrow-right"></i>
+        </div>
+        <span class="nav-label" *ngIf="sidebarOpen">Sign Out</span>
+      </button>
+    </nav>
+
+    <!-- Therapist CTA -->
+    <div class="therapist-cta" *ngIf="sidebarOpen">
+      <div class="cta-card">
+        <div class="cta-icon">
+          <i class="bi bi-person-heart"></i>
+        </div>
+        <div class="cta-content">
+          <h6>Are you a therapist?</h6>
+          <p>Join our network and help more people</p>
+          <button class="cta-button" (click)="openTherapistSignup(); closeOnMobile()">
+            Learn More
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Section (Bottom) -->
+  <div class="user-profile" *ngIf="(currentUser$ | async) && sidebarOpen">
+    <div class="profile-info">
+      <div class="profile-avatar">
+        <span>{{(currentUser$ | async)?.name?.charAt(0) || 'U'}}</span>
+      </div>
+      <div class="profile-details">
+        <div class="profile-name">{{(currentUser$ | async)?.name}}</div>
+        <div class="profile-status">
+          <i class="bi bi-circle-fill text-success"></i>
+          Online
+        </div>
+      </div>
+    </div>
   </div>
 </nav>
- 
-<!-- Mobile overlay: closes sidebar when tapped -->
-<div class="mobile-overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
+
+<!-- Enhanced Mobile Overlay -->
+<div class="mobile-overlay" 
+     *ngIf="sidebarOpen && isMobile" 
+     (click)="closeSidebar()"
+     role="button"
+     aria-label="Close navigation menu"
+     tabindex="0"
+     (keydown.enter)="closeSidebar()"
+     (keydown.space)="closeSidebar()">
+</div>

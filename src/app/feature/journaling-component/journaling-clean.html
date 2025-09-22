@@ -1,0 +1,212 @@
+<div class="journal-container"><div class="journaling-page">
+
+  <div class="journal-header">  <!-- Simple Header with Back Button -->
+
+    <app-back-button-component></app-back-button-component>  <div class="page-header">
+
+    <h1>Daily Journal</h1>    <app-back-button-component></app-back-button-component>
+
+    <div class="streak-info" *ngIf="currentStreak > 0">    <h1>Daily Reflection</h1>
+
+      🔥 {{ currentStreak }} day streak    <div class="streak-badge" *ngIf="currentStreak > 0">
+
+    </div>      <span class="streak-icon">🔥</span>
+
+  </div>      <span class="streak-text">{{ currentStreak }} days</span>
+
+    </div>
+
+  <div class="journal-content">  </div>
+
+    <div class="today-prompt" *ngIf="prompt">
+
+      <h3>💭 Today's Prompt</h3>  <!-- Achievement Celebration (Simple) -->
+
+      <p class="prompt-text">{{ prompt }}</p>  <div class="achievement-popup" *ngIf="showAchievementBanner">
+
+      <button class="use-prompt-btn" (click)="useSuggestion()">Use This Prompt</button>    <div class="achievement-content">
+
+    </div>      🎉 <strong>{{ currentAchievement }}</strong>
+
+      <button class="close-achievement" (click)="dismissAchievementBanner()">×</button>
+
+    <div class="mood-section">    </div>
+
+      <label>How are you feeling?</label>  </div>
+
+      <div class="mood-buttons">
+
+        <button *ngFor="let m of moods"   <!-- Main Writing Area -->
+
+                class="mood-btn"   <div class="writing-section">
+
+                [class.selected]="mood === m.emoji"     <!-- Today's Prompt -->
+
+                (click)="mood = m.emoji"    <div class="daily-prompt" *ngIf="todayPrompt$ | async as prompt">
+
+                [title]="m.label">      <div class="prompt-header">
+
+          {{ m.emoji }}        <span class="prompt-icon">💭</span>
+
+        </button>        <h2>{{ greeting }}!</h2>
+
+      </div>      </div>
+
+    </div>      <div class="prompt-text">{{ prompt }}</div>
+
+    </div>
+
+    <div class="writing-section">
+
+      <label for="journal-entry">What's on your mind?</label>    <!-- Writing Area -->
+
+      <textarea     <div class="journal-input">
+
+        id="journal-entry"      <textarea 
+
+        [(ngModel)]="entry"         [(ngModel)]="entry"
+
+        placeholder="Write your thoughts here... This is your private space."        placeholder="Write whatever comes to mind... there's no right or wrong way to express yourself."
+
+        class="journal-textarea"></textarea>        class="journal-textarea"
+
+              rows="10">
+
+      <div class="entry-actions">      </textarea>
+
+        <div class="word-count" *ngIf="entry.length > 0">      
+
+          {{ getWordCount() }} words      <!-- Word Count -->
+
+        </div>      <div class="input-footer" *ngIf="entry.length > 0">
+
+        <div class="action-buttons">        <span class="word-count">{{ getWordCount() }} words</span>
+
+          <button class="clear-btn" *ngIf="entry.trim()" (click)="clearEntry()">      </div>
+
+            Clear    </div>
+
+          </button>
+
+          <button class="save-btn" [disabled]="!entry.trim()" (click)="saveEntry()">    <!-- Mood Selection (Simplified) -->
+
+            Save Entry    <div class="mood-section" *ngIf="entry.length > 20">
+
+          </button>      <h3>How are you feeling right now?</h3>
+
+        </div>      <div class="mood-buttons">
+
+      </div>        <button *ngFor="let m of moods" 
+
+    </div>                class="mood-btn"
+
+                [class.selected]="mood === m.emoji"
+
+    <div class="past-entries" *ngIf="pastReflections$ | async as entries">                (click)="mood = m.emoji"
+
+      <h3>Previous Entries</h3>                [title]="m.label">
+
+      <div class="entries-grid" *ngIf="entries.length > 0; else noEntries">          <span class="mood-emoji">{{ m.emoji }}</span>
+
+        <div class="entry-card" *ngFor="let entry of entries | slice:0:5">          <span class="mood-label">{{ m.label }}</span>
+
+          <div class="entry-date">        </button>
+
+            {{ entry.created_at | date: 'MMM d' }}      </div>
+
+            <span class="entry-mood" *ngIf="entry.mood">{{ entry.mood }}</span>    </div>
+
+          </div>
+
+          <p class="entry-preview">{{ getPreview(entry.entry) }}</p>    <!-- Action Buttons -->
+
+          <button class="delete-btn" (click)="deleteEntry(entry)">Delete</button>    <div class="action-buttons">
+
+        </div>      <button 
+
+      </div>        class="save-button"
+
+      <ng-template #noEntries>        *ngIf="todayPrompt$ | async as prompt"
+
+        <div class="empty-state">        (click)="saveJournal(prompt)"
+
+          <p>No previous entries yet. Start journaling to see them here!</p>        [disabled]="!entry.trim()"
+
+        </div>        [class.ready]="entry.length > 50">
+
+      </ng-template>        <span class="btn-icon">💾</span>
+
+    </div>        <span class="btn-text">Save My Reflection</span>
+
+  </div>      </button>
+
+</div>      
+      <button 
+        class="burn-button" 
+        (click)="burnEntry()"
+        [disabled]="!entry.trim()"
+        title="Clear everything and start over">
+        <span class="btn-icon">🔥</span>
+        <span class="btn-text">Start Over</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Previous Entries (Simplified) -->
+  <div class="previous-entries" *ngIf="(pastReflections$ | async)?.length as entryCount">
+    <div class="entries-header">
+      <h2>Your Journey ({{ entryCount }} entries)</h2>
+      <div class="quick-stats" *ngIf="currentStreak > 0">
+        <span class="stat">🔥 {{ currentStreak }} day streak</span>
+        <span class="stat">📈 {{ totalEntries }} total entries</span>
+      </div>
+    </div>
+
+    <!-- Entry List -->
+    <div class="entries-list">
+      <div class="entry-card" 
+           *ngFor="let entry of (pastReflections$ | async)?.slice(0, 5)"
+           (click)="viewReflection(entry)">
+        
+        <div class="entry-header">
+          <span class="entry-date">{{ entry.created_at | date: 'MMM d' }}</span>
+          <span class="entry-mood" *ngIf="entry.mood">{{ entry.mood }}</span>
+        </div>
+        
+        <div class="entry-preview">
+          {{ getEntryPreview(entry.entry) }}
+        </div>
+        
+        <div class="entry-actions" (click)="$event.stopPropagation()">
+          <button class="edit-btn" (click)="editReflection(entry)" title="Edit">✏️</button>
+          <button class="delete-btn" (click)="burnReflection(entry)" title="Delete">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- View All Button -->
+    <button class="view-all-btn" *ngIf="entryCount > 5" (click)="toggleViewMode()">
+      View All {{ entryCount }} Entries
+    </button>
+  </div>
+
+  <!-- Empty State for New Users -->
+  <div class="empty-state" *ngIf="(pastReflections$ | async)?.length === 0 && !entry">
+    <div class="empty-content">
+      <span class="empty-icon">✨</span>
+      <h2>Start Your First Reflection</h2>
+      <p>Journaling helps you process thoughts, track your growth, and find clarity. Just write whatever comes to mind.</p>
+      
+      <div class="example-prompts">
+        <h3>Need inspiration? Try writing about:</h3>
+        <div class="prompt-suggestions">
+          <button class="suggestion-btn" 
+                  *ngFor="let suggestion of quickStarters.slice(0, 3)"
+                  (click)="useSuggestion(suggestion)">
+            {{ suggestion }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

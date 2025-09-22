@@ -106,3 +106,59 @@
     </section>
   </div>
 </div>
+
+  <div class="prompt-card">
+    <div class="prompt-header">
+      <h3>✨ Today's Reflection Prompt</h3>
+    </div>
+    <div class="prompt-content">
+      <p class="prompt-text">{{ prompt || 'Reflect on something meaningful today 🌱' }}</p>
+      <button class="btn-secondary" (click)="useSuggestion()">Use This Prompt</button>
+    </div>
+  </div>
+
+  <div class="writing-section">
+    <div class="mood-selector">
+      <p class="mood-question">How are you feeling right now?</p>
+      <div class="mood-options">
+        <button *ngFor="let m of moods" class="mood-btn" [class.selected]="mood === m.emoji" (click)="mood = m.emoji">
+          {{ m.emoji }} {{ m.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="writing-area">
+      <textarea [(ngModel)]="entry" placeholder="Write your thoughts here... Let it all out, this is your safe space." class="journal-input"></textarea>
+      <div class="writing-footer">
+        <div class="word-count" *ngIf="entry.length > 0">{{ getWordCount() }} words</div>
+        <div class="action-buttons">
+          <button class="btn-burn" *ngIf="entry.trim()" (click)="clearEntry()">🔥 Clear</button>
+          <button class="btn-save" [disabled]="!entry.trim()" (click)="saveEntry()">Save Entry</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="entries-section">
+    <h3 class="section-title">Your Past Entries</h3>
+    <div class="entries-list" *ngIf="pastReflections$ | async as entries">
+      <div class="empty-state" *ngIf="entries.length === 0">
+        <div class="empty-icon">📝</div>
+        <h4>No entries yet</h4>
+        <p>Your journal entries will appear here once you start writing.</p>
+      </div>
+      <div class="entry-card" *ngFor="let entry of entries">
+        <div class="entry-header">
+          <div class="entry-date">{{ entry.created_at | date: 'MMM d, yyyy' }}</div>
+          <div class="entry-mood" *ngIf="entry.mood">{{ entry.mood }}</div>
+        </div>
+        <div class="entry-preview">
+          <p class="entry-text">{{ getPreview(entry.entry) }}</p>
+        </div>
+        <div class="entry-actions">
+          <button class="btn-small danger" (click)="deleteEntry(entry)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
