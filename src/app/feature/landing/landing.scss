@@ -8,7 +8,6 @@
   overflow: hidden;
   position: relative;
   --landing-footer-height: 4rem;
-  background: var(--color-bg-primary);
 }
 
 /* Modern gradient background for hero section */
@@ -183,6 +182,34 @@
 
 /* Keep responsive tweaks minimal — prefer bootstrap utility classes */
 @media (max-width: 48rem) {
-  .landing-chat-root { padding: 0.4rem 0; }
+  .landing-chat-root { 
+    padding: 0.4rem 0; 
+  }
+  
+  /* Hero section mobile optimization - reduced padding since toggle is now in content flow */
+  .hero-section {
+    padding-top: 1rem; /* Reduced from 4rem since no fixed overlay */
+    padding-bottom: 1rem;
+  }
+  
+  .hero-content {
+    padding: 1.5rem !important; /* Reduce padding on mobile for better fit */
+  }
+  
+  .hero-title {
+    font-size: 2rem !important; /* Slightly smaller on mobile */
+    line-height: 1.2;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem !important;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Ensure trust badge is visible */
+  .trust-badge {
+    font-size: 0.875rem;
+    margin-bottom: 1rem !important;
+  }
 }
 

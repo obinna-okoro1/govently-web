@@ -1,223 +1,926 @@
-<div class="signup-wrapper">
-  <h3 class="text-center mb-4">Therapist Application</h3>
-
-  <form (ngSubmit)="onSubmit(therapistFormRef)" #therapistFormRef="ngForm">
-    <!-- Basic Information -->
-    <div class="mb-3">
-      <label for="full_name" class="form-label fw-semibold">Full Name</label>
-      <input
-        type="text"
-        id="full_name"
-        class="form-control"
-        name="full_name"
-        [(ngModel)]="full_name"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="email" class="form-label fw-semibold">Email address</label>
-      <input
-        type="email"
-        id="email"
-        class="form-control"
-        name="email"
-        [(ngModel)]="email"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="phone" class="form-label fw-semibold">Phone Number (Optional)</label>
-      <input
-        type="tel"
-        id="phone"
-        class="form-control"
-        name="phone"
-        [(ngModel)]="phone"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="country" class="form-label fw-semibold">Country</label>
-      <select
-        id="country"
-        class="form-select"
-        name="country"
-        [(ngModel)]="country"
-        required
-      >
-        <option value="">Select...</option>
-        <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
-      </select>
-    </div>
-
-    <!-- License Information -->
-    <div class="mb-3">
-      <label for="license_number" class="form-label fw-semibold">License Number (Optional)</label>
-      <input
-        type="text"
-        id="license_number"
-        class="form-control"
-        name="license_number"
-        [(ngModel)]="license_number"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="license_region" class="form-label fw-semibold">License Region/State (Optional)</label>
-      <input
-        type="text"
-        id="license_region"
-        class="form-control"
-        name="license_region"
-        [(ngModel)]="license_region"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="years_experience" class="form-label fw-semibold">Years of Experience (Optional)</label>
-      <input
-        type="number"
-        id="years_experience"
-        class="form-control"
-        name="years_experience"
-        [(ngModel)]="years_experience"
-        min="0"
-      />
-    </div>
-
-    <!-- Specializations -->
-    <div class="mb-3">
-      <label class="form-label fw-semibold">Specializations (Select all that apply)</label>
-      <div class="form-check" *ngFor="let spec of availableSpecializations">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          [id]="'spec_' + spec"
-          [value]="spec"
-          [(ngModel)]="specializations[spec]"
-          name="specializations"
-        />
-        <label class="form-check-label" [for]="'spec_' + spec">
-          {{ spec }}
-        </label>
+<div class="therapist-signup-wrapper">
+  <!-- Header with Progress Indicator -->
+  <div class="signup-header">
+    <h2 class="text-center mb-1">Professional Therapist Application</h2>
+    <p class="text-center text-muted mb-4">Join our network of licensed mental health professionals</p>
+    
+    <!-- Progress Bar -->
+    <div class="progress mb-4" style="height: 0.5rem;">
+      <div class="progress-bar bg-primary" role="progressbar" 
+           [style.width.%]="getProgressPercentage()" 
+           [attr.aria-valuenow]="currentStep" 
+           aria-valuemin="0" 
+           [attr.aria-valuemax]="totalSteps">
       </div>
     </div>
 
-    <!-- Languages -->
-    <div class="mb-3">
-      <label class="form-label fw-semibold">Languages Spoken (Select all that apply)</label>
-      <div class="form-check" *ngFor="let lang of availableLanguages">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          [id]="'lang_' + lang"
-          [value]="lang"
-          [(ngModel)]="languages[lang]"
-          name="languages"
-        />
-        <label class="form-check-label" [for]="'lang_' + lang">
-          {{ lang }}
-        </label>
+    <!-- Step Navigation -->
+    <nav class="step-nav mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <button *ngFor="let step of [1,2,3,4,5,6]; let i = index" 
+                type="button"
+                class="btn btn-sm step-nav-btn"
+                [class.active]="currentStep === step"
+                [class.completed]="currentStep > step"
+                [disabled]="currentStep < step"
+                (click)="goToStep(step)">
+          <span class="step-number">{{ step }}</span>
+          <span class="step-title d-none d-md-inline">{{ getStepTitle(step) }}</span>
+        </button>
       </div>
-    </div>
-
-    <!-- Availability -->
-    <div class="mb-3">
-      <label for="availability_hours_per_week" class="form-label fw-semibold">Availability (hours per week, Optional)</label>
-      <input
-        type="number"
-        id="availability_hours_per_week"
-        class="form-control"
-        name="availability_hours_per_week"
-        [(ngModel)]="availability_hours_per_week"
-        min="1"
-        max="40"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="preferred_session_type" class="form-label fw-semibold">Preferred Session Type (Optional)</label>
-      <select
-        id="preferred_session_type"
-        class="form-select"
-        name="preferred_session_type"
-        [(ngModel)]="preferred_session_type"
-      >
-        <option value="">Select...</option>
-        <option value="individual">Individual</option>
-        <option value="couples">Couples</option>
-        <option value="family">Family</option>
-        <option value="group">Group</option>
-      </select>
-    </div>
-
-    <div class="mb-3">
-      <label for="expected_hourly_rate" class="form-label fw-semibold">Expected Hourly Rate (Optional)</label>
-      <div class="input-group">
-        <span class="input-group-text">$</span>
-        <input
-          type="number"
-          id="expected_hourly_rate"
-          class="form-control"
-          name="expected_hourly_rate"
-          [(ngModel)]="expected_hourly_rate"
-          min="0"
-          step="0.01"
-        />
-      </div>
-    </div>
-
-    <!-- Bio -->
-    <div class="mb-3">
-      <label for="bio" class="form-label fw-semibold">Professional Bio (Optional)</label>
-      <textarea
-        id="bio"
-        class="form-control"
-        name="bio"
-        [(ngModel)]="bio"
-        rows="4"
-      ></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label for="linkedin_url" class="form-label fw-semibold">LinkedIn Profile URL (Optional)</label>
-      <input
-        type="url"
-        id="linkedin_url"
-        class="form-control"
-        name="linkedin_url"
-        [(ngModel)]="linkedin_url"
-        placeholder="https://linkedin.com/in/yourprofile"
-      />
-    </div>
-
-    <!-- Consent -->
-    <!-- <div class="mb-3 form-check">
-      <input
-        type="checkbox"
-        id="consent"
-        class="form-check-input"
-        name="consent"
-        [(ngModel)]="consent"
-        required
-      />
-      <label class="form-check-label" for="consent">
-        I agree to the terms and conditions
-      </label>
-    </div> -->
-
-    <button
-      type="submit"
-      class="btn btn-primary w-100 py-2 fw-semibold"
-      [disabled]="!therapistFormRef.valid"
-    >
-      Submit Application
-    </button>
-  </form>
-
-  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-    {{ errorMessage }}
+    </nav>
   </div>
+
+  <form (ngSubmit)="onSubmit(therapistFormRef)" #therapistFormRef="ngForm" class="therapist-form">
+    
+    <!-- Step 1: Basic Information -->
+    <div class="step-content" *ngIf="currentStep === 1">
+      <div class="step-header mb-4">
+        <h4 class="fw-bold mb-2">Basic Information</h4>
+        <p class="text-muted">Let's start with your basic contact information and location.</p>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="full_name" class="form-label fw-semibold">
+            Full Legal Name <span class="text-danger">*</span>
+          </label>
+          <input type="text" id="full_name" class="form-control" name="full_name" 
+                 [(ngModel)]="full_name" required 
+                 placeholder="Enter your full legal name as it appears on your license">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="email" class="form-label fw-semibold">
+            Professional Email <span class="text-danger">*</span>
+          </label>
+          <input type="email" id="email" class="form-control" name="email" 
+                 [(ngModel)]="email" required 
+                 placeholder="your.email@practice.com">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="phone" class="form-label fw-semibold">
+            Phone Number <span class="text-danger">*</span>
+          </label>
+          <input type="tel" id="phone" class="form-control" name="phone" 
+                 [(ngModel)]="phone" required 
+                 placeholder="+1 (555) 123-4567">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="timezone" class="form-label fw-semibold">
+            Time Zone <span class="text-danger">*</span>
+          </label>
+          <select id="timezone" class="form-select" name="timezone" 
+                  [(ngModel)]="timezone" required>
+            <option value="">Select your time zone...</option>
+            <option *ngFor="let tz of timezones" [value]="tz">{{ tz }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label for="country" class="form-label fw-semibold">
+            Country <span class="text-danger">*</span>
+          </label>
+          <select id="country" class="form-select" name="country" 
+                  [(ngModel)]="country" required>
+            <option value="">Select...</option>
+            <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label for="state_province" class="form-label fw-semibold">
+            State/Province <span class="text-danger">*</span>
+          </label>
+          <input type="text" id="state_province" class="form-control" name="state_province" 
+                 [(ngModel)]="state_province" required 
+                 placeholder="Enter state or province">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label for="city" class="form-label fw-semibold">
+            City <span class="text-danger">*</span>
+          </label>
+          <input type="text" id="city" class="form-control" name="city" 
+                 [(ngModel)]="city" required 
+                 placeholder="Enter city">
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Professional Credentials -->
+    <div class="step-content" *ngIf="currentStep === 2">
+      <div class="step-header mb-4">
+        <h4 class="fw-bold mb-2">Professional Credentials</h4>
+        <p class="text-muted">Provide your licensing and educational background.</p>
+      </div>
+
+      <!-- License Information -->
+      <div class="credential-section mb-4">
+        <h5 class="section-title">Licensing Information</h5>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="license_type" class="form-label fw-semibold">
+              License Type <span class="text-danger">*</span>
+            </label>
+            <select id="license_type" class="form-select" name="license_type" 
+                    [(ngModel)]="license_type" required>
+              <option value="">Select license type...</option>
+              <option *ngFor="let type of licenseTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="license_number" class="form-label fw-semibold">
+              License Number
+            </label>
+            <input type="text" id="license_number" class="form-control" name="license_number" 
+                   [(ngModel)]="license_number" 
+                   placeholder="Enter your license number">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="license_region" class="form-label fw-semibold">
+              License State/Region
+            </label>
+            <input type="text" id="license_region" class="form-control" name="license_region" 
+                   [(ngModel)]="license_region" 
+                   placeholder="State or region where licensed">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="license_expiry_date" class="form-label fw-semibold">
+              License Expiry Date
+            </label>
+            <input type="date" id="license_expiry_date" class="form-control" name="license_expiry_date" 
+                   [(ngModel)]="license_expiry_date">
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience -->
+      <div class="credential-section mb-4">
+        <h5 class="section-title">Professional Experience</h5>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="years_experience" class="form-label fw-semibold">
+              Total Years of Experience <span class="text-danger">*</span>
+            </label>
+            <input type="number" id="years_experience" class="form-control" name="years_experience" 
+                   [(ngModel)]="years_experience" required min="0" max="50" 
+                   placeholder="Years in mental health practice">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="years_private_practice" class="form-label fw-semibold">
+              Years in Private Practice
+            </label>
+            <input type="number" id="years_private_practice" class="form-control" name="years_private_practice" 
+                   [(ngModel)]="years_private_practice" min="0" 
+                   placeholder="Years in private practice">
+          </div>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="credential-section mb-4">
+        <h5 class="section-title">Education</h5>
+        
+        <div class="education-list">
+          <div *ngFor="let edu of education; let i = index" class="education-item mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <h6 class="card-title">Education #{{ i + 1 }}</h6>
+                  <button type="button" class="btn btn-sm btn-outline-danger" 
+                          (click)="removeEducation(i)" 
+                          *ngIf="education.length > 1">
+                    Remove
+                  </button>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4 mb-2">
+                    <label class="form-label">Degree <span class="text-danger" *ngIf="i === 0">*</span></label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="edu.degree" 
+                           [name]="'degree_' + i"
+                           [required]="i === 0"
+                           placeholder="e.g., MSW, PhD, PsyD">
+                  </div>
+
+                  <div class="col-md-5 mb-2">
+                    <label class="form-label">Institution <span class="text-danger" *ngIf="i === 0">*</span></label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="edu.institution" 
+                           [name]="'institution_' + i"
+                           [required]="i === 0"
+                           placeholder="University name">
+                  </div>
+
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Year</label>
+                    <input type="number" class="form-control" 
+                           [(ngModel)]="edu.graduation_year" 
+                           [name]="'year_' + i"
+                           min="1950" [max]="2030"
+                           placeholder="YYYY">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="addEducation()">
+          + Add Another Degree
+        </button>
+      </div>
+
+      <!-- Therapy Approaches -->
+      <div class="credential-section mb-4">
+        <h5 class="section-title">Therapeutic Approaches</h5>
+        <p class="text-muted small">Select the therapeutic modalities you are trained in and practice.</p>
+        
+        <div class="checkbox-grid">
+          <div class="form-check" *ngFor="let approach of availableTherapyApproaches">
+            <input class="form-check-input" type="checkbox" 
+                   [id]="'approach_' + approach" 
+                   [(ngModel)]="therapy_approaches[approach]" 
+                   [name]="'therapy_approaches_' + approach">
+            <label class="form-check-label" [for]="'approach_' + approach">
+              {{ approach }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certifications -->
+      <div class="credential-section mb-4">
+        <h5 class="section-title">Professional Certifications</h5>
+        
+        <div class="certification-list" *ngIf="certifications.length > 0">
+          <div *ngFor="let cert of certifications; let i = index" class="certification-item mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <h6 class="card-title">Certification #{{ i + 1 }}</h6>
+                  <button type="button" class="btn btn-sm btn-outline-danger" 
+                          (click)="removeCertification(i)">
+                    Remove
+                  </button>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Certification Name</label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="cert.name" 
+                           [name]="'cert_name_' + i"
+                           placeholder="e.g., EMDR Therapy Certification">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Issuing Organization</label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="cert.issuing_organization" 
+                           [name]="'cert_org_' + i"
+                           placeholder="Organization name">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Issue Date</label>
+                    <input type="date" class="form-control" 
+                           [(ngModel)]="cert.issue_date" 
+                           [name]="'cert_issue_' + i">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Expiry Date (if applicable)</label>
+                    <input type="date" class="form-control" 
+                           [(ngModel)]="cert.expiry_date" 
+                           [name]="'cert_expiry_' + i">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="addCertification()">
+          + Add Certification
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Specializations & Expertise -->
+    <div class="step-content" *ngIf="currentStep === 3">
+      <div class="step-header mb-4">
+        <h4 class="fw-bold mb-2">Specializations & Expertise</h4>
+        <p class="text-muted">Help us match you with the right clients by detailing your areas of expertise.</p>
+      </div>
+
+      <!-- Specializations -->
+      <div class="specialization-section mb-4">
+        <h5 class="section-title">Clinical Specializations <span class="text-danger">*</span></h5>
+        <p class="text-muted small">Select at least 3 areas you specialize in and have experience treating.</p>
+        
+        <div class="checkbox-grid">
+          <div class="form-check" *ngFor="let spec of availableSpecializations">
+            <input class="form-check-input" type="checkbox" 
+                   [id]="'spec_' + spec" 
+                   [(ngModel)]="specializations[spec]" 
+                   [name]="'specializations_' + spec">
+            <label class="form-check-label" [for]="'spec_' + spec">
+              {{ spec }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Demographics -->
+      <div class="specialization-section mb-4">
+        <h5 class="section-title">Client Demographics</h5>
+        <p class="text-muted small">What age groups and populations do you work with?</p>
+        
+        <div class="checkbox-grid">
+          <div class="form-check" *ngFor="let demo of clientDemographics">
+            <input class="form-check-input" type="checkbox" 
+                   [id]="'demo_' + demo" 
+                   [(ngModel)]="client_demographics[demo]" 
+                   [name]="'client_demographics_' + demo">
+            <label class="form-check-label" [for]="'demo_' + demo">
+              {{ demo }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Severity Levels -->
+      <div class="specialization-section mb-4">
+        <h5 class="section-title">Treatment Complexity</h5>
+        <p class="text-muted small">What levels of symptom severity are you comfortable treating?</p>
+        
+        <div class="checkbox-grid">
+          <div class="form-check" *ngFor="let level of severityLevels">
+            <input class="form-check-input" type="checkbox" 
+                   [id]="'level_' + level" 
+                   [(ngModel)]="severity_levels[level]" 
+                   [name]="'severity_levels_' + level">
+            <label class="form-check-label" [for]="'level_' + level">
+              {{ level }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Special Training -->
+      <div class="specialization-section mb-4">
+        <h5 class="section-title">Special Training & Certifications</h5>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="crisis_intervention" 
+                     [(ngModel)]="crisis_intervention_trained" name="crisis_intervention">
+              <label class="form-check-label fw-semibold" for="crisis_intervention">
+                Crisis Intervention Trained
+              </label>
+              <div class="text-muted small">Trained to handle mental health emergencies</div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="trauma_informed" 
+                     [(ngModel)]="trauma_informed_certified" name="trauma_informed">
+              <label class="form-check-label fw-semibold" for="trauma_informed">
+                Trauma-Informed Care Certified
+              </label>
+              <div class="text-muted small">Certified in trauma-informed treatment approaches</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Languages -->
+      <div class="specialization-section mb-4">
+        <h5 class="section-title">Languages <span class="text-danger">*</span></h5>
+        <p class="text-muted small">Select all languages you can provide therapy in fluently.</p>
+        
+        <div class="checkbox-grid">
+          <div class="form-check" *ngFor="let lang of availableLanguages">
+            <input class="form-check-input" type="checkbox" 
+                   [id]="'lang_' + lang" 
+                   [(ngModel)]="languages[lang]" 
+                   [name]="'languages_' + lang">
+            <label class="form-check-label" [for]="'lang_' + lang">
+              {{ lang }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Availability & Booking -->
+    <div class="step-content" *ngIf="currentStep === 4">
+      <div class="step-header mb-4">
+        <h4 class="fw-bold mb-2">Availability & Booking Preferences</h4>
+        <p class="text-muted">Set your schedule and preferences for client appointments.</p>
+      </div>
+
+      <!-- Weekly Schedule -->
+      <div class="availability-section mb-4">
+        <h5 class="section-title">Weekly Schedule</h5>
+        <p class="text-muted small">Set your available hours for each day of the week.</p>
+        
+        <div class="schedule-grid">
+          <div *ngFor="let slot of availability_slots; let i = index" class="day-schedule mb-3">
+            <div class="card">
+              <div class="card-body py-3">
+                <div class="row align-items-center">
+                  <div class="col-md-3">
+                    <label class="form-label fw-semibold mb-0">{{ slot.day }}</label>
+                  </div>
+                  
+                  <div class="col-md-4">
+                    <label class="form-label small">Start Time</label>
+                    <input type="time" class="form-control" 
+                           [(ngModel)]="slot.start_time" 
+                           [name]="'start_' + i">
+                  </div>
+                  
+                  <div class="col-md-4">
+                    <label class="form-label small">End Time</label>
+                    <input type="time" class="form-control" 
+                           [(ngModel)]="slot.end_time" 
+                           [name]="'end_' + i">
+                  </div>
+                  
+                  <div class="col-md-1 text-center">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" 
+                            (click)="slot.start_time = ''; slot.end_time = ''" 
+                            title="Clear times">
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session Preferences -->
+      <div class="availability-section mb-4">
+        <h5 class="section-title">Session Preferences</h5>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              Session Durations Offered <span class="text-danger">*</span>
+            </label>
+            <p class="text-muted small">Select all session lengths you provide.</p>
+            
+            <div class="session-durations">
+              <div class="form-check" *ngFor="let duration of sessionDurationOptions">
+                <input class="form-check-input" type="checkbox" 
+                       [id]="'duration_' + duration" 
+                       [(ngModel)]="session_durations[duration]" 
+                       [name]="'session_durations_' + duration">
+                <label class="form-check-label" [for]="'duration_' + duration">
+                  {{ duration }} minutes
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="advance_booking" class="form-label fw-semibold">
+              Advance Booking Required
+            </label>
+            <select id="advance_booking" class="form-select" name="advance_booking" 
+                    [(ngModel)]="advance_booking_required">
+              <option value="2">2 hours</option>
+              <option value="4">4 hours</option>
+              <option value="12">12 hours</option>
+              <option value="24">24 hours</option>
+              <option value="48">48 hours</option>
+              <option value="72">72 hours</option>
+              <option value="168">1 week</option>
+            </select>
+            <div class="text-muted small">Minimum notice required for new appointments</div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="max_clients" class="form-label fw-semibold">
+              Maximum Clients Per Week
+            </label>
+            <input type="number" id="max_clients" class="form-control" name="max_clients" 
+                   [(ngModel)]="max_clients_per_week" min="1" max="50" 
+                   placeholder="Enter maximum number">
+            <div class="text-muted small">Leave blank if no specific limit</div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="form-check form-switch mt-4">
+              <input class="form-check-input" type="checkbox" id="emergency_availability" 
+                     [(ngModel)]="emergency_availability" name="emergency_availability">
+              <label class="form-check-label fw-semibold" for="emergency_availability">
+                Emergency Availability
+              </label>
+              <div class="text-muted small">Available for crisis/emergency sessions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Pricing & Professional Profile -->
+    <div class="step-content" *ngIf="currentStep === 5">
+      <div class="step-header mb-4">
+        <h4 class="fw-bold mb-2">Pricing & Professional Profile</h4>
+        <p class="text-muted">Set your rates and create your professional profile.</p>
+      </div>
+
+      <!-- Pricing -->
+      <div class="pricing-section mb-4">
+        <h5 class="section-title">Session Rates</h5>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="rate_individual" class="form-label fw-semibold">
+              Individual Therapy Rate <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" id="rate_individual" class="form-control" 
+                     name="rate_individual" [(ngModel)]="hourly_rates.individual" 
+                     required min="0" step="0.01" placeholder="150">
+              <span class="input-group-text">per session</span>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="rate_couples" class="form-label fw-semibold">
+              Couples Therapy Rate
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" id="rate_couples" class="form-control" 
+                     name="rate_couples" [(ngModel)]="hourly_rates.couples" 
+                     min="0" step="0.01" placeholder="200">
+              <span class="input-group-text">per session</span>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="rate_family" class="form-label fw-semibold">
+              Family Therapy Rate
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" id="rate_family" class="form-control" 
+                     name="rate_family" [(ngModel)]="hourly_rates.family" 
+                     min="0" step="0.01" placeholder="225">
+              <span class="input-group-text">per session</span>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="rate_group" class="form-label fw-semibold">
+              Group Therapy Rate
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" id="rate_group" class="form-control" 
+                     name="rate_group" [(ngModel)]="hourly_rates.group" 
+                     min="0" step="0.01" placeholder="75">
+              <span class="input-group-text">per person</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sliding Scale -->
+        <div class="mt-3">
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="sliding_scale" 
+                   [(ngModel)]="sliding_scale_available" name="sliding_scale">
+            <label class="form-check-label fw-semibold" for="sliding_scale">
+              Offer Sliding Scale Pricing
+            </label>
+            <div class="text-muted small">Reduced rates for clients with financial need</div>
+          </div>
+
+          <div *ngIf="sliding_scale_available" class="row">
+            <div class="col-md-6">
+              <label for="sliding_min_rate" class="form-label fw-semibold">
+                Minimum Sliding Scale Rate
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" id="sliding_min_rate" class="form-control" 
+                       name="sliding_min_rate" [(ngModel)]="sliding_scale_min_rate" 
+                       min="0" step="0.01" placeholder="75">
+                <span class="input-group-text">per session</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insurance & Payment -->
+      <div class="pricing-section mb-4">
+        <h5 class="section-title">Insurance & Payment</h5>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Insurance Providers Accepted</label>
+            <div class="checkbox-list">
+              <div class="form-check" *ngFor="let provider of insuranceProviders">
+                <input class="form-check-input" type="checkbox" 
+                       [id]="'insurance_' + provider" 
+                       [(ngModel)]="insurance_accepted[provider]" 
+                       [name]="'insurance_' + provider">
+                <label class="form-check-label" [for]="'insurance_' + provider">
+                  {{ provider }}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Payment Methods Accepted</label>
+            <div class="checkbox-list">
+              <div class="form-check" *ngFor="let method of paymentMethodOptions">
+                <input class="form-check-input" type="checkbox" 
+                       [id]="'payment_' + method" 
+                       [(ngModel)]="payment_methods[method]" 
+                       [name]="'payment_' + method">
+                <label class="form-check-label" [for]="'payment_' + method">
+                  {{ method }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <label for="cancellation_policy" class="form-label fw-semibold">
+            Cancellation Policy
+          </label>
+          <textarea id="cancellation_policy" class="form-control" name="cancellation_policy" 
+                    [(ngModel)]="cancellation_policy" rows="3" 
+                    placeholder="Describe your cancellation and no-show policy..."></textarea>
+        </div>
+      </div>
+
+      <!-- Professional Profile -->
+      <div class="profile-section mb-4">
+        <h5 class="section-title">Professional Profile</h5>
+        
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label for="bio" class="form-label fw-semibold">
+              Professional Bio <span class="text-danger">*</span>
+            </label>
+            <textarea id="bio" class="form-control" name="bio" [(ngModel)]="bio" 
+                      required rows="4" 
+                      placeholder="Share your background, experience, and approach to therapy. This will be visible to potential clients."></textarea>
+            <div class="text-muted small">Recommended: 150-300 words</div>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label for="treatment_philosophy" class="form-label fw-semibold">
+              Treatment Philosophy <span class="text-danger">*</span>
+            </label>
+            <textarea id="treatment_philosophy" class="form-control" name="treatment_philosophy" 
+                      [(ngModel)]="treatment_philosophy" required rows="3" 
+                      placeholder="Describe your therapeutic philosophy and approach to helping clients..."></textarea>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="linkedin_url" class="form-label fw-semibold">
+              LinkedIn Profile URL
+            </label>
+            <input type="url" id="linkedin_url" class="form-control" name="linkedin_url" 
+                   [(ngModel)]="linkedin_url" 
+                   placeholder="https://linkedin.com/in/yourprofile">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="website_url" class="form-label fw-semibold">
+              Professional Website
+            </label>
+            <input type="url" id="website_url" class="form-control" name="website_url" 
+                   [(ngModel)]="website_url" 
+                   placeholder="https://yourpractice.com">
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional References -->
+      <div class="references-section mb-4">
+        <h5 class="section-title">Professional References</h5>
+        <p class="text-muted small">Provide contacts who can speak to your professional competence (supervisors, colleagues, etc.)</p>
+        
+        <div class="references-list" *ngIf="professional_references.length > 0">
+          <div *ngFor="let ref of professional_references; let i = index" class="reference-item mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <h6 class="card-title">Reference #{{ i + 1 }}</h6>
+                  <button type="button" class="btn btn-sm btn-outline-danger" 
+                          (click)="removeReference(i)">
+                    Remove
+                  </button>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="ref.name" [name]="'ref_name_' + i" 
+                           placeholder="Reference full name">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Position/Title</label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="ref.position" [name]="'ref_position_' + i" 
+                           placeholder="Their professional title">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Organization</label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="ref.organization" [name]="'ref_org_' + i" 
+                           placeholder="Their workplace/organization">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Relationship</label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="ref.relationship" [name]="'ref_rel_' + i" 
+                           placeholder="e.g., Clinical Supervisor, Colleague">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" 
+                           [(ngModel)]="ref.email" [name]="'ref_email_' + i" 
+                           placeholder="professional.email@organization.com">
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-control" 
+                           [(ngModel)]="ref.phone" [name]="'ref_phone_' + i" 
+                           placeholder="+1 (555) 123-4567">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="addReference()">
+          + Add Professional Reference
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 6: Verification & Consent -->
+    <div class="step-content" *ngIf="currentStep === 6">
+      <div class="step-header mb-4">
+        <h4 class="fw-bold mb-2">Verification & Consent</h4>
+        <p class="text-muted">Final step: document uploads and required consents.</p>
+      </div>
+
+      <!-- Document Upload Placeholders -->
+      <div class="verification-section mb-4">
+        <h5 class="section-title">Document Verification</h5>
+        <p class="text-muted small">Upload clear photos or scans of your credentials. We'll review these as part of our verification process.</p>
+        
+        <div class="upload-grid">
+          <div class="upload-item mb-3">
+            <label class="form-label fw-semibold">Professional License</label>
+            <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" 
+                   (change)="license_document_url = 'uploaded'" />
+            <div class="text-muted small">Upload a clear image of your professional license</div>
+          </div>
+
+          <div class="upload-item mb-3">
+            <label class="form-label fw-semibold">Diploma/Degree</label>
+            <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" 
+                   (change)="diploma_document_url = 'uploaded'" />
+            <div class="text-muted small">Upload your highest relevant degree</div>
+          </div>
+
+          <div class="upload-item mb-3">
+            <label class="form-label fw-semibold">Additional Certifications</label>
+            <input type="file" class="form-control" multiple accept=".pdf,.jpg,.jpeg,.png" 
+                   (change)="certification_documents = ['uploaded']" />
+            <div class="text-muted small">Upload any additional certifications (optional)</div>
+          </div>
+
+          <div class="upload-item mb-3">
+            <label class="form-label fw-semibold">Professional Photo</label>
+            <input type="file" class="form-control" accept=".jpg,.jpeg,.png" 
+                   (change)="professional_photo_url = 'uploaded'" />
+            <div class="text-muted small">Professional headshot for your profile</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Consent & Terms -->
+      <div class="consent-section mb-4">
+        <h5 class="section-title">Required Consents</h5>
+        
+        <div class="consent-items">
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="professional_consent" 
+                       [(ngModel)]="consent" name="consent" required>
+                <label class="form-check-label fw-semibold" for="professional_consent">
+                  Professional Agreement & Terms of Service <span class="text-danger">*</span>
+                </label>
+              </div>
+              <div class="text-muted small mt-2">
+                I certify that all information provided is accurate and complete. I understand that Govently will verify my credentials and that false information may result in application rejection or account termination. I agree to maintain all required licenses and certifications while providing services on the platform.
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="background_consent" 
+                       [(ngModel)]="background_check_consent" name="background_consent" required>
+                <label class="form-check-label fw-semibold" for="background_consent">
+                  Background Check Authorization <span class="text-danger">*</span>
+                </label>
+              </div>
+              <div class="text-muted small mt-2">
+                I authorize Govently to conduct background checks, verify my professional credentials, and contact my references as part of the application review process. I understand this is required for client safety and platform integrity.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="hipaa_consent" 
+                       [(ngModel)]="consent" name="hipaa_consent" required>
+                <label class="form-check-label fw-semibold" for="hipaa_consent">
+                  HIPAA Compliance & Privacy Agreement <span class="text-danger">*</span>
+                </label>
+              </div>
+              <div class="text-muted small mt-2">
+                I understand and agree to comply with all HIPAA regulations and maintain strict confidentiality of all client information. I will use only approved, secure communication methods provided by the platform for all client interactions.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="form-navigation mt-4 pt-3 border-top">
+      <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" 
+                (click)="previousStep()" 
+                [disabled]="currentStep === 1">
+          <i class="fas fa-arrow-left me-2"></i>Previous
+        </button>
+
+        <div class="step-indicator">
+          <span class="text-muted">Step {{ currentStep }} of {{ totalSteps }}</span>
+        </div>
+
+        <button *ngIf="currentStep < totalSteps" 
+                type="button" class="btn btn-primary" 
+                (click)="nextStep()" 
+                [disabled]="!isStepValid(currentStep)">
+          Next<i class="fas fa-arrow-right ms-2"></i>
+        </button>
+
+        <button *ngIf="currentStep === totalSteps" 
+                type="submit" class="btn btn-success" 
+                [disabled]="!therapistFormRef.valid || !isStepValid(6)">
+          <i class="fas fa-check me-2"></i>Submit Application
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Messages -->
+    <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+      <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+    </div>
+  </form>
 </div>

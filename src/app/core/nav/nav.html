@@ -1,14 +1,10 @@
 <!-- Professional navigation with optimized mobile experience -->
 <nav class="sidebar-nav" [class.open]="sidebarOpen" [class.mobile-open]="sidebarOpen && isMobile">
   <!-- Mobile header with close button -->
-  <div class="mobile-nav-header d-md-none" *ngIf="sidebarOpen">
+  <div class="mobile-nav-header d-md-none py-4" *ngIf="sidebarOpen">
     <div class="mobile-nav-brand">
-      <img src="/assets/logo/govently-black.png" alt="Govently" height="32">
-      <span class="brand-text">Mental Wellness</span>
+      <span class="brand-text ms-5">Govently</span>
     </div>
-    <button class="mobile-close-btn" (click)="closeSidebar()" aria-label="Close navigation" type="button">
-      <i class="bi bi-x"></i>
-    </button>
   </div>
   
   <!-- Desktop header -->
@@ -19,9 +15,6 @@
     <a [routerLink]="'/'" class="sidebar-logo" *ngIf="sidebarOpen">
       <img src="/assets/logo/govently-black.png" alt="Govently">
     </a>
-    <div class="logo-collapsed" *ngIf="!sidebarOpen">
-      <img src="/assets/logo/govently-transparent.png" alt="G" width="28" height="28">
-    </div>
   </div>
 
   <!-- Navigation Content -->

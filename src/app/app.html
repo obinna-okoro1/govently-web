@@ -1,12 +1,16 @@
-<div class="wrapper">
+<div class="d-flex min-vh-100">
 	<app-nav #navComponent></app-nav>
 	
-	<!-- Mobile toggle button for when sidebar is closed -->
-	<button class="mobile-toggle-btn d-md-none" (click)="toggleSidebar()" aria-label="Open menu">
-		<i class="bi bi-list"></i>
-	</button>
-	
-	<div class="main-content">
+	<main class="flex-fill">
+		<!-- Mobile toggle button using Bootstrap sticky positioning -->
+		<div class="sticky-top d-md-none p-3 text-end">
+			<button class="btn btn-primary mobile-menu-toggle" 
+			        (click)="toggleSidebar()" 
+			        aria-label="Open menu">
+				<i class="bi bi-list"></i>
+			</button>
+		</div>
+		
 		<router-outlet></router-outlet>
-	</div>
+	</main>
 </div>

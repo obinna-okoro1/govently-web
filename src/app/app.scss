@@ -1,77 +1,53 @@
-/* Professional main layout styles using new color system */
+/* Professional main layout styles - Bootstrap-first approach with rem units */
 
-.wrapper {
-  background: var(--color-bg-primary);
-  padding: 0;
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  align-items: stretch;
-  color: var(--color-text-primary);
-}
-
-.main-content {
-  flex: 1;
-  padding: 0;
-  margin-left: 13.75rem; /* Default sidebar width on desktop */
-  transition: margin-left 0.2s cubic-bezier(.4,0,.2,1);
-}
-
-/* Adjust content when sidebar is collapsed on desktop */
-body:has(.sidebar-nav:not(.open)) .main-content {
-  margin-left: 3.75rem;
-}
-
-/* On mobile screens, content should use full width */
-@media (max-width: 48rem) {
-  .main-content {
-    margin-left: 0 !important;
-  }
-}
-
-/* Professional mobile toggle button */
-.mobile-toggle-btn {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 1001;
-  background: var(--color-primary);
-  color: var(--color-white);
-  border: none;
+/* Mobile menu toggle - Bootstrap sticky positioning */
+.mobile-menu-toggle {
   border-radius: 0.5rem;
-  padding: 0.75rem;
-  font-size: 1.25rem;
-  box-shadow: var(--shadow-lg);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  display: none;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  /* Bootstrap positioning handles the rest - no custom absolute positioning */
+}
 
-  &:hover {
-    background: var(--color-primary-light);
-    transform: translateY(-0.0625rem);
-    box-shadow: var(--shadow-xl);
+/* Mobile-first: no margin by default, use Bootstrap utilities */
+main {
+  margin-left: 0;
+  transition: margin-left 0.2s ease-in-out;
+  /* Ensure content doesn't get hidden behind mobile toggle */
+  position: relative;
+}
+
+/* Desktop sidebar adjustments only */
+@media (min-width: 48rem) {
+  main {
+    margin-left: 13.75rem; /* Default sidebar width on desktop (220px / 16px = 13.75rem) */
   }
 
-  &:active {
-    background: var(--color-primary-dark);
-    transform: translateY(0);
-  }
-
-  &:focus {
-    outline: 2px solid var(--color-primary-alpha-20);
-    outline-offset: 2px;
+  /* Adjust content when sidebar is collapsed on desktop */
+  body:has(.sidebar-nav:not(.open)) main {
+    margin-left: 3.75rem; /* 60px / 16px = 3.75rem */
   }
 }
 
-/* Show toggle button on mobile screens */
-@media (max-width: 48rem) {
-  .mobile-toggle-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Hide toggle button when sidebar is open */
-  body.sidebar-open .mobile-toggle-btn {
-    display: none !important;
-  }
+/* Custom enhancements that complement Bootstrap */
+.btn:hover {
+  transform: translateY(-1px);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom brand colors when Bootstrap colors aren't sufficient */
+.text-brand-primary {
+  color: var(--color-primary) !important;
+}
+
+.bg-brand-primary {
+  background-color: var(--color-primary) !important;
+}
+
+/* Smooth transitions for better UX */
+* {
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
