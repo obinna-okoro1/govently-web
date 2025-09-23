@@ -18,8 +18,7 @@ export const routes: Routes = [
   },
   { 
     path: 'assessment', 
-    loadComponent: () => import('./feature/mental-health-assessment/mental-health-assessment.component').then(m => m.MentalHealthAssessmentComponent),
-    canActivate: [authGuard]
+    loadComponent: () => import('./feature/mental-health-assessment/mental-health-assessment.component').then(m => m.MentalHealthAssessmentComponent)
   },
   { 
     path: 'therapist-matching', 

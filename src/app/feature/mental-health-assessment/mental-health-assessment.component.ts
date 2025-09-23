@@ -8,6 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/auth/auth-service';
 import { ModalService } from '../../shared/modal/modal.service';
 import { ConfettiService } from '../../shared/confetti-service';
+import { Login } from '../login/login';
 
 import {
   AssessmentSection,
@@ -111,6 +112,14 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
    * Start the mental health assessment
    */
   public startAssessment(): void {
+    // Check if user is authenticated before starting
+    if (!this.authService.isAuthenticated()) {
+      this.modalService.open(Login, 'Login to Continue', {
+        message: 'Please log in to start your mental health assessment'
+      });
+      return;
+    }
+
     this.assessmentState.isStarted = true;
     this.assessmentState.startedAt = new Date();
     this.assessmentState.currentSection = ASSESSMENT_SECTIONS[0];
