@@ -334,12 +334,12 @@
 
             <!-- Risk Level Summary -->
             <div class="risk-summary mb-4 p-4 rounded" 
-                 [class.bg-success-subtle]="assessmentResult?.riskLevel === 'minimal'"
-                 [class.bg-info-subtle]="assessmentResult?.riskLevel === 'mild'"
-                 [class.bg-warning-subtle]="assessmentResult?.riskLevel === 'moderate'"
-                 [class.bg-danger-subtle]="assessmentResult?.riskLevel === 'severe' || assessmentResult?.riskLevel === 'moderately-severe'">
+                 [class.bg-success-subtle]="assessmentResult.riskLevel === 'minimal'"
+                 [class.bg-info-subtle]="assessmentResult.riskLevel === 'mild'"
+                 [class.bg-warning-subtle]="assessmentResult.riskLevel === 'moderate'"
+                 [class.bg-danger-subtle]="assessmentResult.riskLevel === 'severe' || assessmentResult.riskLevel === 'moderately-severe'">
               <h5 class="mb-2">
-                <span class="text-capitalize">{{ assessmentResult?.riskLevel || 'Unknown' }}</span> Support Level Indicated
+                <span class="text-capitalize">{{ assessmentResult.riskLevel || 'Unknown' }}</span> Support Level Indicated
               </h5>
               <p class="small mb-0">
                 Based on your responses, we've identified your current support needs and prepared personalized recommendations.

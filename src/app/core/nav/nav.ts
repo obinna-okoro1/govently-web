@@ -298,4 +298,9 @@ export class NavComponent implements OnInit, OnDestroy {
     // Reset unread messages when user engages
     this.unreadAiMessages = 0;
   }
+
+  connectToTherapist(): void {
+    this.router.navigate(['/assessment']);
+    this.closeOnMobile();
+  }
 }

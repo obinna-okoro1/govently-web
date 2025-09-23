@@ -8,14 +8,13 @@ import { AuthService } from '../../core/auth/auth-service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { GoventlyLegalComponent } from '../govently-legal.component/govently-legal.component';
-import { AiChatComponent } from '../ai-chat-component/ai-chat-component';
 import { Signup } from '../signup/signup';
 import { Login } from '../login/login';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, NgbCarouselModule, RouterModule, AiChatComponent],
+  imports: [CommonModule, NgbCarouselModule, RouterModule],
   templateUrl: './landing.html',
   styleUrls: ['./landing-new.scss']
 })

@@ -1,0 +1,453 @@
+<div class="therapist-listing-container">
+  <!-- Header -->
+  <div class="listing-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="page-title">Find Your Therapist</h1>
+          <p class="page-subtitle" *ngIf="hasRecommendedTherapists()">
+            We've found {{ therapists.recommended.length }} therapists specially matched for you
+          </p>
+          <p class="page-subtitle" *ngIf="!hasRecommendedTherapists() && therapists.totalCount > 0">
+            {{ therapists.totalCount }} licensed therapists available
+          </p>
+        </div>
+        <div class="col-md-6">
+          <!-- Search -->
+          <div class="search-container">
+            <div class="search-input-wrapper">
+              <i class="bi bi-search search-icon"></i>
+              <input 
+                type="text" 
+                class="form-control search-input" 
+                placeholder="Search by name or specialization..."
+                [(ngModel)]="searchQuery"
+                (input)="onSearchChange($event.target.value || '')">
+              <button *ngIf="searchQuery" class="btn-clear-search" (click)="onSearchChange('')">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar Filters -->
+      <div class="col-lg-3" [class.d-none]="!showFilters" [class.d-lg-block]="true">
+        <div class="filters-sidebar">
+          <div class="filters-header">
+            <h5>Filters</h5>
+            <div class="d-flex align-items-center">
+              <span *ngIf="getActiveFilterCount() > 0" class="active-filters-count">
+                {{ getActiveFilterCount() }} active
+              </span>
+              <button 
+                *ngIf="isFilterActive()" 
+                class="btn btn-sm btn-outline-secondary ms-2" 
+                (click)="clearFilters()">
+                Clear All
+              </button>
+            </div>
+          </div>
+
+          <!-- Specialization Filter -->
+          <div class="filter-section">
+            <h6 class="filter-title">Specializations</h6>
+            <div class="filter-options">
+              <div class="form-check" *ngFor="let spec of filterOptions.specializations.slice(0, 8)">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [id]="'spec_' + spec"
+                  [checked]="filters.specializations?.includes(spec)"
+                  (change)="toggleFilter('specializations', spec)">
+                <label class="form-check-label" [for]="'spec_' + spec">
+                  {{ spec }}
+                </label>
+              </div>
+              <!-- Show more toggle could go here -->
+            </div>
+          </div>
+
+          <!-- Language Filter -->
+          <div class="filter-section">
+            <h6 class="filter-title">Languages</h6>
+            <div class="filter-options">
+              <div class="form-check" *ngFor="let lang of filterOptions.languages.slice(0, 6)">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [id]="'lang_' + lang"
+                  [checked]="filters.languages?.includes(lang)"
+                  (change)="toggleFilter('languages', lang)">
+                <label class="form-check-label" [for]="'lang_' + lang">
+                  {{ lang }}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Range -->
+          <div class="filter-section">
+            <h6 class="filter-title">Price Range</h6>
+            <div class="price-inputs">
+              <div class="row g-2">
+                <div class="col-6">
+                  <input 
+                    type="number" 
+                    class="form-control form-control-sm" 
+                    placeholder="Min"
+                    [(ngModel)]="filters.priceRange!.min"
+                    (blur)="loadTherapists()"
+                    min="0">
+                </div>
+                <div class="col-6">
+                  <input 
+                    type="number" 
+                    class="form-control form-control-sm" 
+                    placeholder="Max"
+                    [(ngModel)]="filters.priceRange!.max"
+                    (blur)="loadTherapists()"
+                    min="0">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Type -->
+          <div class="filter-section">
+            <h6 class="filter-title">Session Type</h6>
+            <div class="filter-options">
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="radio" 
+                  name="sessionType" 
+                  id="individual"
+                  value="individual"
+                  [(ngModel)]="filters.sessionType"
+                  (change)="loadTherapists()">
+                <label class="form-check-label" for="individual">Individual</label>
+              </div>
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="radio" 
+                  name="sessionType" 
+                  id="couples"
+                  value="couples"
+                  [(ngModel)]="filters.sessionType"
+                  (change)="loadTherapists()">
+                <label class="form-check-label" for="couples">Couples</label>
+              </div>
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="radio" 
+                  name="sessionType" 
+                  id="family"
+                  value="family"
+                  [(ngModel)]="filters.sessionType"
+                  (change)="loadTherapists()">
+                <label class="form-check-label" for="family">Family</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Type -->
+          <div class="filter-section">
+            <h6 class="filter-title">Service Type</h6>
+            <div class="filter-options">
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  id="online"
+                  [checked]="filters.servicesOffered?.includes('online')"
+                  (change)="toggleFilter('servicesOffered', 'online')">
+                <label class="form-check-label" for="online">Online Sessions</label>
+              </div>
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  id="in_person"
+                  [checked]="filters.servicesOffered?.includes('in_person')"
+                  (change)="toggleFilter('servicesOffered', 'in_person')">
+                <label class="form-check-label" for="in_person">In-Person</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Insurance -->
+          <div class="filter-section">
+            <h6 class="filter-title">Insurance Accepted</h6>
+            <div class="filter-options">
+              <div class="form-check" *ngFor="let insurance of filterOptions.insuranceProviders.slice(0, 6)">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [id]="'ins_' + insurance"
+                  [checked]="filters.insuranceAccepted?.includes(insurance)"
+                  (change)="toggleFilter('insuranceAccepted', insurance)">
+                <label class="form-check-label" [for]="'ins_' + insurance">
+                  {{ insurance }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <button 
+                class="btn btn-outline-primary btn-sm d-lg-none me-3" 
+                (click)="showFilters = !showFilters">
+                <i class="bi bi-funnel me-1"></i>
+                Filters
+                <span *ngIf="getActiveFilterCount() > 0" class="ms-1">({{ getActiveFilterCount() }})</span>
+              </button>
+              
+              <div class="view-mode-toggle">
+                <button 
+                  class="btn btn-sm" 
+                  [class.btn-primary]="viewMode === 'grid'"
+                  [class.btn-outline-secondary]="viewMode !== 'grid'"
+                  (click)="viewMode = 'grid'">
+                  <i class="bi bi-grid"></i>
+                </button>
+                <button 
+                  class="btn btn-sm" 
+                  [class.btn-primary]="viewMode === 'list'"
+                  [class.btn-outline-secondary]="viewMode !== 'list'"
+                  (click)="viewMode = 'list'">
+                  <i class="bi bi-list"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="sort-controls">
+              <label class="form-label me-2">Sort by:</label>
+              <select class="form-select form-select-sm" [(ngModel)]="sortBy" (change)="onSortChange()">
+                <option value="relevance">Best Match</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="experience">Most Experienced</option>
+                <option value="rating">Highest Rated</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-state">
+          <div class="d-flex justify-content-center align-items-center py-5">
+            <div class="spinner-border text-primary me-3" role="status"></div>
+            <span>Finding therapists for you...</span>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          {{ error }}
+          <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadTherapists()">
+            Try Again
+          </button>
+        </div>
+
+        <!-- Results -->
+        <div *ngIf="!loading && !error">
+          <!-- Recommended Section -->
+          <div *ngIf="hasRecommendedTherapists()" class="results-section recommended-section">
+            <div class="section-header">
+              <h4 class="section-title">
+                <i class="bi bi-star-fill text-warning me-2"></i>
+                Recommended For You
+              </h4>
+              <p class="section-subtitle">Based on your assessment, these therapists are specially matched to your needs</p>
+            </div>
+
+            <div class="therapist-grid" [class.grid-view]="viewMode === 'grid'" [class.list-view]="viewMode === 'list'">
+              <div *ngFor="let therapist of therapists.recommended" class="therapist-card recommended">
+                <!-- Match Score Badge -->
+                <div class="match-badge" *ngIf="getMatchScore(therapist.id)">
+                  {{ getMatchScorePercentage(therapist.id) }}% match
+                </div>
+
+                <!-- Photo -->
+                <div class="therapist-photo">
+                  <img 
+                    [src]="therapist.professional_photo_url || getPlaceholderImage(therapist)" 
+                    [alt]="therapist.full_name"
+                    class="therapist-image"
+                    (error)="$event.target.src=getPlaceholderImage(therapist)">
+                </div>
+
+                <!-- Info -->
+                <div class="therapist-info">
+                  <div class="therapist-header">
+                    <h5 class="therapist-name">{{ therapist.full_name }}</h5>
+                    <div class="therapist-credentials">
+                      {{ therapist.license_type }} • {{ therapist.years_experience }}+ years
+                    </div>
+                  </div>
+
+                  <div class="therapist-specializations">
+                    {{ getSpecializationDisplay(therapist.specializations) }}
+                  </div>
+
+                  <div class="compatibility-reasons" *ngIf="getCompatibilityReasons(therapist.id).length > 0">
+                    <small class="text-success">
+                      <i class="bi bi-check-circle me-1"></i>
+                      {{ getCompatibilityReasons(therapist.id)[0] }}
+                    </small>
+                  </div>
+
+                  <div class="therapist-details">
+                    <div class="detail-item">
+                      <i class="bi bi-geo-alt me-1"></i>
+                      {{ therapist.location }}
+                    </div>
+                    <div class="detail-item">
+                      <i class="bi bi-calendar-check me-1"></i>
+                      {{ formatAvailability(therapist.availability_slots) }}
+                    </div>
+                    <div class="detail-item">
+                      <i class="bi bi-translate me-1"></i>
+                      {{ therapist.languages.join(', ') || 'English' }}
+                    </div>
+                  </div>
+
+                  <div class="therapist-pricing">
+                    <div class="price-main">
+                      {{ formatPrice(therapist.hourly_rates.individual) }}
+                    </div>
+                    <div *ngIf="therapist.sliding_scale_available" class="sliding-scale">
+                      <small class="text-success">
+                        <i class="bi bi-currency-dollar me-1"></i>
+                        Sliding scale available
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="therapist-actions">
+                  <button 
+                    class="btn btn-primary btn-book"
+                    (click)="bookTherapist(therapist)">
+                    <i class="bi bi-calendar-plus me-1"></i>
+                    Book Session
+                  </button>
+                  <button 
+                    class="btn btn-outline-primary btn-sm"
+                    (click)="viewTherapistProfile(therapist)">
+                    View Profile
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Other Therapists Section -->
+          <div *ngIf="therapists.other.length > 0" class="results-section other-section">
+            <div class="section-header">
+              <h4 class="section-title">
+                {{ hasRecommendedTherapists() ? 'Other Available Therapists' : 'Available Therapists' }}
+              </h4>
+              <p class="section-subtitle">{{ therapists.other.length }} therapists available</p>
+            </div>
+
+            <div class="therapist-grid" [class.grid-view]="viewMode === 'grid'" [class.list-view]="viewMode === 'list'">
+              <div *ngFor="let therapist of therapists.other" class="therapist-card">
+                <!-- Photo -->
+                <div class="therapist-photo">
+                  <img 
+                    [src]="therapist.professional_photo_url || getPlaceholderImage(therapist)" 
+                    [alt]="therapist.full_name"
+                    class="therapist-image"
+                    (error)="$event.target.src=getPlaceholderImage(therapist)">
+                </div>
+
+                <!-- Info -->
+                <div class="therapist-info">
+                  <div class="therapist-header">
+                    <h5 class="therapist-name">{{ therapist.full_name }}</h5>
+                    <div class="therapist-credentials">
+                      {{ therapist.license_type }} • {{ therapist.years_experience }}+ years
+                    </div>
+                  </div>
+
+                  <div class="therapist-specializations">
+                    {{ getSpecializationDisplay(therapist.specializations) }}
+                  </div>
+
+                  <div class="therapist-details">
+                    <div class="detail-item">
+                      <i class="bi bi-geo-alt me-1"></i>
+                      {{ therapist.location }}
+                    </div>
+                    <div class="detail-item">
+                      <i class="bi bi-calendar-check me-1"></i>
+                      {{ formatAvailability(therapist.availability_slots) }}
+                    </div>
+                    <div class="detail-item">
+                      <i class="bi bi-translate me-1"></i>
+                      {{ therapist.languages.join(', ') || 'English' }}
+                    </div>
+                  </div>
+
+                  <div class="therapist-pricing">
+                    <div class="price-main">
+                      {{ formatPrice(therapist.hourly_rates.individual) }}
+                    </div>
+                    <div *ngIf="therapist.sliding_scale_available" class="sliding-scale">
+                      <small class="text-success">
+                        <i class="bi bi-currency-dollar me-1"></i>
+                        Sliding scale available
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="therapist-actions">
+                  <button 
+                    class="btn btn-primary btn-book"
+                    (click)="bookTherapist(therapist)">
+                    <i class="bi bi-calendar-plus me-1"></i>
+                    Book Session
+                  </button>
+                  <button 
+                    class="btn btn-outline-primary btn-sm"
+                    (click)="viewTherapistProfile(therapist)">
+                    View Profile
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Results -->
+          <div *ngIf="therapists.totalCount === 0" class="no-results">
+            <div class="text-center py-5">
+              <i class="bi bi-search display-4 text-muted"></i>
+              <h4 class="mt-3">No therapists found</h4>
+              <p class="text-muted">Try adjusting your search criteria or filters</p>
+              <button class="btn btn-primary" (click)="clearFilters()">Clear All Filters</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

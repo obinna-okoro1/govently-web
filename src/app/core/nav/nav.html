@@ -80,6 +80,18 @@
         </span>
       </button>
 
+      <!-- Connect to Licensed Therapist -->
+      <button class="nav-item nav-button" 
+              (click)="connectToTherapist()">
+        <div class="nav-icon">
+          <i class="bi bi-person-heart"></i>
+        </div>
+        <span class="nav-label" *ngIf="sidebarOpen">
+          Connect to Therapist
+          <small class="nav-sublabel">Take assessment & find help</small>
+        </span>
+      </button>
+
       <!-- Divider -->
       <div class="nav-divider" *ngIf="sidebarOpen"></div>
 

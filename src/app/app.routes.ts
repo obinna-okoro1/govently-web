@@ -22,6 +22,10 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   { 
+    path: 'therapist-matching', 
+    loadComponent: () => import('./feature/therapist-listing/therapist-listing.component').then(m => m.TherapistListingComponent)
+  },
+  { 
     path: 'new-password', 
     loadComponent: () => import('./feature/password-reset.component/password-reset.component').then(m => m.PasswordResetComponent),
     canActivate: [authGuard]
