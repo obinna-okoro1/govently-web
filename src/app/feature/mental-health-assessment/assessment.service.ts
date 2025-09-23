@@ -1,22 +1,23 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, of, throwError } from 'rxjs';
+import { Observable, from, of, throwError, forkJoin } from 'rxjs';
 import { map, catchError, tap, switchMap } from 'rxjs/operators';
 
 import { SupabaseService } from '../../core/auth/supabase-client';
 import { AuthService } from '../../core/auth/auth-service';
 import { AssessmentResult, AssessmentResponse, TherapistRecommendation } from './assessment.types';
+import { ASSESSMENT_SECTIONS } from './assessment.data';
 
 interface AssessmentRecord {
   id?: string;
   user_id: string;
   assessment_id: string;
-  responses: any;
   phq9_score: number;
   gad7_score: number;
   pss10_score: number;
   who_wellbeing_score: number;
   risk_level: string;
   recommendations: string[];
+  individual_responses: any; // Enhanced JSONB structure with question details
   completed_at: string;
   created_at?: string;
   updated_at?: string;
@@ -33,7 +34,8 @@ export class AssessmentService {
   ) {}
 
   /**
-   * Save assessment result to Supabase
+   * Save assessment result to Supabase using UPSERT (one assessment per user)
+   * Saves both summary scores and individual question responses in single table
    */
   public saveAssessmentResult(result: AssessmentResult): Observable<AssessmentResult> {
     return this.authService.getSession().pipe(
@@ -45,20 +47,24 @@ export class AssessmentService {
         const record: AssessmentRecord = {
           user_id: session.user.id,
           assessment_id: result.assessmentId,
-          responses: this.serializeResponses(result.responses),
           phq9_score: result.scores.phq9Score,
           gad7_score: result.scores.gad7Score,
           pss10_score: result.scores.pss10Score,
           who_wellbeing_score: result.scores.whoWellBeingScore,
           risk_level: result.riskLevel,
           recommendations: result.recommendations,
+          individual_responses: this.prepareIndividualResponses(result.responses),
           completed_at: result.completedAt.toISOString()
         };
 
+        // Use UPSERT to ensure one assessment per user
         return from(
           this.supabase.client
-            .from('mental_health_assessments')
-            .insert([record])
+            .from('user_assessments')
+            .upsert(record, { 
+              onConflict: 'user_id',
+              ignoreDuplicates: false 
+            })
             .select()
             .single()
         );
@@ -67,6 +73,8 @@ export class AssessmentService {
         if (response.error) {
           throw new Error(`Failed to save assessment: ${response.error.message}`);
         }
+        
+        console.log('Assessment saved successfully with individual responses');
         
         // Return the original result with user ID populated
         return {
@@ -82,7 +90,7 @@ export class AssessmentService {
   }
 
   /**
-   * Get assessment results for current user
+   * Get assessment results for current user (latest assessment only due to unique constraint)
    */
   public getUserAssessments(): Observable<AssessmentResult[]> {
     return this.authService.getSession().pipe(
@@ -93,7 +101,7 @@ export class AssessmentService {
 
         return from(
           this.supabase.client
-            .from('mental_health_assessments')
+            .from('user_assessments')
             .select('*')
             .eq('user_id', session.user.id)
             .order('completed_at', { ascending: false })
@@ -114,6 +122,101 @@ export class AssessmentService {
   }
 
   /**
+   * Get the current assessment for the user
+   */
+  public getCurrentAssessment(): Observable<AssessmentResult | null> {
+    return this.authService.getSession().pipe(
+      switchMap(session => {
+        if (!session?.user) {
+          return of(null);
+        }
+
+        return from(
+          this.supabase.client
+            .from('user_assessments')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single()
+        );
+      }),
+      map((response: any) => {
+        if (response.error || !response.data) {
+          return null;
+        }
+
+        return this.mapRecordToResult(response.data);
+      }),
+      catchError(error => {
+        console.error('Error fetching current assessment:', error);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Get individual question responses for a user (for therapist review)
+   * Now uses the individual_responses JSONB field from single table
+   */
+  public getQuestionResponses(userId: string): Observable<any> {
+    return this.authService.getSession().pipe(
+      switchMap(session => {
+        if (!session?.user) {
+          return of(null);
+        }
+
+        return from(
+          this.supabase.client
+            .from('user_assessments')
+            .select('individual_responses, completed_at, assessment_id')
+            .eq('user_id', userId)
+            .single()
+        );
+      }),
+      map((response: any) => {
+        if (response.error || !response.data) {
+          return null;
+        }
+
+        return {
+          assessmentId: response.data.assessment_id,
+          completedAt: response.data.completed_at,
+          responses: response.data.individual_responses
+        };
+      }),
+      catchError(error => {
+        console.error('Error fetching question responses:', error);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Get comprehensive assessment review for therapists
+   * Uses the simplified single-table approach with therapist_assessment_review view
+   */
+  public getAssessmentReview(clientUserId: string): Observable<any> {
+    return from(
+      this.supabase.client
+        .from('therapist_assessment_review')
+        .select('*')
+        .eq('client_user_id', clientUserId)
+        .single()
+    ).pipe(
+      map((response: any) => {
+        if (response.error) {
+          throw new Error(`Failed to fetch assessment review: ${response.error.message}`);
+        }
+
+        return response.data;
+      }),
+      catchError(error => {
+        console.error('Error fetching assessment review:', error);
+        return of(null);
+      })
+    );
+  }
+
+  /**
    * Get specific assessment by ID
    */
   public getAssessmentById(assessmentId: string): Observable<AssessmentResult | null> {
@@ -125,7 +228,7 @@ export class AssessmentService {
 
         return from(
           this.supabase.client
-            .from('mental_health_assessments')
+            .from('user_assessments')
             .select('*')
             .eq('assessment_id', assessmentId)
             .eq('user_id', session.user.id)
@@ -189,7 +292,7 @@ export class AssessmentService {
   }
 
   /**
-   * Get assessment completion statistics
+   * Get assessment completion statistics (simplified for single assessment per user)
    */
   public getAssessmentStats(): Observable<any> {
     return this.authService.getSession().pipe(
@@ -200,46 +303,148 @@ export class AssessmentService {
 
         return from(
           this.supabase.client
-            .from('mental_health_assessments')
-            .select('completed_at, risk_level, phq9_score, gad7_score')
+            .from('user_assessments')
+            .select('completed_at, created_at, updated_at, risk_level, phq9_score, gad7_score')
             .eq('user_id', session.user.id)
+            .single()
         );
       }),
       map((response: any) => {
         if (response.error || !response.data) {
-          return null;
+          return {
+            totalAssessments: 0,
+            lastAssessment: null,
+            currentPhq9Score: null,
+            currentGad7Score: null,
+            currentRiskLevel: null,
+            hasRetaken: false
+          };
         }
 
-        const assessments = response.data;
+        const assessment = response.data;
+        const hasRetaken = new Date(assessment.created_at).getTime() !== new Date(assessment.updated_at).getTime();
         
         return {
-          totalAssessments: assessments.length,
-          lastAssessment: assessments.length > 0 ? new Date(assessments[0].completed_at) : null,
-          averagePhq9Score: this.calculateAverage(assessments.map((a: any) => a.phq9_score)),
-          averageGad7Score: this.calculateAverage(assessments.map((a: any) => a.gad7_score)),
-          riskLevelTrend: this.analyzeRiskTrend(assessments),
-          progressIndicators: this.calculateProgressIndicators(assessments)
+          totalAssessments: 1,
+          lastAssessment: new Date(assessment.completed_at),
+          currentPhq9Score: assessment.phq9_score,
+          currentGad7Score: assessment.gad7_score,
+          currentRiskLevel: assessment.risk_level,
+          hasRetaken: hasRetaken,
+          firstTaken: new Date(assessment.created_at),
+          lastUpdated: new Date(assessment.updated_at)
         };
-      })
+      }),
+      catchError(() => of({
+        totalAssessments: 0,
+        lastAssessment: null,
+        currentPhq9Score: null,
+        currentGad7Score: null,
+        currentRiskLevel: null,
+        hasRetaken: false
+      }))
     );
   }
 
   // ===== Private Helper Methods =====
 
   /**
-   * Serialize responses for database storage
+   * Prepare individual responses in enhanced JSONB structure for therapist review
    */
-  private serializeResponses(responses: AssessmentResponse[]): any {
-    const serialized: any = {};
+  private prepareIndividualResponses(responses: AssessmentResponse[]): any {
+    const individualResponses = {
+      demographic: {},
+      depression: {},
+      anxiety: {},
+      stress: {},
+      'well-being': {}
+    };
     
-    responses.forEach(response => {
-      serialized[response.questionId] = {
-        value: response.value,
-        timestamp: response.timestamp.toISOString()
-      };
+    // Create a map of all questions from assessment sections for quick lookup
+    const questionMap = new Map();
+    ASSESSMENT_SECTIONS.forEach(section => {
+      section.questions.forEach(question => {
+        questionMap.set(question.id, {
+          category: question.category,
+          text: question.question,
+          type: question.type,
+          options: question.options,
+          clinicalContext: question.clinicalContext
+        });
+      });
     });
-    
-    return serialized;
+
+    responses.forEach(response => {
+      const questionDetails = questionMap.get(response.questionId);
+      
+      if (questionDetails) {
+        // Find the human-readable label for the response
+        let responseLabel: string | undefined;
+        if (questionDetails.options && typeof response.value !== 'boolean') {
+          const option = questionDetails.options.find((opt: any) => opt.value === response.value);
+          responseLabel = option?.label;
+        } else if (typeof response.value === 'boolean') {
+          responseLabel = response.value ? 'Yes' : 'No';
+        } else {
+          responseLabel = response.value.toString();
+        }
+
+        // Determine scale type and max score
+        let scaleType: string | undefined;
+        let maxScore: number | undefined;
+        let clinicalSignificance: string | undefined;
+
+        if (response.questionId.startsWith('phq9_')) {
+          scaleType = 'phq9';
+          maxScore = 3;
+          clinicalSignificance = 'PHQ-9 Depression Severity Scale - measures depression symptoms';
+          if (response.questionId === 'phq9_9') {
+            clinicalSignificance = 'CRITICAL: Assesses suicidal ideation - requires immediate clinical attention if > 0';
+          }
+        } else if (response.questionId.startsWith('gad7_')) {
+          scaleType = 'gad7';
+          maxScore = 3;
+          clinicalSignificance = 'GAD-7 Anxiety Scale - measures anxiety symptoms';
+        } else if (response.questionId.startsWith('pss_')) {
+          scaleType = 'pss10';
+          maxScore = 4;
+          clinicalSignificance = 'Perceived Stress Scale - measures stress perception and coping';
+        } else if (response.questionId.startsWith('who5_')) {
+          scaleType = 'who5';
+          maxScore = 5;
+          clinicalSignificance = 'WHO-5 Well-Being Index - measures psychological well-being';
+        } else if (questionDetails.category === 'demographic') {
+          scaleType = 'demographic';
+          clinicalSignificance = 'Demographic information for personalized treatment';
+        }
+
+        // Add clinical context if available
+        if (questionDetails.clinicalContext) {
+          clinicalSignificance = questionDetails.clinicalContext;
+        }
+
+        // Create the enhanced response object
+        const enhancedResponse = {
+          question: questionDetails.text,
+          value: response.value,
+          label: responseLabel,
+          scale_type: scaleType,
+          max_score: maxScore,
+          clinical_significance: clinicalSignificance,
+          answered_at: response.timestamp.toISOString()
+        };
+
+        // Add to the appropriate category
+        const category = questionDetails.category;
+        if (category === 'well-being') {
+          (individualResponses['well-being'] as any)[response.questionId] = enhancedResponse;
+        } else {
+          (individualResponses as any)[category][response.questionId] = enhancedResponse;
+        }
+      }
+    });
+
+    return individualResponses;
   }
 
   /**
@@ -248,13 +453,20 @@ export class AssessmentService {
   private mapRecordToResult(record: AssessmentRecord): AssessmentResult {
     const responses: AssessmentResponse[] = [];
     
-    if (record.responses) {
-      Object.entries(record.responses).forEach(([questionId, data]: [string, any]) => {
-        responses.push({
-          questionId,
-          value: data.value,
-          timestamp: new Date(data.timestamp)
-        });
+    // Extract responses from individual_responses JSONB structure
+    if (record.individual_responses) {
+      Object.values(record.individual_responses).forEach((categoryResponses: any) => {
+        if (categoryResponses && typeof categoryResponses === 'object') {
+          Object.entries(categoryResponses).forEach(([questionId, responseData]: [string, any]) => {
+            if (responseData && responseData.value !== undefined && responseData.answered_at) {
+              responses.push({
+                questionId,
+                value: responseData.value,
+                timestamp: new Date(responseData.answered_at)
+              });
+            }
+          });
+        }
       });
     }
 

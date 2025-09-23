@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth-service';
 import { ModalService } from '../../shared/modal/modal.service';
@@ -71,7 +72,25 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.startAssessment();
+    this.calculateTotalQuestions();
+    this.checkExistingAssessment();
+  }
+  
+  /**
+   * Check if user has taken assessment before
+   */
+  private checkExistingAssessment(): void {
+    this.assessmentService.getCurrentAssessment().subscribe({
+      next: (existingAssessment) => {
+        if (existingAssessment) {
+          console.log('User has existing assessment:', existingAssessment);
+          // You can show a message or handle retake logic here
+        }
+      },
+      error: (error) => {
+        console.error('Error checking existing assessment:', error);
+      }
+    });
   }
 
   public ngOnDestroy(): void {
@@ -303,6 +322,7 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
    */
   private async completeAssessment(): Promise<void> {
     this.isLoading = true;
+    this.errorMessage = ''; // Clear any previous errors
     this.assessmentState.completedAt = new Date();
     
     try {
@@ -311,6 +331,14 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
       const gad7Score = ClinicalScoring.calculateGAD7Score(this.assessmentState.responses);
       const stressScore = ClinicalScoring.calculateStressScore(this.assessmentState.responses);
       const wellBeingScore = ClinicalScoring.calculateWellBeingScore(this.assessmentState.responses);
+
+      // Log calculated scores for debugging
+      console.log('Calculated scores:', {
+        phq9Score: phq9Score,
+        gad7Score: gad7Score,
+        stressScore: stressScore,
+        wellBeingScore: wellBeingScore
+      });
 
       // Create assessment result
       this.assessmentResult = {
@@ -328,17 +356,41 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
         completedAt: this.assessmentState.completedAt
       };
 
-      // Save assessment results
-      await this.assessmentService.saveAssessmentResult(this.assessmentResult);
-      
+      console.log('Assessment result created:', this.assessmentResult);
+
+      // Save assessment results using UPSERT (will update existing or insert new)
+      try {
+        const savedResult = await firstValueFrom(this.assessmentService.saveAssessmentResult(this.assessmentResult));
+        
+        if (savedResult) {
+          this.assessmentResult = savedResult;
+          console.log('Assessment saved successfully:', savedResult);
+        }
+      } catch (saveError: any) {
+        console.warn('Assessment save failed, but continuing with local results:', saveError);
+        this.errorMessage = 'Your assessment was completed but could not be saved. Your results are still available below.';
+      }
+
+      // Mark as completed regardless of save status
       this.assessmentState.isCompleted = true;
       this.confettiService.launchConfetti();
       
-    } catch (error) {
-      this.errorMessage = 'There was an error saving your assessment. Please try again.';
+      // Track completion
+      console.log('Assessment completed:', {
+        assessmentId: this.assessmentResult.assessmentId,
+        userId: this.assessmentResult.userId,
+        riskLevel: this.assessmentResult.riskLevel,
+        scores: this.assessmentResult.scores
+      });
+      
+    } catch (error: any) {
+      this.errorMessage = error?.message || 'There was an error completing your assessment. Please try again.';
       console.error('Assessment completion error:', error);
+      
+      // Don't mark as completed if there was a critical error
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges(); // Force change detection
     }
   }
 
@@ -348,10 +400,14 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
   private determineOverallRiskLevel(depressionLevel: string, anxietyLevel: string): 'minimal' | 'mild' | 'moderate' | 'moderately-severe' | 'severe' {
     const riskLevels = ['minimal', 'mild', 'moderate', 'moderately-severe', 'severe'];
     const depressionIndex = riskLevels.indexOf(depressionLevel);
-    const anxietyIndex = riskLevels.indexOf(anxietyLevel as any) || 0;
+    const anxietyIndex = riskLevels.indexOf(anxietyLevel as any);
     
-    // Use the higher of the two risk levels
-    const maxIndex = Math.max(depressionIndex, anxietyIndex);
+    // Use the higher of the two risk levels, defaulting to 0 if not found
+    const maxIndex = Math.max(
+      depressionIndex >= 0 ? depressionIndex : 0, 
+      anxietyIndex >= 0 ? anxietyIndex : 0
+    );
+    
     return riskLevels[maxIndex] as any;
   }
 
@@ -361,11 +417,19 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
   private generateRecommendations(phq9: any, gad7: any, stress: any, wellBeing: any): string[] {
     const recommendations: string[] = [];
     
-    // Combine recommendations from all assessments
-    recommendations.push(...phq9.recommendations);
-    recommendations.push(...gad7.recommendations);
-    recommendations.push(...stress.recommendations);
-    recommendations.push(...wellBeing.recommendations);
+    // Debug logging
+    console.log('Generating recommendations from:', {
+      phq9: phq9,
+      gad7: gad7,
+      stress: stress,
+      wellBeing: wellBeing
+    });
+    
+    // Safely combine recommendations from all assessments
+    if (phq9?.recommendations) recommendations.push(...phq9.recommendations);
+    if (gad7?.recommendations) recommendations.push(...gad7.recommendations);
+    if (stress?.recommendations) recommendations.push(...stress.recommendations);
+    if (wellBeing?.recommendations) recommendations.push(...wellBeing.recommendations);
     
     // Remove duplicates and add general recommendations
     const uniqueRecommendations = Array.from(new Set(recommendations));
@@ -376,6 +440,16 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
       uniqueRecommendations.push(`Connect with a therapist who specializes in ${primaryConcern}`);
     }
     
+    // Ensure there's always at least one recommendation
+    if (uniqueRecommendations.length === 0) {
+      uniqueRecommendations.push(
+        'Consider speaking with a mental health professional for personalized guidance',
+        'Practice self-care and stress management techniques',
+        'Maintain social connections and support systems'
+      );
+    }
+    
+    console.log('Generated recommendations:', uniqueRecommendations);
     return uniqueRecommendations;
   }
 
@@ -496,5 +570,12 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
    */
   public trackByValue(index: number, item: any): any {
     return item.value;
+  }
+
+  /**
+   * Track by index for ngFor performance optimization
+   */
+  public trackByIndex(index: number, item: any): number {
+    return index;
   }
 }

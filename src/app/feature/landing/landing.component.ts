@@ -21,7 +21,6 @@ import { Login } from '../login/login';
 })
 export class LandingComponent implements OnInit {
   public todayPrompt: Observable<string>;
-  public showChatOverlay: boolean = false;
   public showCrisisSupport: boolean = true;
   
   // Demo interaction state
@@ -117,8 +116,7 @@ export class LandingComponent implements OnInit {
   }
 
   public startFullExperience() {
-    // Convert demo user to full AI chat experience
-    this.showChatOverlay = true;
+    this.router.navigate(['/ai-chat']);
   }
 
   // Navigation methods
@@ -143,21 +141,17 @@ export class LandingComponent implements OnInit {
     // Check if user is logged in, if not prompt signup
     this.authService.getSession().subscribe(session => {
       if (session?.user) {
-        this.showChatOverlay = true;
+        this.router.navigate(['/ai-chat']);
       } else {
         this.modalService.open(Signup, 'Sign Up to Chat with AI', {
           onSuccess: () => {
             setTimeout(() => {
-              this.showChatOverlay = true;
+              this.router.navigate(['/ai-chat']);
             }, 1000);
           }
         });
       }
     });
-  }
-
-  public closeChatOverlay() {
-    this.showChatOverlay = false;
   }
 
   public openLegalModal() {
