@@ -86,15 +86,24 @@ $error: var(--color-error);
 $info: var(--color-info);
 
 /* Global typography and base styles */
+html {
+  background-color: #ffffff;
+  /* Safari-specific fixes */
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--color-bg-primary);
+  background-color: #ffffff !important;
   color: var(--color-text-primary);
   margin: 0;
   padding: 0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Safari mobile fixes */
+  -webkit-overflow-scrolling: touch;
+  min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -132,3 +141,24 @@ h1, h2, h3, h4, h5, h6 {
 .rounded-lg { border-radius: 0.75rem; }
 .rounded-xl { border-radius: 1rem; }
 .rounded-2xl { border-radius: 1.5rem; }
+
+/* Safari-specific fixes for mobile white background */
+@supports (-webkit-appearance: none) {
+  html, body {
+    background-color: #ffffff !important;
+  }
+  
+  /* Ensure app root has white background */
+  app-root {
+    display: block;
+    background-color: #ffffff !important;
+    min-height: 100vh;
+  }
+  
+  /* Fix Safari mobile viewport issues */
+  body {
+    position: relative;
+    width: 100%;
+    overflow-x: hidden;
+  }
+}
