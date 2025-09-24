@@ -9,6 +9,7 @@ import { AuthService } from '../../core/auth/auth-service';
 import { ModalService } from '../../shared/modal/modal.service';
 import { ConfettiService } from '../../shared/confetti-service';
 import { Login } from '../login/login';
+import { CrisisSupportService } from '../../shared/crisis-support.service';
 
 import {
   AssessmentSection,
@@ -67,7 +68,8 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private confettiService: ConfettiService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public crisisSupportService: CrisisSupportService
   ) {
     this.calculateTotalQuestions();
   }
@@ -485,7 +487,7 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
    * Get crisis resources immediately
    */
   public getCrisisHelp(): void {
-    window.open('tel:988', '_self'); // National Suicide Prevention Lifeline
+    this.crisisSupportService.callSuicideHotline();
   }
 
   /**

@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { GoventlyLegalComponent } from '../govently-legal.component/govently-legal.component';
 import { Signup } from '../signup/signup';
 import { Login } from '../login/login';
+import { CrisisSupportService } from '../../shared/crisis-support.service';
 
 @Component({
   selector: 'app-landing',
@@ -53,7 +54,8 @@ export class LandingComponent implements OnInit {
     private router: Router,
     private modalService: ModalService,
     private dailyPromptService: DailyPromptService,
-    private authService: AuthService
+    private authService: AuthService,
+    public crisisSupportService: CrisisSupportService
   ) {
     this.todayPrompt = this.dailyPromptService.getPrompt();
     this.updateLandingHeight();

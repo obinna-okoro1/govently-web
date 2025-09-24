@@ -8,7 +8,7 @@
           <div class="col-lg-6">
             <div class="hero-content" data-aos="fade-up">
               <!-- Trust Badge -->
-              <div class="trust-badge mb-3">
+              <div class="trust-badge mb-3 rounded-pill px-3">
                 <i class="bi bi-shield-check text-success me-2"></i>
                 <span class="text-muted small">HIPAA Compliant • Licensed Therapists • 24/7 Support</span>
               </div>
@@ -302,7 +302,11 @@
             <i class="bi bi-telephone-fill"></i>
           </div>
           <div class="crisis-text">
-            <strong>Need immediate help?</strong> If you're in crisis, call 988 (Suicide & Crisis Lifeline) or text "HELLO" to 741741 (Crisis Text Line)
+            <strong>Need immediate help?</strong> 
+            <span *ngIf="crisisSupportService.getCurrentSupport() | async as support">
+              Call {{ support.suicide.phone }} ({{ support.suicide.name }})
+              <span *ngIf="support.crisis.text"> or text {{ support.crisis.text }}</span>
+            </span>
           </div>
           <button class="crisis-close" (click)="showCrisisSupport = false">
             <i class="bi bi-x"></i>

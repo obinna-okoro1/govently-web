@@ -87,7 +87,8 @@
                 <small class="mb-0">
                   This assessment uses validated clinical screening tools (PHQ-9, GAD-7, PSS-10, WHO-5) 
                   but is not a substitute for professional diagnosis. If you're experiencing thoughts of 
-                  self-harm or crisis, please seek immediate help by calling 988 (Suicide & Crisis Lifeline).
+                  self-harm or crisis, please seek immediate help by calling {{ crisisSupportService.getSuicideHotline() }} 
+                  ({{ (crisisSupportService.getCurrentSupport() | async)?.suicide?.name || 'Crisis Support' }}).
                 </small>
               </div>
               
@@ -495,14 +496,18 @@
             <i class="bi bi-telephone-fill me-2"></i>
             Immediate Help Available 24/7
           </h6>
-          <p class="small mb-2">
-            <strong>National Suicide Prevention Lifeline:</strong><br>
-            Call or text <strong>988</strong> for free, confidential support
-          </p>
-          <p class="small mb-0">
-            <strong>Crisis Text Line:</strong><br>
-            Text <strong>HOME</strong> to <strong>741741</strong>
-          </p>
+          <div *ngIf="crisisSupportService.getCurrentSupport() | async as support">
+            <p class="small mb-2">
+              <strong>{{ support.suicide.name }}:</strong><br>
+              Call <strong>{{ support.suicide.phone }}</strong><span *ngIf="support.suicide.text"> or text <strong>{{ support.suicide.text }}</strong></span>
+              <span *ngIf="support.suicide.available24h"> - Available 24/7</span>
+            </p>
+            <p class="small mb-0" *ngIf="support.crisis.text">
+              <strong>{{ support.crisis.name }}:</strong><br>
+              Text <strong>{{ support.crisis.text }}</strong>
+              <span *ngIf="support.crisis.available24h"> - Available 24/7</span>
+            </p>
+          </div>
         </div>
         
         <p class="small text-muted">
@@ -518,7 +523,7 @@
               class="btn btn-danger w-100"
               (click)="getCrisisHelp()">
               <i class="bi bi-telephone me-2"></i>
-              Get Crisis Support Now (988)
+              Get Crisis Support Now ({{ crisisSupportService.getSuicideHotline() }})
             </button>
           </div>
           <div class="col-12">
