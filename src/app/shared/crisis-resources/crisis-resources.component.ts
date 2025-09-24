@@ -202,10 +202,20 @@ export class CrisisResourcesComponent implements OnInit {
   }
 
   callNumber(phoneNumber: string): void {
+    // Log the action for analytics
+    if (phoneNumber === this.crisisSupportService.getEmergencyNumber()) {
+      this.crisisSupportService.logCrisisSupport('call', 'emergency');
+    } else if (phoneNumber === this.crisisSupportService.getSuicideHotline()) {
+      this.crisisSupportService.logCrisisSupport('call', 'suicide');
+    } else {
+      this.crisisSupportService.logCrisisSupport('call', 'crisis');
+    }
+    
     window.open(`tel:${phoneNumber}`, '_self');
   }
 
   sendText(textNumber: string): void {
+    this.crisisSupportService.logCrisisSupport('text', 'crisis');
     window.open(`sms:${textNumber}`, '_self');
   }
 }
