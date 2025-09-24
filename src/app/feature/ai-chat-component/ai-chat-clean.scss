@@ -3,7 +3,7 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 90vh;
   max-width: 800px;
   margin: 0 auto;
   background: var(--color-white);
@@ -13,7 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 0rem;
   border-bottom: 1px solid var(--color-border-light);
   background: var(--color-bg-primary);
 }

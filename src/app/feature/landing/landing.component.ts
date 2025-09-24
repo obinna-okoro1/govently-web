@@ -73,25 +73,7 @@ export class LandingComponent implements OnInit {
 
   // Primary CTA - Start Free Assessment
   public startFreeAssessment() {
-    // Check if user is authenticated
-    this.authService.getSession().subscribe(session => {
-      if (session?.user) {
-        // User is authenticated, navigate directly to assessment
-        this.router.navigate(['/assessment']);
-      } else {
-        // User is not authenticated, show signup modal with assessment context
-        this.modalService.open(Signup, 'Start Your Free Mental Health Assessment', {
-          isAssessment: true,
-          skipToAssessment: true,
-          onSuccess: () => {
-            // After successful signup, navigate to assessment
-            setTimeout(() => {
-              this.router.navigate(['/assessment']);
-            }, 1000);
-          }
-        });
-      }
-    });
+    this.router.navigate(['/assessment']);
   }
 
   // Secondary CTA - Explore Features
