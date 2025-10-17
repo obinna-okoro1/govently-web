@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS public.appointments (
     status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'in-progress', 'completed', 'cancelled', 'no-show')),
     type TEXT NOT NULL CHECK (type IN ('initial-consultation', 'follow-up', 'assessment-review', 'therapy-session')),
     notes TEXT,
-    assessment_id UUID REFERENCES public.user_assessments(assessment_id),
+    assessment_id UUID REFERENCES public.user_assessments(id),
     meeting_link TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
