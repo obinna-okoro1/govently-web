@@ -22,11 +22,24 @@ import {
 
 import { ASSESSMENT_SECTIONS, ClinicalScoring } from './assessment.data';
 import { AssessmentService } from './assessment.service';
+import {
+  AssessmentWelcomeComponent,
+  AssessmentQuestionComponent,
+  AssessmentResultsComponent,
+  AssessmentSummaryComponent
+} from './components';
 
 @Component({
   selector: 'app-mental-health-assessment',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    AssessmentWelcomeComponent,
+    AssessmentQuestionComponent,
+    AssessmentResultsComponent,
+    AssessmentSummaryComponent
+  ],
   templateUrl: './mental-health-assessment.component.html',
   styleUrls: ['./mental-health-assessment.component.scss']
 })
@@ -60,6 +73,10 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
   // Assessment Results
   public assessmentResult: AssessmentResult | null = null;
   
+  // Previous Assessment
+  public previousAssessment: AssessmentResult | null = null;
+  public showPreviousAssessment: boolean = false;
+  
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -87,7 +104,8 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
       next: (existingAssessment) => {
         if (existingAssessment) {
           console.log('User has existing assessment:', existingAssessment);
-          // You can show a message or handle retake logic here
+          this.previousAssessment = existingAssessment;
+          this.showPreviousAssessment = true;
         }
       },
       error: (error) => {
@@ -121,6 +139,9 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
       });
       return;
     }
+
+    // Hide previous assessment view if showing
+    this.showPreviousAssessment = false;
 
     this.assessmentState.isStarted = true;
     this.assessmentState.startedAt = new Date();
@@ -526,6 +547,18 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
       queryParams: { 
         assessment: this.assessmentResult?.assessmentId,
         riskLevel: this.assessmentResult?.riskLevel 
+      }
+    });
+  }
+
+  /**
+   * Book therapist from assessment summary
+   */
+  public bookTherapistFromSummary(): void {
+    this.router.navigate(['/therapist-matching'], { 
+      queryParams: { 
+        assessment: this.previousAssessment?.assessmentId,
+        riskLevel: this.previousAssessment?.riskLevel 
       }
     });
   }

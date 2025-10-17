@@ -31,399 +31,47 @@
     </div>
   </div>
 
-  <!-- Assessment Welcome Screen - Mobile First -->
-  <div class="flex-grow-1 d-flex align-items-center" *ngIf="!assessmentState.isStarted">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8 col-xl-6">
-          <div class="card shadow-sm border-0">
-            <div class="card-body p-4 p-lg-5 text-center">
-              <div class="mb-4">
-                <i class="bi bi-heart-pulse text-primary" style="font-size: 3rem;"></i>
-              </div>
-              
-              <h1 class="h3 mb-4">Your Mental Health Journey Starts Here</h1>
-              <p class="lead mb-4 text-muted">
-                This comprehensive assessment will help us understand your current mental health and well-being. 
-                Your responses are completely confidential and will be used to provide personalized recommendations.
-              </p>
-              
-              <!-- Assessment Details using Bootstrap Grid -->
-              <div class="row g-3 mb-4">
-                <div class="col-12 col-sm-4">
-                  <div class="d-flex align-items-center justify-content-center justify-content-sm-start">
-                    <i class="bi bi-clock text-primary me-2"></i>
-                    <div>
-                      <div class="fw-bold">8 minutes</div>
-                      <small class="text-muted">Estimated time</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-4">
-                  <div class="d-flex align-items-center justify-content-center justify-content-sm-start">
-                    <i class="bi bi-shield-check text-success me-2"></i>
-                    <div>
-                      <div class="fw-bold">Confidential</div>
-                      <small class="text-muted">Private & secure</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-4">
-                  <div class="d-flex align-items-center justify-content-center justify-content-sm-start">
-                    <i class="bi bi-award text-warning me-2"></i>
-                    <div>
-                      <div class="fw-bold">Evidence-based</div>
-                      <small class="text-muted">Clinical tools</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Important Note -->
-              <div class="alert alert-info text-start mb-4">
-                <h6 class="alert-heading">
-                  <i class="bi bi-info-circle me-2"></i>Important Note
-                </h6>
-                <small class="mb-0">
-                  This assessment uses validated clinical screening tools (PHQ-9, GAD-7, PSS-10, WHO-5) 
-                  but is not a substitute for professional diagnosis. If you're experiencing thoughts of 
-                  self-harm or crisis, please seek immediate help by calling {{ crisisSupportService.getSuicideHotline() }} 
-                  ({{ (crisisSupportService.getCurrentSupport() | async)?.suicide?.name || 'Crisis Support' }}).
-                </small>
-              </div>
-              
-              <button 
-                class="btn btn-primary btn-lg px-4 px-lg-5"
-                (click)="startAssessment()"
-                [disabled]="isLoading">
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-                <i class="bi bi-play-circle me-2" *ngIf="!isLoading"></i>
-                Begin Assessment
-              </button>
-            </div>
-          </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Previous Assessment Summary -->
+  <app-assessment-summary
+    *ngIf="showPreviousAssessment && previousAssessment"
+    [previousAssessment]="previousAssessment"
+    (retakeAssessment)="startAssessment()"
+    (bookTherapist)="bookTherapistFromSummary()">
+  </app-assessment-summary>
 
-  <!-- Assessment Questions - Mobile First -->
-  <div class="flex-grow-1" *ngIf="assessmentState.isStarted && !assessmentState.isCompleted && currentQuestion">
-    <div class="container py-4">
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8 col-xl-6">
-          
-          <!-- Section Navigation -->
-          <div class="mb-4">
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
-              <div class="mb-3 mb-sm-0">
-                <h5 class="mb-1 text-primary">{{ assessmentState.currentSection?.title }}</h5>
-                <small class="text-muted">
-                  Section {{ assessmentState.progress.currentSection + 1 }} of {{ assessmentState.progress.totalSections }}
-                </small>
-              </div>
-              <div class="section-progress">
-                <div class="progress" style="width: 5rem; height: 0.375rem;">
-                  <div 
-                    class="progress-bar bg-primary" 
-                    [style.width.%]="currentSectionProgress">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- Assessment Welcome Screen -->
+  <app-assessment-welcome
+    *ngIf="!assessmentState.isStarted && !showPreviousAssessment"
+    [isLoading]="isLoading"
+    (startAssessment)="startAssessment()">
+  </app-assessment-welcome>
 
-          <!-- Question Card using Bootstrap -->
-          <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body p-4 p-lg-5">
-              <h3 class="h5 h4-md mb-3">{{ currentQuestion.question }}</h3>
-              <div class="help-text" *ngIf="currentQuestion.helpText">
-                <small class="text-muted">
-                  <i class="bi bi-lightbulb me-1"></i>
-                  {{ currentQuestion.helpText }}
-                </small>
-              </div>
-            </div>
-
-            <!-- Answer Options -->
-            <div class="answer-options mb-4">
-              
-              <!-- Scale Questions -->
-              <div class="scale-options" *ngIf="currentQuestion.type === 'scale'">
-                <div class="row g-2">
-                  <div 
-                    class="col-12" 
-                    *ngFor="let option of currentQuestion.options; trackBy: trackByValue">
-                    <div class="form-check">
-                      <input 
-                        class="form-check-input" 
-                        type="radio" 
-                        [id]="'option-' + option.value"
-                        [value]="option.value"
-                        [checked]="currentResponse === option.value"
-                        (change)="onResponseChanged(option.value)"
-                        name="assessment-response">
-                      <label 
-                        class="form-check-label w-100 p-3 border rounded d-flex justify-content-between align-items-center"
-                        [for]="'option-' + option.value">
-                        <div>
-                          <strong>{{ option.label }}</strong>
-                          <div class="option-description" *ngIf="option.description">
-                            <small class="text-muted">
-                              {{ option.description }}
-                            </small>
-                          </div>
-                        </div>
-                        <i class="bi bi-check-circle-fill text-primary" 
-                           *ngIf="currentResponse === option.value" 
-                           style="font-size: 1.25rem;"></i>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Multiple Choice Questions -->
-              <div class="multiple-choice-options" *ngIf="currentQuestion.type === 'multiple-choice'">
-                <div class="row g-2">
-                  <div 
-                    class="col-12" 
-                    *ngFor="let option of currentQuestion.options; trackBy: trackByValue">
-                    <div class="form-check">
-                      <input 
-                        class="form-check-input" 
-                        type="radio" 
-                        [id]="'option-' + option.value"
-                        [value]="option.value"
-                        [checked]="currentResponse === option.value"
-                        (change)="onResponseChanged(option.value)"
-                        name="assessment-response">
-                      <label 
-                        class="form-check-label w-100 p-3 border rounded d-flex justify-content-between align-items-center"
-                        [for]="'option-' + option.value">
-                        <strong>{{ option.label }}</strong>
-                        <i class="bi bi-check-circle-fill text-primary" 
-                           *ngIf="currentResponse === option.value" 
-                           style="font-size: 1.25rem;"></i>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Boolean Questions -->
-              <div class="boolean-options" *ngIf="currentQuestion.type === 'boolean'">
-                <div class="row g-2">
-                  <div class="col-6">
-                    <div class="form-check">
-                      <input 
-                        class="form-check-input" 
-                        type="radio" 
-                        id="option-yes"
-                        [value]="true"
-                        [(ngModel)]="currentResponse"
-                        (change)="onResponseChanged(true)"
-                        name="assessment-response">
-                      <label 
-                        class="form-check-label w-100 p-3 border rounded text-center"
-                        [class.border-success]="currentResponse === true"
-                        [class.bg-success]="currentResponse === true"
-                        [class.text-white]="currentResponse === true"
-                        for="option-yes">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <strong>Yes</strong>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="form-check">
-                      <input 
-                        class="form-check-input" 
-                        type="radio" 
-                        id="option-no"
-                        [value]="false"
-                        [(ngModel)]="currentResponse"
-                        (change)="onResponseChanged(false)"
-                        name="assessment-response">
-                      <label 
-                        class="form-check-label w-100 p-3 border rounded text-center"
-                        [class.border-secondary]="currentResponse === false"
-                        [class.bg-secondary]="currentResponse === false"
-                        [class.text-white]="currentResponse === false"
-                        for="option-no">
-                        <i class="bi bi-x-circle me-2"></i>
-                        <strong>No</strong>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Text Questions -->
-              <div class="text-options" *ngIf="currentQuestion.type === 'text'">
-                <div class="form-group">
-                  <textarea 
-                    class="form-control" 
-                    rows="4"
-                    placeholder="Please share your thoughts..."
-                    [(ngModel)]="currentResponse"
-                    (input)="onTextAreaInput($event)"
-                    maxlength="500">
-                  </textarea>
-                  <div class="form-text">
-                    <small class="text-muted">Optional - share as much or as little as you'd like</small>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-
-            <!-- Error Message -->
-            <div class="alert alert-warning" *ngIf="errorMessage" role="alert">
-              <i class="bi bi-exclamation-triangle me-2"></i>
-              {{ errorMessage }}
-            </div>
-
-            <!-- Navigation Buttons -->
-            <div class="navigation-buttons d-flex flex-column flex-sm-row justify-content-between gap-2 gap-sm-0">
-              <button 
-                class="btn btn-outline-secondary order-2 order-sm-1"
-                (click)="previousQuestion()"
-                [disabled]="!canGoBack || isLoading">
-                <i class="bi bi-arrow-left me-2"></i>
-                Back
-              </button>
-              
-              <button 
-                class="btn btn-primary px-4 order-1 order-sm-2"
-                (click)="nextQuestion()"
-                [disabled]="isLoading || !isCurrentQuestionAnswered()">
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-                {{ nextButtonText }}
-                <i class="bi bi-arrow-right ms-2" *ngIf="!isLoading"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Assessment Questions -->
+  <app-assessment-question
+    *ngIf="assessmentState.isStarted && !assessmentState.isCompleted && currentQuestion"
+    [question]="currentQuestion"
+    [currentSection]="assessmentState.currentSection!"
+    [progress]="assessmentState.progress"
+    [currentResponse]="currentResponse"
+    [sectionProgress]="currentSectionProgress"
+    [canGoBack]="canGoBack"
+    [nextButtonText]="nextButtonText"
+    [isLoading]="isLoading"
+    [errorMessage]="errorMessage"
+    (responseChanged)="onResponseChanged($event)"
+    (nextQuestion)="nextQuestion()"
+    (previousQuestion)="previousQuestion()">
+  </app-assessment-question>
 
   <!-- Assessment Complete -->
-  <div class="results-screen flex-grow-1 d-flex align-items-center" *ngIf="assessmentState.isCompleted && assessmentResult">
-    <div class="container-fluid px-3 px-md-4">
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8 col-xl-6">
-          <div class="results-card bg-white p-3 p-md-5 rounded-3 shadow-sm text-center">
-            
-            <div class="celebration-icon mb-3 mb-md-4">
-              <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
-            </div>
-            
-            <h1 class="h3 h2-md mb-3 mb-md-4">Assessment Complete!</h1>
-            <p class="lead mb-3 mb-md-4 text-muted">
-              Thank you for taking the time to complete your mental health assessment. 
-              Your responses have been securely saved and analyzed.
-            </p>
-
-            <!-- Error Message if any -->
-            <div class="alert alert-info" *ngIf="errorMessage" role="alert">
-              <i class="bi bi-info-circle me-2"></i>
-              {{ errorMessage }}
-            </div>
-
-            <!-- Risk Level Summary -->
-            <div class="risk-summary mb-4 p-4 rounded" 
-                 [class.bg-success-subtle]="assessmentResult.riskLevel === 'minimal'"
-                 [class.bg-info-subtle]="assessmentResult.riskLevel === 'mild'"
-                 [class.bg-warning-subtle]="assessmentResult.riskLevel === 'moderate'"
-                 [class.bg-danger-subtle]="assessmentResult.riskLevel === 'severe' || assessmentResult.riskLevel === 'moderately-severe'">
-              <h5 class="mb-2">
-                <span class="text-capitalize">{{ assessmentResult.riskLevel || 'Unknown' }}</span> Support Level Indicated
-              </h5>
-              <p class="small mb-0">
-                Based on your responses, we've identified your current support needs and prepared personalized recommendations.
-              </p>
-            </div>
-
-            <!-- Score Summary -->
-            <div class="score-summary mb-4" *ngIf="assessmentResult?.scores">
-              <div class="row g-3 text-start">
-                <div class="col-6">
-                  <div class="score-item p-3 bg-light rounded">
-                    <small class="text-muted d-block">Depression Screening</small>
-                    <strong>{{ assessmentResult.scores.phq9Score || 0 }}/27</strong>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="score-item p-3 bg-light rounded">
-                    <small class="text-muted d-block">Anxiety Screening</small>
-                    <strong>{{ assessmentResult.scores.gad7Score || 0 }}/21</strong>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="score-item p-3 bg-light rounded">
-                    <small class="text-muted d-block">Stress Level</small>
-                    <strong>{{ assessmentResult.scores.pss10Score || 0 }}/20</strong>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="score-item p-3 bg-light rounded">
-                    <small class="text-muted d-block">Well-being</small>
-                    <strong>{{ assessmentResult.scores.whoWellBeingScore || 0 }}/100</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Recommendations Section -->
-            <div class="recommendations-section mb-4" *ngIf="assessmentResult?.recommendations && assessmentResult.recommendations.length > 0">
-              <h6 class="text-start mb-3">Personalized Recommendations:</h6>
-              <div class="recommendations-list text-start">
-                <div class="recommendation-item p-3 bg-light rounded mb-2" *ngFor="let recommendation of assessmentResult.recommendations; trackBy: trackByIndex">
-                  <i class="bi bi-lightbulb text-primary me-2"></i>
-                  {{ recommendation }}
-                </div>
-              </div>
-            </div>
-
-            <!-- Next Steps -->
-            <div class="next-steps mb-4">
-              <h6 class="text-start mb-3">Your Next Steps:</h6>
-              <div class="row g-2">
-                <div class="col-12">
-                  <button 
-                    class="btn btn-primary btn-lg w-100"
-                    (click)="connectWithTherapist()">
-                    <i class="bi bi-person-heart me-2"></i>
-                    Connect with a Licensed Therapist
-                  </button>
-                </div>
-                <div class="col-12">
-                  <button 
-                    class="btn btn-outline-primary w-100"
-                    (click)="viewDetailedResults()">
-                    <i class="bi bi-file-text me-2"></i>
-                    View Detailed Results & Recommendations
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="additional-actions">
-              <button 
-                class="btn btn-link text-muted"
-                (click)="restartAssessment()">
-                <i class="bi bi-arrow-clockwise me-1"></i>
-                Retake Assessment
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-assessment-results
+    *ngIf="assessmentState.isCompleted && assessmentResult"
+    [result]="assessmentResult"
+    [errorMessage]="errorMessage"
+    (connectWithTherapist)="connectWithTherapist()"
+    (viewDetailedResults)="viewDetailedResults()"
+    (retakeAssessment)="restartAssessment()">
+  </app-assessment-results>
 
   <!-- Assessment Complete but No Results Available -->
   <div class="error-screen flex-grow-1 d-flex align-items-center" *ngIf="assessmentState.isCompleted && !assessmentResult">
@@ -474,6 +122,7 @@
       </div>
     </div>
   </div>
+</div>
 
 <!-- Suicide Risk Support Modal -->
 <div class="support-modal-overlay" *ngIf="showSupportMessage">
