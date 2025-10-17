@@ -4,13 +4,15 @@
 
 This table stores all appointment bookings between clients and therapists.
 
+**Note:** This schema references the `therapist_interest` table for therapist profiles. The `therapist_interest` table links to `auth.users` via the `email` field.
+
 ```sql
 -- Create appointments table
 CREATE TABLE IF NOT EXISTS public.appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     client_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     therapist_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    therapist_id UUID NOT NULL REFERENCES public.therapist_profiles(id) ON DELETE CASCADE,
+    therapist_id UUID NOT NULL REFERENCES public.therapist_interest(id) ON DELETE CASCADE,
     scheduled_start TIMESTAMPTZ NOT NULL,
     scheduled_end TIMESTAMPTZ NOT NULL,
     status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'in-progress', 'completed', 'cancelled', 'no-show')),

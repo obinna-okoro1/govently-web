@@ -4,11 +4,13 @@
 
 This table stores the recurring weekly availability schedule for therapists.
 
+**Note:** This schema references the `therapist_interest` table for therapist profiles. The `therapist_interest` table links to `auth.users` via the `email` field (not `user_id`).
+
 ```sql
 -- Create therapist_availability table
 CREATE TABLE IF NOT EXISTS public.therapist_availability (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    therapist_id UUID NOT NULL REFERENCES public.therapist_profiles(id) ON DELETE CASCADE,
+    therapist_id UUID NOT NULL REFERENCES public.therapist_interest(id) ON DELETE CASCADE,
     day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
@@ -41,7 +43,7 @@ This table stores one-time exceptions to the regular availability schedule (holi
 -- Create availability_exceptions table
 CREATE TABLE IF NOT EXISTS public.availability_exceptions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    therapist_id UUID NOT NULL REFERENCES public.therapist_profiles(id) ON DELETE CASCADE,
+    therapist_id UUID NOT NULL REFERENCES public.therapist_interest(id) ON DELETE CASCADE,
     date DATE NOT NULL,
     is_available BOOLEAN NOT NULL DEFAULT false,
     start_time TIME,
@@ -83,16 +85,16 @@ CREATE POLICY "Therapists can manage own availability"
     FOR ALL
     USING (
         EXISTS (
-            SELECT 1 FROM public.therapist_profiles
-            WHERE therapist_profiles.id = therapist_availability.therapist_id
-            AND therapist_profiles.user_id = auth.uid()
+            SELECT 1 FROM public.therapist_interest
+            WHERE therapist_interest.id = therapist_availability.therapist_id
+            AND therapist_interest.email = (SELECT email FROM auth.users WHERE id = auth.uid())
         )
     )
     WITH CHECK (
         EXISTS (
-            SELECT 1 FROM public.therapist_profiles
-            WHERE therapist_profiles.id = therapist_availability.therapist_id
-            AND therapist_profiles.user_id = auth.uid()
+            SELECT 1 FROM public.therapist_interest
+            WHERE therapist_interest.id = therapist_availability.therapist_id
+            AND therapist_interest.email = (SELECT email FROM auth.users WHERE id = auth.uid())
         )
     );
 
@@ -111,16 +113,16 @@ CREATE POLICY "Therapists can manage own exceptions"
     FOR ALL
     USING (
         EXISTS (
-            SELECT 1 FROM public.therapist_profiles
-            WHERE therapist_profiles.id = availability_exceptions.therapist_id
-            AND therapist_profiles.user_id = auth.uid()
+            SELECT 1 FROM public.therapist_interest
+            WHERE therapist_interest.id = availability_exceptions.therapist_id
+            AND therapist_interest.email = (SELECT email FROM auth.users WHERE id = auth.uid())
         )
     )
     WITH CHECK (
         EXISTS (
-            SELECT 1 FROM public.therapist_profiles
-            WHERE therapist_profiles.id = availability_exceptions.therapist_id
-            AND therapist_profiles.user_id = auth.uid()
+            SELECT 1 FROM public.therapist_interest
+            WHERE therapist_interest.id = availability_exceptions.therapist_id
+            AND therapist_interest.email = (SELECT email FROM auth.users WHERE id = auth.uid())
         )
     );
 

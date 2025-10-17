@@ -108,7 +108,7 @@ Comprehensive database schemas have been created with full Row Level Security (R
 - id (UUID, primary key)
 - client_user_id (UUID, references auth.users)
 - therapist_user_id (UUID, references auth.users)
-- therapist_id (UUID, references therapist_profiles)
+- therapist_id (UUID, references therapist_interest)
 - scheduled_start (TIMESTAMPTZ)
 - scheduled_end (TIMESTAMPTZ)
 - status (TEXT: scheduled, confirmed, in-progress, completed, cancelled, no-show)

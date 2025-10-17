@@ -38,7 +38,7 @@ This creates:
 
 ```
 auth.users (Supabase Auth)
-    ├── therapist_profiles (existing)
+    ├── therapist_interest (existing - linked via email field)
     │   ├── therapist_availability (new)
     │   ├── availability_exceptions (new)
     │   └── appointments (new) [as therapist]
@@ -48,6 +48,8 @@ auth.users (Supabase Auth)
     │
     └── appointments (new) [as client]
 ```
+
+**Note:** The `therapist_interest` table links to `auth.users` via the `email` field rather than a `user_id` column.
 
 ## Key Features
 
@@ -169,8 +171,10 @@ ORDER BY start_time;
 
 ### Prerequisites
 - Supabase project with authentication enabled
-- Existing `therapist_profiles` table
+- Existing `therapist_interest` table (contains therapist profile data including email, full_name, specializations, bio, etc.)
 - Existing `user_assessments` table (optional, for assessment linking)
+
+**Important:** The `therapist_interest` table uses `email` to link to `auth.users` (not `user_id`). RLS policies in this schema reflect this relationship.
 
 ### Installation Steps
 
