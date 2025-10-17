@@ -1,119 +1,132 @@
 <!-- Mental Health Assessment Component - Mobile First Responsive -->
 <div class="container-fluid d-flex flex-column p-0" *ngIf="!showSupportMessage">
   
-  <!-- Assessment Header -->
-  <div class="bg-primary text-white py-3 py-lg-4" *ngIf="assessmentState.isStarted && !assessmentState.isCompleted">
-    <div class="container-fluid px-3 px-lg-4">
-      <div class="row align-items-center">
-        <div class="col-12 col-lg-8">
-          <h1 class="h4 h1-lg mb-1">Mental Health Assessment</h1>
-          <p class="mb-0 opacity-75">{{ assessmentState.currentSection?.description }}</p>
-        </div>
-        <div class="col-12 col-lg-4 text-start text-lg-end mt-3 mt-lg-0">
-          <div class="progress-info">
-            <small class="d-block">Question {{ assessmentState.progress.currentQuestion }} of {{ assessmentState.progress.totalQuestions }}</small>
-            <small class="d-block">~{{ assessmentState.progress.estimatedTimeRemaining }} min remaining</small>
-          </div>
-        </div>
+  <!-- Loading State -->
+  <div class="flex-grow-1 d-flex align-items-center justify-content-center" *ngIf="isCheckingExisting">
+    <div class="text-center p-4">
+      <div class="spinner-border text-primary mb-3" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
-      
-      <!-- Progress Bar -->
-      <div class="progress mt-3" style="height: 6px;">
-        <div 
-          class="progress-bar bg-success" 
-          role="progressbar" 
-          [style.width.%]="assessmentState.progress.percentComplete"
-          [attr.aria-valuenow]="assessmentState.progress.percentComplete"
-          aria-valuemin="0" 
-          aria-valuemax="100">
-        </div>
-      </div>
+      <p class="text-muted">Checking your assessment history...</p>
     </div>
   </div>
 
-  <!-- Previous Assessment Summary -->
-  <app-assessment-summary
-    *ngIf="showPreviousAssessment && previousAssessment"
-    [previousAssessment]="previousAssessment"
-    (retakeAssessment)="startAssessment()"
-    (bookTherapist)="bookTherapistFromSummary()">
-  </app-assessment-summary>
-
-  <!-- Assessment Welcome Screen -->
-  <app-assessment-welcome
-    *ngIf="!assessmentState.isStarted && !showPreviousAssessment"
-    [isLoading]="isLoading"
-    (startAssessment)="startAssessment()">
-  </app-assessment-welcome>
-
-  <!-- Assessment Questions -->
-  <app-assessment-question
-    *ngIf="assessmentState.isStarted && !assessmentState.isCompleted && currentQuestion"
-    [question]="currentQuestion"
-    [currentSection]="assessmentState.currentSection!"
-    [progress]="assessmentState.progress"
-    [currentResponse]="currentResponse"
-    [sectionProgress]="currentSectionProgress"
-    [canGoBack]="canGoBack"
-    [nextButtonText]="nextButtonText"
-    [isLoading]="isLoading"
-    [errorMessage]="errorMessage"
-    (responseChanged)="onResponseChanged($event)"
-    (nextQuestion)="nextQuestion()"
-    (previousQuestion)="previousQuestion()">
-  </app-assessment-question>
-
-  <!-- Assessment Complete -->
-  <app-assessment-results
-    *ngIf="assessmentState.isCompleted && assessmentResult"
-    [result]="assessmentResult"
-    [errorMessage]="errorMessage"
-    (connectWithTherapist)="connectWithTherapist()"
-    (viewDetailedResults)="viewDetailedResults()"
-    (retakeAssessment)="restartAssessment()">
-  </app-assessment-results>
-
-  <!-- Assessment Complete but No Results Available -->
-  <div class="error-screen flex-grow-1 d-flex align-items-center" *ngIf="assessmentState.isCompleted && !assessmentResult">
-    <div class="container-fluid px-3 px-md-4">
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8 col-xl-6">
-          <div class="error-card bg-white p-3 p-md-5 rounded-3 shadow-sm text-center">
-            
-            <div class="error-icon mb-3 mb-md-4">
-              <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3rem;"></i>
+  <!-- Assessment Content (only show when not checking existing) -->
+  <ng-container *ngIf="!isCheckingExisting">
+    <!-- Assessment Header -->
+    <div class="bg-primary text-white py-3 py-lg-4" *ngIf="assessmentState.isStarted && !assessmentState.isCompleted">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="row align-items-center">
+          <div class="col-12 col-lg-8">
+            <h1 class="h4 h1-lg mb-1">Mental Health Assessment</h1>
+            <p class="mb-0 opacity-75">{{ assessmentState.currentSection?.description }}</p>
+          </div>
+          <div class="col-12 col-lg-4 text-start text-lg-end mt-3 mt-lg-0">
+            <div class="progress-info">
+              <small class="d-block">Question {{ assessmentState.progress.currentQuestion }} of {{ assessmentState.progress.totalQuestions }}</small>
+              <small class="d-block">~{{ assessmentState.progress.estimatedTimeRemaining }} min remaining</small>
             </div>
-            
-            <h1 class="h3 h2-md mb-3 mb-md-4">Assessment Processing</h1>
-            <p class="lead mb-3 mb-md-4 text-muted">
-              Your assessment has been completed, but we're having trouble processing your results. 
-              Please try refreshing the page or retaking the assessment.
-            </p>
+          </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress mt-3" style="height: 6px;">
+          <div 
+            class="progress-bar bg-success" 
+            role="progressbar" 
+            [style.width.%]="assessmentState.progress.percentComplete"
+            [attr.aria-valuenow]="assessmentState.progress.percentComplete"
+            aria-valuemin="0" 
+            aria-valuemax="100">
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <!-- Error Message if any -->
-            <div class="alert alert-warning" *ngIf="errorMessage" role="alert">
-              <i class="bi bi-exclamation-triangle me-2"></i>
-              {{ errorMessage }}
-            </div>
+    <!-- Previous Assessment Summary -->
+    <app-assessment-summary
+      *ngIf="showPreviousAssessment && previousAssessment"
+      [previousAssessment]="previousAssessment"
+      (retakeAssessment)="startAssessment()"
+      (bookTherapist)="bookTherapistFromSummary()">
+    </app-assessment-summary>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-              <div class="row g-2">
-                <div class="col-12">
-                  <button 
-                    class="btn btn-primary btn-lg w-100"
-                    (click)="restartAssessment()">
-                    <i class="bi bi-arrow-clockwise me-2"></i>
-                    Retake Assessment
-                  </button>
-                </div>
-                <div class="col-12">
-                  <button 
-                    class="btn btn-outline-secondary w-100"
-                    (click)="connectWithTherapist()">
-                    <i class="bi bi-person-heart me-2"></i>
-                    Connect with a Therapist
-                  </button>
+    <!-- Assessment Welcome Screen -->
+    <app-assessment-welcome
+      *ngIf="!assessmentState.isStarted && !showPreviousAssessment"
+      [isLoading]="isLoading"
+      (startAssessment)="startAssessment()">
+    </app-assessment-welcome>
+
+    <!-- Assessment Questions -->
+    <app-assessment-question
+      *ngIf="assessmentState.isStarted && !assessmentState.isCompleted && currentQuestion"
+      [question]="currentQuestion"
+      [currentSection]="assessmentState.currentSection!"
+      [progress]="assessmentState.progress"
+      [currentResponse]="currentResponse"
+      [sectionProgress]="currentSectionProgress"
+      [canGoBack]="canGoBack"
+      [nextButtonText]="nextButtonText"
+      [isLoading]="isLoading"
+      [errorMessage]="errorMessage"
+      (responseChanged)="onResponseChanged($event)"
+      (nextQuestion)="nextQuestion()"
+      (previousQuestion)="previousQuestion()">
+    </app-assessment-question>
+
+    <!-- Assessment Complete -->
+    <app-assessment-results
+      *ngIf="assessmentState.isCompleted && assessmentResult"
+      [result]="assessmentResult"
+      [errorMessage]="errorMessage"
+      (connectWithTherapist)="connectWithTherapist()"
+      (viewDetailedResults)="viewDetailedResults()"
+      (retakeAssessment)="restartAssessment()">
+    </app-assessment-results>
+
+    <!-- Assessment Complete but No Results Available -->
+    <div class="error-screen flex-grow-1 d-flex align-items-center" *ngIf="assessmentState.isCompleted && !assessmentResult">
+      <div class="container-fluid px-3 px-md-4">
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-8 col-xl-6">
+            <div class="error-card bg-white p-3 p-md-5 rounded-3 shadow-sm text-center">
+              
+              <div class="error-icon mb-3 mb-md-4">
+                <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3rem;"></i>
+              </div>
+              
+              <h1 class="h3 h2-md mb-3 mb-md-4">Assessment Processing</h1>
+              <p class="lead mb-3 mb-md-4 text-muted">
+                Your assessment has been completed, but we're having trouble processing your results. 
+                Please try refreshing the page or retaking the assessment.
+              </p>
+
+              <!-- Error Message if any -->
+              <div class="alert alert-warning" *ngIf="errorMessage" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ errorMessage }}
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="action-buttons">
+                <div class="row g-2">
+                  <div class="col-12">
+                    <button 
+                      class="btn btn-primary btn-lg w-100"
+                      (click)="restartAssessment()">
+                      <i class="bi bi-arrow-clockwise me-2"></i>
+                      Retake Assessment
+                    </button>
+                  </div>
+                  <div class="col-12">
+                    <button 
+                      class="btn btn-outline-secondary w-100"
+                      (click)="connectWithTherapist()">
+                      <i class="bi bi-person-heart me-2"></i>
+                      Connect with a Therapist
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -121,7 +134,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </ng-container>
 </div>
 
 <!-- Suicide Risk Support Modal -->
