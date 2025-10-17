@@ -1,0 +1,40 @@
+.appointment-booking-container {
+  min-height: 80vh;
+
+  .therapist-avatar {
+    img {
+      border: 2px solid #e9ecef;
+    }
+  }
+
+  .dates-container {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .row {
+      flex-wrap: nowrap;
+    }
+  }
+
+  .time-slots-container {
+    .btn {
+      font-size: 0.875rem;
+    }
+  }
+
+  .form-check-label {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f8f9fa;
+    }
+  }
+
+  .form-check-input:checked ~ .form-check-label {
+    background-color: #e7f1ff;
+  }
+}
