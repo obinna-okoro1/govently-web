@@ -67,6 +67,7 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
   // Current UI State
   public currentResponse: any = null;
   public isLoading: boolean = false;
+  public isCheckingExisting: boolean = false;
   public errorMessage: string = '';
   public showSupportMessage: boolean = false;
   
@@ -100,6 +101,7 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
    * Check if user has taken assessment before
    */
   private checkExistingAssessment(): void {
+    this.isCheckingExisting = true;
     this.assessmentService.getCurrentAssessment().subscribe({
       next: (existingAssessment) => {
         if (existingAssessment) {
@@ -107,9 +109,11 @@ export class MentalHealthAssessmentComponent implements OnInit, OnDestroy {
           this.previousAssessment = existingAssessment;
           this.showPreviousAssessment = true;
         }
+        this.isCheckingExisting = false;
       },
       error: (error) => {
         console.error('Error checking existing assessment:', error);
+        this.isCheckingExisting = false;
       }
     });
   }
