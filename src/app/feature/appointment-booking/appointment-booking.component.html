@@ -1,0 +1,209 @@
+<div class="appointment-booking-container py-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10 col-xl-8">
+        
+        <!-- Header -->
+        <div class="mb-4">
+          <h2 class="h3 mb-2">Book an Appointment</h2>
+          <p class="text-muted">Schedule a session with {{ therapist?.full_name }}</p>
+        </div>
+
+        <!-- Therapist Info Card -->
+        <div class="card shadow-sm border-0 mb-4" *ngIf="therapist">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-start">
+              <div class="therapist-avatar me-3">
+                <img 
+                  [src]="therapist.profile_picture_url || 'assets/default-avatar.png'" 
+                  [alt]="therapist.full_name"
+                  class="rounded-circle"
+                  style="width: 64px; height: 64px; object-fit: cover;">
+              </div>
+              <div class="flex-grow-1">
+                <h5 class="mb-1">{{ therapist.full_name }}</h5>
+                <div class="specializations mb-2">
+                  <span class="badge bg-primary me-1" *ngFor="let spec of therapist.specializations?.slice(0, 3)">
+                    {{ spec }}
+                  </span>
+                </div>
+                <p class="text-muted small mb-0" *ngIf="therapist.bio">{{ therapist.bio }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment Type Selection -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body p-4">
+            <h6 class="mb-3">Appointment Type</h6>
+            <div class="row g-2">
+              <div class="col-12 col-sm-6">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="type-initial"
+                    [(ngModel)]="appointmentType"
+                    value="initial-consultation"
+                    name="appointmentType">
+                  <label class="form-check-label w-100" for="type-initial">
+                    <strong>Initial Consultation</strong>
+                    <small class="d-block text-muted">First-time meeting</small>
+                  </label>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="type-assessment"
+                    [(ngModel)]="appointmentType"
+                    value="assessment-review"
+                    name="appointmentType">
+                  <label class="form-check-label w-100" for="type-assessment">
+                    <strong>Assessment Review</strong>
+                    <small class="d-block text-muted">Discuss assessment results</small>
+                  </label>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="type-therapy"
+                    [(ngModel)]="appointmentType"
+                    value="therapy-session"
+                    name="appointmentType">
+                  <label class="form-check-label w-100" for="type-therapy">
+                    <strong>Therapy Session</strong>
+                    <small class="d-block text-muted">Regular therapy session</small>
+                  </label>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="type-followup"
+                    [(ngModel)]="appointmentType"
+                    value="follow-up"
+                    name="appointmentType">
+                  <label class="form-check-label w-100" for="type-followup">
+                    <strong>Follow-up</strong>
+                    <small class="d-block text-muted">Follow-up session</small>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Available Time Slots -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body p-4">
+            <h6 class="mb-3">Select Date & Time</h6>
+            
+            <!-- Loading State -->
+            <div class="text-center py-5" *ngIf="isLoading && !successMessage">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="text-muted mt-3">Loading available slots...</p>
+            </div>
+
+            <!-- No Slots Available -->
+            <div class="alert alert-warning" *ngIf="!isLoading && availableSlots.length === 0">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              No available slots found for this week. Please try again later or contact the therapist directly.
+            </div>
+
+            <!-- Available Dates and Slots -->
+            <div *ngIf="!isLoading && availableSlots.length > 0">
+              <div class="dates-container mb-3">
+                <div class="row g-2">
+                  <div class="col-auto" *ngFor="let date of availableDates">
+                    <button 
+                      class="btn btn-sm"
+                      [class.btn-primary]="selectedDate.toDateString() === date.toDateString()"
+                      [class.btn-outline-primary]="selectedDate.toDateString() !== date.toDateString()"
+                      (click)="selectedDate = date">
+                      {{ formatDate(date) }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Time Slots for Selected Date -->
+              <div class="time-slots-container">
+                <div class="row g-2">
+                  <div 
+                    class="col-6 col-sm-4 col-md-3" 
+                    *ngFor="let slot of getSlotsForDate(selectedDate)">
+                    <button 
+                      class="btn btn-sm w-100"
+                      [class.btn-success]="selectedSlot?.id === slot.id"
+                      [class.btn-outline-secondary]="selectedSlot?.id !== slot.id"
+                      [disabled]="!slot.is_available || slot.is_booked"
+                      (click)="selectSlot(slot)">
+                      {{ formatTime(slot.start_time) }}
+                    </button>
+                  </div>
+                </div>
+                <p class="text-muted small mt-2" *ngIf="getSlotsForDate(selectedDate).length === 0">
+                  No slots available for this date.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body p-4">
+            <h6 class="mb-3">Notes (Optional)</h6>
+            <textarea 
+              class="form-control" 
+              rows="3"
+              [(ngModel)]="notes"
+              placeholder="Share any specific concerns or topics you'd like to discuss...">
+            </textarea>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Success Message -->
+        <div class="alert alert-success" *ngIf="successMessage" role="alert">
+          <i class="bi bi-check-circle me-2"></i>
+          {{ successMessage }}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons d-flex gap-2 justify-content-end">
+          <button 
+            class="btn btn-outline-secondary"
+            (click)="cancelBooking()"
+            [disabled]="isLoading">
+            Cancel
+          </button>
+          <button 
+            class="btn btn-primary px-4"
+            (click)="bookAppointment()"
+            [disabled]="!selectedSlot || isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isLoading ? 'Booking...' : 'Book Appointment' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
