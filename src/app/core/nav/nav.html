@@ -146,18 +146,20 @@
 
   <!-- User Profile Section (Bottom) -->
   <div class="user-profile" *ngIf="(currentUser$ | async) && sidebarOpen">
-    <div class="profile-info">
-      <div class="profile-avatar">
-        <span>{{(currentUser$ | async)?.name?.charAt(0) || 'U'}}</span>
-      </div>
-      <div class="profile-details">
-        <div class="profile-name">{{(currentUser$ | async)?.name}}</div>
-        <div class="profile-status">
-          <i class="bi bi-circle-fill text-success"></i>
-          Online
+    <a [routerLink]="'/profile'" class="profile-link" (click)="closeOnMobile()">
+      <div class="profile-info">
+        <div class="profile-avatar">
+          <span>{{(currentUser$ | async)?.name?.charAt(0) || 'U'}}</span>
+        </div>
+        <div class="profile-details">
+          <div class="profile-name">{{(currentUser$ | async)?.name}}</div>
+          <div class="profile-status">
+            <i class="bi bi-circle-fill text-success"></i>
+            Online
+          </div>
         </div>
       </div>
-    </div>
+    </a>
   </div>
 </nav>
 

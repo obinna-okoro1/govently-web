@@ -1,0 +1,195 @@
+<div class="profile-page">
+  <app-back-button></app-back-button>
+  
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-avatar-large">
+        <span>{{ userProfile?.name?.charAt(0) || 'U' }}</span>
+      </div>
+      <h1>{{ userProfile?.name }}</h1>
+      <p class="text-muted">{{ userProfile?.email }}</p>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div class="alert alert-success" *ngIf="successMessage">
+      <i class="bi bi-check-circle"></i> {{ successMessage }}
+    </div>
+    <div class="alert alert-danger" *ngIf="errorMessage">
+      <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+    </div>
+
+    <!-- Profile Information Section -->
+    <div class="profile-section">
+      <div class="section-header">
+        <h2>
+          <i class="bi bi-person"></i> Profile Information
+        </h2>
+        <button 
+          *ngIf="!isEditing" 
+          class="btn btn-outline-primary btn-sm"
+          (click)="enableEdit()">
+          <i class="bi bi-pencil"></i> Edit Profile
+        </button>
+      </div>
+
+      <div class="profile-form">
+        <!-- Name -->
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            [(ngModel)]="editName"
+            [disabled]="!isEditing"
+            placeholder="Enter your name"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            [(ngModel)]="editEmail"
+            [disabled]="!isEditing"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select
+            id="gender"
+            class="form-control"
+            [(ngModel)]="editGender"
+            [disabled]="!isEditing"
+          >
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="non-binary">Non-Binary</option>
+            <option value="other">Prefer not to say</option>
+          </select>
+        </div>
+
+        <!-- Age -->
+        <div class="form-group">
+          <label for="age">Age</label>
+          <input
+            type="number"
+            id="age"
+            class="form-control"
+            [(ngModel)]="editAge"
+            [disabled]="!isEditing"
+            min="13"
+            max="120"
+            placeholder="Enter your age"
+          />
+        </div>
+
+        <!-- Location -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input
+              type="text"
+              id="city"
+              class="form-control"
+              [(ngModel)]="editCity"
+              [disabled]="!isEditing"
+              placeholder="Enter your city"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="country">Country</label>
+            <input
+              type="text"
+              id="country"
+              class="form-control"
+              [(ngModel)]="editCountry"
+              [disabled]="!isEditing"
+              placeholder="Enter your country"
+            />
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions" *ngIf="isEditing">
+          <button 
+            class="btn btn-secondary"
+            (click)="cancelEdit()"
+            [disabled]="isSaving">
+            Cancel
+          </button>
+          <button 
+            class="btn btn-primary"
+            (click)="saveProfile()"
+            [disabled]="isSaving">
+            <span *ngIf="!isSaving">
+              <i class="bi bi-check-lg"></i> Save Changes
+            </span>
+            <span *ngIf="isSaving">
+              <i class="bi bi-hourglass-split"></i> Saving...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Chat Persona Section -->
+    <div class="profile-section">
+      <div class="section-header">
+        <h2>
+          <i class="bi bi-chat-dots"></i> AI Chat Persona
+        </h2>
+      </div>
+
+      <p class="section-description">
+        Choose how your AI companion interacts with you. This affects the tone and style of responses.
+      </p>
+
+      <div class="persona-options">
+        <div 
+          *ngFor="let companion of companions"
+          class="persona-card"
+          [class.selected]="editAiPersona === companion.value"
+          [class.disabled]="!isEditing"
+          (click)="isEditing && (editAiPersona = companion.value)">
+          <div class="persona-emoji">{{ companion.emoji }}</div>
+          <div class="persona-info">
+            <h3>{{ companion.name }}</h3>
+            <p>{{ companion.description }}</p>
+          </div>
+          <div class="persona-check" *ngIf="editAiPersona === companion.value">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="profile-section danger-section">
+      <div class="section-header">
+        <h2>
+          <i class="bi bi-exclamation-triangle"></i> Danger Zone
+        </h2>
+      </div>
+
+      <div class="danger-content">
+        <div class="danger-info">
+          <h3>Delete Account</h3>
+          <p>Permanently remove your account and all associated data. This action cannot be undone.</p>
+        </div>
+        <button 
+          class="btn btn-danger"
+          (click)="deleteAccount()">
+          <i class="bi bi-trash"></i> Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

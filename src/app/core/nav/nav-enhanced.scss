@@ -408,6 +408,23 @@
   padding: 1rem;
   background: var(--color-bg-subtle);
   
+  .profile-link {
+    text-decoration: none;
+    display: block;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: var(--color-primary-alpha-10);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
   .profile-info {
     display: flex;
     align-items: center;
